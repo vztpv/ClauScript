@@ -1,2 +1,5 @@
 # ClauScript
-new project, Using json form,  to use in JsonLint Project...
+new project, Simple ClauText to use in JsonLint Project...
+
+
+# example
