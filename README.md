@@ -11,4 +11,4 @@
     /./x = 3
     /./x = /./y # calcul /./y
     /./x = '/./y' # no calcul and ( x <= /./y )
-    $add = { $unwrap = { '/./y' } /./x }
+    $add = { $calcul = { '/./y' } /./x }
