@@ -1,5 +1,5 @@
 # ClauScript
-    new project, Simple ClauText to use in JsonLint Project...
+    new project, Modified ClauText to use in JsonLint Project...
 
 
 # ToDo
