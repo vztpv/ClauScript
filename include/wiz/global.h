@@ -158,7 +158,7 @@ namespace wiz {
 		bool operator==(const DataType& type) const;
 		bool operator==(const char* cstr) const;
 		bool operator==(const std::string& str) const;
-
+		bool operator==(std::string_view str) const;
 		bool operator!=(const DataType& type) const;
 		bool operator!=(const char* cstr) const;
 		bool operator!=(const std::string& str) const;
@@ -198,6 +198,7 @@ namespace wiz {
 
 	bool operator==(const char* cstr, const DataType& type);
 	bool operator==(const std::string& str, const DataType& type);
+	bool operator==(std::string_view str, const DataType& type);
 
 
 	bool operator!=(const char* cstr, const DataType& type);

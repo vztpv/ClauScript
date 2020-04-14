@@ -21,7 +21,7 @@ namespace wiz {
 		class Utility
 		{
 		public:
-			static bool IsInteger(std::string str) {
+			static bool IsInteger(std::string_view str) {
 				//if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 				//	str = str.substr(1, str.size() - 2);
 				//}
@@ -48,7 +48,7 @@ namespace wiz {
 				}
 				return 1 == state; /// chk..
 			}
-			static bool IsNumberInJson(std::string str)
+			static bool IsNumberInJson(std::string_view str)
 			{
 				//if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 				//	str = str.substr(1, str.size() - 2);
@@ -116,7 +116,7 @@ namespace wiz {
 				}
 				return 3 == state || 6 == state;
 			}
-			static bool IsDouble(std::string str) {
+			static bool IsDouble(std::string_view str) {
 				//if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 				//	str = str.substr(1, str.size() - 2);
 				//}
@@ -181,7 +181,7 @@ namespace wiz {
 				}
 				return 3 == state || 6 == state;
 			}
-			static bool IsDate(std::string str) /// chk!!
+			static bool IsDate(std::string_view str) /// chk!!
 			{
 				//if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 				//	str = str.substr(1, str.size() - 2);
@@ -229,7 +229,7 @@ namespace wiz {
 				}
 				return 5 == state;
 			}
-			static bool IsDateTimeA(std::string str) // yyyy.MM.dd.hh
+			static bool IsDateTimeA(std::string_view str) // yyyy.MM.dd.hh
 			{
 				//if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 				//	str = str.substr(1, str.size() - 2);
@@ -286,7 +286,7 @@ namespace wiz {
 				}
 				return 7 == state;
 			}
-			static bool IsDateTimeB(std::string str) // yyyy.MM.dd.hh.mm
+			static bool IsDateTimeB(std::string_view str) // yyyy.MM.dd.hh.mm
 			{
 			//	if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 			//		str = str.substr(1, str.size() - 2);
@@ -640,7 +640,7 @@ namespace wiz {
 				return "ERROR";
 			}
 
-			static std::string BoolOperation(std::string op, std::string x, std::string y)
+			static std::string_view BoolOperation(std::string_view op, std::string_view x, std::string_view y)
 			{
 				if (x == "ERROR" || y == "ERROR") { return "ERROR"; }
 				if ("NOT" == op) { return x == "TRUE" ? "FALSE" : "TRUE"; }

@@ -1261,13 +1261,12 @@ namespace wiz {
 			}
 			
 			//// O(N) -> O(logN)?
-			std::vector<UserType*> GetUserTypeItem(std::string name) const { /// chk...
+			std::vector<UserType*> GetUserTypeItem(const std::string& name) const { /// chk...
 				std::vector<UserType*> temp;
-				std::string _name = name;
 
-				if (String::startsWith(_name, "$.") && _name.size() >= 5) {
+				if (String::startsWith(name, "$.") && name.size() >= 5) {
 					// later, change to binary search?
-					std::string str = _name.substr(3, _name.size() - 4);
+					std::string str = name.substr(3, name.size() - 4);
 					std::regex rgx(str.data());
 
 					for (int i = 0; i < userTypeList.size(); ++i) {
@@ -2164,10 +2163,9 @@ namespace wiz {
 				
 				std::vector<std::string> x;
 
-				std::string pos_sv = position;
 
 				//std::cout << "string view is " << pos_sv << " ";
-				std::vector<std::string> tokens = tokenize(pos_sv, '/');
+				std::vector<std::string> tokens = tokenize(position, '/');
 			
 				for (size_t i = 0; i < tokens.size(); ++i) {
 					std::string temp = tokens[i];
@@ -2188,34 +2186,26 @@ namespace wiz {
 						x.push_back(temp);
 					}
 				}
-				//std::cout << "\n";
-				std::string result = "/./";
-				for (const auto& _x : x) {
-					result += _x.data();
 
-					result += "/";
-				}
-
-				if (x.size() >= 1) {
-					result.pop_back();
-				}
-
-				return _Find(std::move(result), global);
+				return _Find(std::move(x), global);
 			}
 		private:	
 			// find userType! not itemList!,// this has bug
-			static std::pair<bool, std::vector< UserType*> > _Find(std::string&& position, UserType* global) /// option, option_offset
+			static std::pair<bool, std::vector< UserType*> > _Find(std::vector<std::string>&& tokens, UserType* global) /// option, option_offset
 			{
 				std::vector< UserType* > temp;
+				int start = 0;
 
-				if (position.empty()) { temp.push_back(global); return{ true, temp }; }
-				if (position == ".") { temp.push_back(global); return{ true, temp }; }
-				if (position == "/./") { temp.push_back(global); return{ true, temp }; } // chk..
-				if (position == "/.") { temp.push_back(global); return{ true, temp }; }
-				if (position == "/") { temp.push_back(global); return{ true, temp }; }
-				if (String::startsWith(position, "/./"))
+				if (tokens.empty()) { temp.push_back(global); return{ true, temp }; }
+				if (tokens.size() == 1 && tokens[0] == ".") { temp.push_back(global); return{ true, temp }; }
+				//if (position.size() == 1 && position[0] == "/./") { temp.push_back(global); return{ true, temp }; } // chk..
+				//if (position.size() == 1 && position[0] == "/.") { temp.push_back(global); return{ true, temp }; }
+				//if (position.size() == 1 && position[0] == "/") { temp.push_back(global); return{ true, temp }; }
+				
+				if (tokens.size() > 1 && tokens[0] == ".")
 				{
-					position = String::substring(position, 3);
+					start = 1;
+					//position = String::substring(position, 3);
 				}
 
 				std::list<std::pair< UserType*, int >> utDeck;
@@ -2224,10 +2214,8 @@ namespace wiz {
 				utTemp.second = 0;
 				std::vector<std::string> strVec;
 
-				auto tokens = tokenize(position, '/');
-
 				//std::cout << "position is " << position << "\t";
-				for (int i = 0; i < tokens.size(); ++i) {
+				for (int i = start; i < tokens.size(); ++i) {
 					std::string strTemp = tokens[i];
 
 					//std::cout << strTemp << " ";

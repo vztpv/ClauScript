@@ -134,13 +134,13 @@ namespace wiz {
 		{
 			return substring(str, start, str.size() - 1);
 		}
-		static bool startsWith(std::string str, std::string start)
+		static bool startsWith(std::string_view str, std::string_view start)
 		{
 			if (str.size() < start.size()) { return false; }
 			return Comp(str.data(), start.data(), start.size());
 		}
 
-		static bool endsWith(std::string str, std::string last)
+		static bool endsWith(std::string_view str, std::string_view last)
 		{
 			if (str.size() < last.size()) { return false; }
 			if (last.empty()) { return true; } /// chk... return false; 
