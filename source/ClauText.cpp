@@ -1,6 +1,7 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 
 #include "wiz/ClauText.h"
+using namespace std::literals;
 
 namespace wiz {
 
@@ -316,7 +317,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 
 			while (val != nullptr)
 			{
-				if ("$copy" == val->GetName()) { // to = { } from = { } option = { 1 : internal data, default, 2 : total data }
+				if ("$copy"sv == val->GetName()) { // to = { } from = { } option = { 1 : internal data, default, 2 : total data }
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -362,7 +363,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$iterate" == val->GetName()) { // very slow? why??
+				else if ("$iterate"sv == val->GetName()) { // very slow? why??
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -395,7 +396,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$iterateA" == val->GetName()) { // very slow? why??
+				else if ("$iterateA"sv == val->GetName()) { // very slow? why??
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -427,7 +428,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$iterate2" == val->GetName()) { // very slow? why??
+				else if ("$iterate2"sv == val->GetName()) { // very slow? why??
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -453,7 +454,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$iterate3" == val->GetName()) { //
+				else if ("$iterate3"sv == val->GetName()) { //
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -486,7 +487,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$riterate" == val->GetName()) { // very slow? why??
+				else if ("$riterate"sv == val->GetName()) { // very slow? why??
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -512,7 +513,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$while" == val->GetName()) {
+				else if ("$while"sv == val->GetName()) {
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -533,7 +534,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						break;
 					}
 				}
-				else if ("$do" == val->GetName()) { // chk? - need example!
+				else if ("$do"sv == val->GetName()) { // chk? - need example!
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -564,7 +565,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$remove_usertype_total" == val->GetName()) { //// has bug?
+				else if ("$remove_usertype_total"sv == val->GetName()) { //// has bug?
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -590,7 +591,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$save" == val->GetName()) // save data, event, main!
+				else if ("$save"sv == val->GetName()) // save data, event, main!
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -611,7 +612,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$save_data_only" == val->GetName())
+				else if ("$save_data_only"sv == val->GetName())
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -633,7 +634,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 				}
 
-				else if ("$save_data_only2" == val->GetName())
+				else if ("$save_data_only2"sv == val->GetName())
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -662,7 +663,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$option" == val->GetName()) // first
+				else if ("$option"sv == val->GetName()) // first
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -677,7 +678,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 				}
 				// done - ($push_back-insert!) $pop_back, $push_front, $pop_front ($front?, $back?)
-				else if ("$pop_back" == val->GetName()) {
+				else if ("$pop_back"sv == val->GetName()) {
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -699,7 +700,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$push_front" == val->GetName()) {
+				else if ("$push_front"sv == val->GetName()) {
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -729,7 +730,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$pop_front" == val->GetName()) {
+				else if ("$pop_front"sv == val->GetName()) {
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -749,7 +750,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 				}
 				/*
-				else if ("$wait" == val->GetName()) {
+				else if ("$wait"sv == val->GetName()) {
 				for (int i = 0; i < waits.size(); ++i) {
 				waits[i]->join();
 				delete waits[i];
@@ -761,7 +762,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 				}
 				*/
 				
-				else if ("$print_option" == val->GetName()) {
+				else if ("$print_option"sv == val->GetName()) {
 				ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -798,7 +799,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$print_file_option" == val->GetName()) {
+				else if ("$print_file_option"sv == val->GetName()) {
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -813,7 +814,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$print_file_clear" == val->GetName()) {
+				else if ("$print_file_clear"sv == val->GetName()) {
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -827,7 +828,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$call" == val->GetName()) {
+				else if ("$call"sv == val->GetName()) {
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -962,7 +963,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 
 					break;
 				}
-				else if ("$call_by_data" == val->GetName()) {
+				else if ("$call_by_data"sv == val->GetName()) {
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -988,7 +989,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$call_by_data2" == val->GetName()) {
+				else if ("$call_by_data2"sv == val->GetName()) {
 				ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 				_excuteData.chkInfo = true;
 				_excuteData.info = eventStack.top();
@@ -1016,7 +1017,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 				break;
 				}
 				//// no $parameter.~
-				else if ("$assign" == val->GetName()) /// -> assign2?
+				else if ("$assign"sv == val->GetName()) /// -> assign2?
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1039,7 +1040,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 				}
 
-				else if ("$assign2" == val->GetName())
+				else if ("$assign2"sv == val->GetName())
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1065,7 +1066,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$assign_local" == val->GetName()) /// no  
+				else if ("$assign_local"sv == val->GetName()) /// no  
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1094,7 +1095,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$assign_global" == val->GetName()) // 二쇱쓽!! dir=> dir/name ( dir= { name = val } } , @瑜??욎뿉 遺숈뿬???쒕떎. 
+				else if ("$assign_global"sv == val->GetName()) // 二쇱쓽!! dir=> dir/name ( dir= { name = val } } , @瑜??욎뿉 遺숈뿬???쒕떎. 
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1119,7 +1120,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 				}
 
-				else if ("$assign_from_ut" == val->GetName()) {
+				else if ("$assign_from_ut"sv == val->GetName()) {
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -1147,7 +1148,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 				}
 
 				/// cf) insert3? - any position?
-				else if ("$push_back" == val->GetName() || "$insert" == val->GetName() || "$insert2" == val->GetName())
+				else if ("$push_back"sv == val->GetName() || "$insert"sv == val->GetName() || "$insert2"sv == val->GetName())
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1178,7 +1179,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$insert_noname_usertype" == val->GetName())
+				else if ("$insert_noname_usertype"sv == val->GetName())
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1196,7 +1197,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$insert_by_idx" == val->GetName())
+				else if ("$insert_by_idx"sv == val->GetName())
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1227,7 +1228,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$make" == val->GetName()) // To Do? - make2? or remake? 
+				else if ("$make"sv == val->GetName()) // To Do? - make2? or remake? 
 													// cf) make empty ut??
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
@@ -1274,7 +1275,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$findIndex" == val->GetName()) // For list : { 1 2  3 4 5 }
+				else if ("$findIndex"sv == val->GetName()) // For list : { 1 2  3 4 5 }
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1299,7 +1300,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$remove" == val->GetName()) // remove by dir., remove all?
+				else if ("$remove"sv == val->GetName()) // remove by dir., remove all?
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1321,7 +1322,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$remove2" == val->GetName()) // remove /dir/name 
+				else if ("$remove2"sv == val->GetName()) // remove /dir/name 
 													   // if name is empty, then chk!!
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
@@ -1352,7 +1353,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$remove3" == val->GetName()) /// remove itemlist by idx.
+				else if ("$remove3"sv == val->GetName()) /// remove itemlist by idx.
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1379,7 +1380,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 				}
 
-				else if ("$setElement" == val->GetName())
+				else if ("$setElement"sv == val->GetName())
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1398,7 +1399,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$swap" == val->GetName()) // $swap2
+				else if ("$swap"sv == val->GetName()) // $swap2
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1427,7 +1428,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$print" == val->GetName()) /// has many bugs..!?, for print list or print item?.
+				else if ("$print"sv == val->GetName()) /// has many bugs..!?, for print list or print item?.
 				{
 					if (excuteData.noUseOutput) {
 						eventStack.top().userType_idx.top()++;
@@ -1537,7 +1538,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$print2" == val->GetName()) /// for print usertype.ToString();
+				else if ("$print2"sv == val->GetName()) /// for print usertype.ToString();
 				{
 					if (excuteData.noUseOutput) {
 						eventStack.top().userType_idx.top()++;
@@ -1564,7 +1565,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 				}
 				// comment copy??
-				else if ("$load" == val->GetName())
+				else if ("$load"sv == val->GetName())
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1642,7 +1643,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 
 				}
-				else if ("$load_only_data" == val->GetName()) // $load2?
+				else if ("$load_only_data"sv == val->GetName()) // $load2?
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1708,7 +1709,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 
 				}
-				else if ("$load_json" == val->GetName()) // $load2?
+				else if ("$load_json"sv == val->GetName()) // $load2?
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -1775,7 +1776,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 
 				}
-				else if ("$load_json2" == val->GetName()) // 
+				else if ("$load_json2"sv == val->GetName()) // 
 				{
 				ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 				_excuteData.chkInfo = true;
@@ -1842,13 +1843,13 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 				break;
 
 				}
-				else if ("$clear_screen" == val->GetName())
+				else if ("$clear_screen"sv == val->GetName())
 				{
 					system("cls");
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$_getch" == val->GetName())
+				else if ("$_getch"sv == val->GetName())
 				{
 					if (excuteData.noUseInput) {
 						eventStack.top().userType_idx.top()++;
@@ -1859,7 +1860,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$input" == val->GetName())
+				else if ("$input"sv == val->GetName())
 				{
 					if (excuteData.noUseInput) {
 						eventStack.top().userType_idx.top()++;
@@ -1872,7 +1873,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 				}
 				// line
-				else if ("$input2" == val->GetName()) {
+				else if ("$input2"sv == val->GetName()) {
 					if (excuteData.noUseInput) { // when no use input?
 						eventStack.top().userType_idx.top()++;
 						break;
@@ -1883,7 +1884,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$return" == val->GetName())
+				else if ("$return"sv == val->GetName())
 				{
 					//// can $return = { a b c }
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
@@ -1912,7 +1913,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 				}
 				
-				else if ("$return_data" == val->GetName()) { // for functional programming??
+				else if ("$return_data"sv == val->GetName()) { // for functional programming??
 					eventStack.top().userType_idx.top()++;
 
 					if (eventStack.size() > 1)
@@ -1933,18 +1934,18 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 				}
 				
-				else if ("$parameter" == val->GetName())
+				else if ("$parameter"sv == val->GetName())
 				{
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$local" == val->GetName())
+				else if ("$local"sv == val->GetName())
 				{
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
 				// make sort stable.
-				else if ("$sort" == val->GetName()) {
+				else if ("$sort"sv == val->GetName()) {
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -1997,7 +1998,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$sort2" == val->GetName()) { // colName -> just one! ? 
+				else if ("$sort2"sv == val->GetName()) { // colName -> just one! ? 
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -2057,7 +2058,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$sort2_dsc" == val->GetName()) { // colName -> just one! ? 
+				else if ("$sort2_dsc"sv == val->GetName()) { // colName -> just one! ? 
 														   /// condition = has just one? in one usertype!
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -2117,7 +2118,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$shell_mode" == val->GetName()) {
+				else if ("$shell_mode"sv == val->GetName()) {
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -2137,7 +2138,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 				}
 				// removal?
-				else if ("$stable_sort" == val->GetName()) {
+				else if ("$stable_sort"sv == val->GetName()) {
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
 					_excuteData.info = eventStack.top();
@@ -2191,7 +2192,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$if" == val->GetName()) // ToDo!!
+				else if ("$if"sv == val->GetName()) // ToDo!!
 				{
 					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
 					_excuteData.chkInfo = true;
@@ -2270,7 +2271,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						return "ERROR -3";
 					}
 				}
-				else if ("$else" == val->GetName())
+				else if ("$else"sv == val->GetName())
 				{
 					if (!eventStack.top().conditionStack.empty() && "FALSE" == eventStack.top().conditionStack.top())
 					{

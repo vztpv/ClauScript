@@ -205,6 +205,10 @@ namespace wiz {
 	{
 		return cstr == this->str_value;
 	}
+	bool DataType::operator==(std::string_view str) const
+	{
+		return this->str_value == str;
+	}
 	bool DataType::operator==(const std::string& str) const
 	{
 		return str == this->str_value;
@@ -257,6 +261,10 @@ namespace wiz {
 	bool operator==(const char* cstr, const DataType& type)
 	{
 		return type == cstr;
+	}
+	bool operator==(std::string_view str, const DataType& type)
+	{
+		return type == str;
 	}
 	bool operator==(const std::string& str, const DataType& type)
 	{
