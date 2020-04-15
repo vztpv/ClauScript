@@ -330,7 +330,25 @@ namespace wiz {
 			mutable bool useSortedItemList = false;
 			mutable bool useSortedUserTypeList = false;
 			bool noRemove = false;
-			//bool reservedA = false;
+			bool isVirtual = false;
+			bool isObject = true;
+
+		public:
+			bool IsObject() const {
+				return isObject;
+			}
+			bool IsArray() const {
+				return !isObject;
+			}
+			void SetIsObject(bool val) {
+				isObject = val;
+			}
+			void SetIsVirtual(bool val) {
+				isVirtual = val;
+			}
+			bool IsVirtual() const {
+				return isVirtual;
+			}
 		public:
 			explicit UserType(const char* str, size_t len) : Type(WIZ_STRING_TYPE(str, len)), parent(nullptr) {
 				//
@@ -386,6 +404,9 @@ namespace wiz {
 				//sortedItemList = ut.sortedItemList;
 				sortedUserTypeList = ut.sortedUserTypeList;
 
+				isObject = ut.isObject;
+				isVirtual = ut.isVirtual;
+
 				useSortedItemList = false; // ut.useSortedItemList; - fixed!
 				useSortedUserTypeList = ut.useSortedUserTypeList;
 
@@ -422,6 +443,9 @@ namespace wiz {
 
 				useSortedItemList = false; // fixed
 				useSortedUserTypeList = ut.useSortedUserTypeList;
+
+				std::swap(isObject, ut.isObject);
+				std::swap(isVirtual, ut.isVirtual);
 
 				userTypeList.reserve(ut.userTypeList.size());
 
@@ -1865,147 +1889,6 @@ namespace wiz {
 					}
 				}
 			}
-			void SaveWithHtml(std::ostream& stream, const UserType* ut, const int depth = 0) const {
-				int itemListCount = 0;
-				int userTypeListCount = 0;
-
-				bool isOpenCloseTag = ut->GetUserTypeListSize() == 1 && ut->GetUserTypeList(0)->GetIListSize() == 0;
-
-				for (int i = 0; i < ut->ilist.size(); ++i) {
-					if (ut->IsItemList(i)) {
-						auto x = ut;
-
-						if (wiz::ToString(x->GetName()).empty() == false) {
-							for (int k = 0; k < depth; ++k) {
-								stream << "\t";
-							}
-							stream << "<" << wiz::ToString(x->GetName()) << " ";
-						}
-						else {
-							for (int k = 0; k < depth; ++k) {
-								stream << "\t";
-							}
-						}
-
-						if (wiz::ToString(ut->GetItemList(itemListCount).GetName()).empty()) {
-							stream << wiz::ToString(ut->GetItemList(itemListCount).Get(0));
-						}
-						else {
-							stream << wiz::ToString(ut->GetItemList(itemListCount).GetName()) + "=" + wiz::ToString(ut->GetItemList(itemListCount).Get(0));
-						}
-						if (wiz::ToString(x->GetName()).empty() == false && isOpenCloseTag) {
-							{
-								stream << "/>\n";
-							}
-						}
-						else if (wiz::ToString(x->GetName()).empty() == false) {
-							stream << ">\n";
-						}
-						else {
-							stream << "\n";
-						}
-
-						itemListCount++;
-					}
-					else {
-						// <test> or <test a=b > or <test/>
-						auto x = ut;
-
-						if (wiz::ToString(x->GetName()).empty() == false && x->GetItemListSize() == 0) {
-							for (int k = 0; k < depth; ++k) {
-								stream << "\t";
-							}
-							stream << "<" << wiz::ToString(x->GetName());
-						}
-
-
-
-						// </test> or </test>  or 
-						if (wiz::ToString(x->GetName()).empty() == false && x->GetItemListSize() == 0 && !isOpenCloseTag) {
-							{
-								stream << ">\n";
-							}
-						}
-						else if (wiz::ToString(x->GetName()).empty() == false && x->GetItemListSize() == 0 && isOpenCloseTag) {
-							stream << "/>\n";
-						}
-
-						SaveWithHtml(stream, x->GetUserTypeList(userTypeListCount), depth + 1);
-						
-
-						if (wiz::ToString(x->GetName()).empty() == false && x->GetItemListSize() > 0 && isOpenCloseTag) {
-							
-						}
-						else if (wiz::ToString(x->GetName()).empty() == false && !isOpenCloseTag) {
-							for (int k = 0; k < depth; ++k) {
-								stream << "\t";
-							}
-							if (x->GetUserTypeList(userTypeListCount)->GetItem("_").empty() == false) {
-
-							}
-							else {
-								stream << "</" << wiz::ToString(x->GetName()) << ">" << "\n";
-							}
-						}
-
-						userTypeListCount++;
-					}
-				}
-			}
-			void SaveWithHtml2(std::ostream& stream, const UserType* ut, const int depth = 0) const {
-				int itemListCount = 0;
-				int userTypeListCount = 0;
-
-
-				for (int i = 0; i < ut->GetIListSize(); ++i) {
-					if (ut->IsItemList(i)) {
-						ItemType<WIZ_STRING_TYPE> it = ut->GetItemList(itemListCount);
-
-						for (int k = 0; k < depth; ++k) {
-							stream << "\t";
-						}
-
-						if (wiz::ToString(it.GetName()).empty()) {
-							stream << wiz::ToString(it.Get(0));
-						}
-						else {
-							stream << wiz::ToString(it.GetName()) + "=" + wiz::ToString(it.Get(0));
-						}
-						stream << "\n";
-
-						itemListCount++;
-					}
-					else {
-						for (int k = 0; k < depth; ++k) {
-							stream << "\t";
-						}
-
-						if (wiz::ToString(ut->GetUserTypeList(userTypeListCount)->GetName()).empty()) {
-							stream << "<_>\n";
-						}
-						else {
-							stream << "<" + wiz::ToString(ut->GetUserTypeList(userTypeListCount)->GetName()) + ">\n";
-						}
-
-						SaveWithHtml2(stream, ut->GetUserTypeList(userTypeListCount), depth + 1);
-
-						for (int k = 0; k < depth; ++k) {
-							stream << "\t";
-						}
-
-						if (wiz::ToString(ut->GetUserTypeList(userTypeListCount)->GetName()).empty()) {
-							stream << "</_>\n";
-						}
-						else {
-							stream << "</" + wiz::ToString(ut->GetUserTypeList(userTypeListCount)->GetName()) + ">\n";
-						}
-
-
-						userTypeListCount++;
-					}
-				}
-			}
-
 		public:
 			void Save1(std::ostream& stream, int depth = 0) const {
 				Save1(stream, this, depth);

@@ -211,76 +211,6 @@ namespace wiz {
 #define WIZ_STRING_TYPE DataType
 
 namespace wiz {
-	class Token2
-	{
-	public:
-		const char* str = nullptr;
-		int len = 0;
-		bool isComment = false;
-		bool isEnd = false;
-		Token2* ptr = nullptr;
-	public:
-		Token2(char* str, int len, bool isComment) :
-			str(str), len(len), isComment(isComment) { }
-
-		Token2() { }
-
-		void clear()
-		{
-			str = nullptr;
-			len = 0;
-			isComment = false;
-		}
-		bool operator==(const char* cstr) const {
-			int cstr_len = strlen(cstr);
-
-			if (len == cstr_len) {
-				for (int i = 0; i < len; ++i) {
-					if (str[i] != cstr[i]) {
-						return false;
-					}
-				}
-				return true;
-			}
-			return false;
-		}
-	};
-
-	class Token3
-	{
-	public:
-		const char* str = nullptr;
-		int len = 0;
-		bool isComment = false;
-		bool isEnd = false;
-		Token3* ptr = nullptr;
-	public:
-		Token3(char* str, int len, bool isComment) :
-			str(str), len(len), isComment(isComment) { }
-
-		Token3() { }
-
-		void clear()
-		{
-			str = nullptr;
-			len = 0;
-			isComment = false;
-		}
-		bool operator==(const char* cstr) const {
-			int cstr_len = strlen(cstr);
-
-			if (len == cstr_len) {
-				for (int i = 0; i < len; ++i) {
-					if (str[i] != cstr[i]) {
-						return false;
-					}
-				}
-				return true;
-			}
-			return false;
-		}
-	};
-	//
 	inline std::string ToString(WIZ_STRING_TYPE&& x) {
 		return x.ToString();
 	}
@@ -331,31 +261,6 @@ namespace wiz {
 		return ToString(x) < ToString(y);
 	}
 	*/
-
-	class Token
-	{
-	public:
-		std::string str; // cf) && ?
-		bool isComment;
-	public:
-		Token & operator=(const Token& token) {
-			str = token.str;
-			isComment = token.isComment;
-			return *this;
-		}
-		void operator=(Token&& token) {
-			str = std::move(token.str);
-			isComment = token.isComment;
-		}
-		virtual ~Token() {
-
-		}
-		Token(Token&& token) : str(std::move(token.str)), isComment(token.isComment) { }
-		Token(const Token& token) : str(token.str), isComment(token.isComment) { }
-		explicit Token() : isComment(false) { }
-		explicit Token(std::string&& str, bool isComment = false) : str(std::move(str)), isComment(isComment) { }
-		explicit Token(const std::string& str, bool isComment = false) : str(str), isComment(isComment) { }
-	};
 
 	inline int Equal(const std::vector<char>& option, const char ch)
 	{
