@@ -1394,9 +1394,6 @@ namespace wiz {
 					//	wiz::Out << "length " << length << "\n";
 					if (x == Utility::BomType::UTF_8) {
 						length = length - 3;
-#if _WIN32
-						SetConsoleOutputCP(65001); // UTF-8 Codepage 
-#endif
 					}
 
 					file_length = length;

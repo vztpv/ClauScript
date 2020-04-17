@@ -2952,6 +2952,11 @@ namespace wiz {
 				if (option2 == "") {
 					outFile.open(fileName);
 					if (outFile.fail()) { return false; }
+#if _WIN32
+					if (65001 == GetConsoleOutputCP()) {
+						outFile << (char)0xEF << (char)0xBB << (char)0xBF;
+					}
+#endif
 				}
 				else {
 					outFile.open(fileName, std::ios::app);
@@ -2959,6 +2964,7 @@ namespace wiz {
 
 					outFile << "\n";
 				}
+
 
 				/// saveFile
 				if (option == "1") { // for eu4.
