@@ -135,9 +135,6 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 
 					if (wiz::load_data::LoadData::LoadDataFromFile(fileName, ut)) {
 						{
-							for (int i = 0; i < ut.GetCommentListSize(); ++i) {
-								utTemp->PushComment(std::move(ut.GetCommentList(i)));
-							}
 							int item_count = 0;
 							int userType_count = 0;
 
@@ -186,11 +183,11 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 		}
 
 		if (nullptr == excuteData.pEvents) {
-			_events = global.GetCopyUserTypeItem("Event");
+			_events = global.GetUserTypeItem("Event");
 			for (int i = 0; i < _events.size(); ++i) {
 				events.LinkUserType(_events[i]);
 			}
-			global.RemoveUserTypeList("Event");
+			global.RemoveUserTypeList("Event", false);
 			eventPtr = &events;
 		}
 		else {
@@ -1673,9 +1670,6 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 
 					if (wiz::load_data::LoadData::LoadDataFromFile(fileName, ut)) {
 						{
-							for (int i = 0; i < ut.GetCommentListSize(); ++i) {
-								utTemp->PushComment(std::move(ut.GetCommentList(i)));
-							}
 							int item_count = 0;
 							int userType_count = 0;
 
@@ -1776,11 +1770,67 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					break;
 
 				}
+				else if ("$load_my_json_schema"sv == val->GetName()) {
+					ExecuteData _excuteData; _excuteData.depth = excuteData.depth;
+					_excuteData.chkInfo = true;
+					_excuteData.info = eventStack.top();
+					_excuteData.pObjectMap = objectMapPtr;
+					_excuteData.pEvents = eventPtr;
+					_excuteData.pModule = moduleMapPtr;
+
+					// to do, load data and events from other file!
+					wiz::load_data::UserType ut;
+					std::string fileName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), _excuteData).ToString();
+					fileName = wiz::String::substring(fileName, 1, fileName.size() - 2);
+					std::string dirName = val->GetUserTypeList(1)->ToString();
+					wiz::load_data::UserType* utTemp = global.GetUserTypeItem(dirName)[0];
+
+					if (dirName == "/./" || dirName == "root") {
+						utTemp = &global;
+					}
+					else {
+						dirName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), ExecuteData()).ToString();
+						utTemp = global.GetUserTypeItem(dirName)[0];
+					}
+
+					if (wiz::load_data::LoadData::LoadDataFromFileWithJsonSchema(fileName, ut)) {
+						wiz::load_data::UserType* _ut = ut.GetUserTypeList(0);
+
+						int item_count = 0;
+						int userType_count = 0;
+
+						for (int i = 0; i < _ut->GetIListSize(); ++i) {
+							if (_ut->IsItemList(i)) {
+								utTemp->AddItem(std::move(_ut->GetItemList(item_count).GetName()),
+									std::move(_ut->GetItemList(item_count).Get(0)));
+								item_count++;
+							}
+							else {
+								utTemp->AddUserTypeItem(std::move(*_ut->GetUserTypeList(userType_count)));
+								userType_count++;
+							}
+						}
+
+					}
+					else {
+						// error!
+					}
+
+					eventStack.top().userType_idx.top()++;
+					break;
+				}
 				else if ("$encoding_utf-8"sv == val->GetName()) {
 #if _WIN32
 					SetConsoleOutputCP(65001); // UTF-8 Codepage 
 #endif
 
+					eventStack.top().userType_idx.top()++;
+					break;
+				}
+				else if ("$encoding_default"sv == val->GetName()) {
+#if _WIN32
+					SetConsoleOutputCP(wiz::load_data::Utility::defaultConsoleEncoding); // UTF-8 Codepage 
+#endif
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
@@ -2249,10 +2299,11 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 	*/
 
 	if (1 == chk && !events.empty()) {
-		auto _events = events.GetCopyUserTypeItem("Event");
+		auto _events = events.GetUserTypeItem("Event");
 		for (int i = 0; i < _events.size(); ++i) {
 			_global->LinkUserType(_events[i]);
 		}
+		events.RemoveUserTypeList("Event", false);
 	}
 	return module_value;
 }
@@ -2281,17 +2332,6 @@ void SaveWithOutEvent(std::ostream& stream, wiz::load_data::UserType* ut, int de
 {
 	int itemListCount = 0;
 	int userTypeListCount = 0;
-
-	for (int i = 0; i < ut->GetCommentListSize(); ++i) {
-		for (int k = 0; k < depth; ++k) {
-			stream << "\t";
-		}
-		stream << (ut->GetCommentList(i));
-
-		if (i < ut->GetCommentListSize() - 1 || 0 == ut->GetIListSize()) {
-			stream << "\n";
-		}
-	}
 
 	for (int i = 0; i < ut->GetIListSize(); ++i) {
 		//wiz::Out << "ItemList" << endl;
