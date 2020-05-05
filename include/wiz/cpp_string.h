@@ -22,7 +22,7 @@ namespace wiz {
 			}
 			return str;
 		}
-		static int find(std::string str, std::string dilim, const int start_index)
+		static int find(std::string_view str, std::string_view dilim, const int start_index)
 		{
 			if (str.empty() || dilim.empty()) { return -1; }
 
@@ -100,12 +100,12 @@ namespace wiz {
 			return result;
 			*/
 		}
-		static std::string remove(const std::string& str, std::string str1)
+		static std::string remove(const std::string& str, const std::string& str1)
 		{
 			return replace(str, str1, std::string(""));
 		}
 		//start index
-		static int indexOf(std::string str, const char ch)
+		static int indexOf(const std::string& str, const char ch)
 		{
 			for (int i = 0; i < str.size(); i++)
 			{
@@ -121,7 +121,7 @@ namespace wiz {
 			if (idx == std::string::npos) { return{ false, 0 }; }
 			return{ true, idx };
 		}
-		static auto indexOf(std::string str, std::string str1)
+		static auto indexOf(const std::string& str, const std::string& str1)
 		{
 			return indexOf(str, str1, 0);
 		}

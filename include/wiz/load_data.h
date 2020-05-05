@@ -83,7 +83,7 @@ namespace wiz {
 		int iElement; // 2 : userType, // 1 : item
 		size_t idx; // for stable? - chk!!
 	public:
-		SortInfo(wiz::StringBuilder* builder = nullptr) : idx(-1) { }
+		SortInfo(wiz::StringBuilder* builder = nullptr) : idx(-1), iElement(-1) { }
 		SortInfo(const std::string& data, int iElement, size_t idx)
 			: data(data), iElement(iElement), idx(idx)
 		{
@@ -119,7 +119,7 @@ namespace wiz {
 		int iElement; // 2 : userType, // 1 : item
 		size_t idx; // for stable? - chk!!
 	public:
-		SortInfo2(wiz::StringBuilder* builder = nullptr) : idx(-1) { }
+		SortInfo2(wiz::StringBuilder* builder = nullptr) : idx(-1), iElement(-1) { }
 
 		SortInfo2(const std::string& data, int iElement, size_t idx)
 			: data(data), iElement(iElement), idx(idx)
@@ -330,23 +330,14 @@ namespace wiz {
 				}
 			}
 		private:
-			static int GetIdx(long long x) {
-				return (x >> 32) & 0x00000000FFFFFFFF;
-			}
-			static int GetLength(long long x) {
-				return (x & 0x00000000FFFFFFF8) >> 3;
-			}
-			static int GetType(long long x) { //to enum or enum class?
-				return (x & 6) >> 1;
-			}
-		private:
 			static bool __LoadData(const char* buffer, const long long* token_arr, long long token_arr_len, UserType* _global, const wiz::load_data::LoadDataOption2* _option,
-				int start_state, int last_state, UserType** next, int* err)
+				int start_state, int last_state, UserType** next, long long* lines, long long lines_len, int* err)
 			{
 
 				std::vector<long long> varVec;
 				std::vector<long long> valVec;
 
+				long long start = 0;
 
 				if (token_arr_len <= 0) {
 					return false;
@@ -390,8 +381,23 @@ namespace wiz {
 								nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 								for (size_t x = 0; x < varVec.size(); ++x) {
-									nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]),
-										buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
+									auto info1 = GetLineInfo((varVec[x]), lines, lines_len, start);
+									auto info2 = GetLineInfo((valVec[x]), lines, lines_len, start);
+
+									nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
+										buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
+									{
+										std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).GetName().ToString();
+										temp = wiz::load_data::Utility::Convert(std::move(temp));
+
+										nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName(wiz::DataType(temp));
+									}
+									{
+										std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Get().ToString();
+										temp = wiz::load_data::Utility::Convert(std::move(temp));
+
+										nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, wiz::DataType(temp));
+									}
 								}
 
 								varVec.clear();
@@ -428,8 +434,23 @@ namespace wiz {
 									nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 									for (size_t x = 0; x < varVec.size(); ++x) {
-										nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]),
-											buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
+										auto info1 = GetLineInfo(varVec[x], lines, lines_len, start);
+										auto info2 = GetLineInfo(valVec[x], lines, lines_len, start);
+
+										nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
+											buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
+										{
+											std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).GetName().ToString();
+											temp = wiz::load_data::Utility::Convert(std::move(temp));
+
+											nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName(wiz::DataType(temp));
+										}
+										{
+											std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Get().ToString();
+											temp = wiz::load_data::Utility::Convert(std::move(temp));
+
+											nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, wiz::DataType(temp));
+										}
 									}
 								}
 
@@ -530,8 +551,24 @@ namespace wiz {
 							nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 							for (size_t x = 0; x < varVec.size(); ++x) {
-								nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]),
-									buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
+								auto info1 = GetLineInfo((varVec[x]), lines, lines_len, start);
+								auto info2 = GetLineInfo((valVec[x]), lines, lines_len, start);
+
+								nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
+									buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
+
+								{
+									std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).GetName().ToString();
+									temp = wiz::load_data::Utility::Convert(std::move(temp));
+
+									nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName(wiz::DataType(temp));
+								}
+								{
+									std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Get().ToString();
+									temp = wiz::load_data::Utility::Convert(std::move(temp));
+
+									nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, wiz::DataType(temp));
+								}
 							}
 
 
@@ -540,7 +577,18 @@ namespace wiz {
 
 							///
 							{
-								nestedUT[braceNum]->AddUserTypeItem(UserType(buffer + GetIdx(var), GetLength(var)));
+								auto info1 = GetLineInfo((var), lines, lines_len, start);
+								nestedUT[braceNum]->AddUserTypeItem(UserType(buffer + GetIdx(var), GetLength(var), info1));
+
+								{
+									{
+										std::string temp = nestedUT[braceNum]->GetUserTypeList(nestedUT[braceNum]->GetUserTypeListSize() - 1)->GetName().ToString();
+										temp = wiz::load_data::Utility::Convert(std::move(temp));
+
+										nestedUT[braceNum]->GetUserTypeList(nestedUT[braceNum]->GetUserTypeListSize() - 1)->SetName(wiz::DataType(temp));
+									}
+								}
+
 								UserType* pTemp = nestedUT[braceNum]->GetUserTypeList(nestedUT[braceNum]->GetUserTypeListSize() - 1);
 								var = 0;
 								braceNum++;
@@ -586,8 +634,11 @@ namespace wiz {
 					nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 					for (size_t x = 0; x < varVec.size(); ++x) {
-						nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]),
-							buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
+						auto info1 = GetLineInfo(varVec[x], lines, lines_len, start);
+						auto info2 = GetLineInfo(valVec[x], lines, lines_len, start);
+
+						nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
+							buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
 					}
 
 
@@ -643,18 +694,19 @@ namespace wiz {
 				return -1;
 			}
 
-			static bool _LoadData(InFileReserverJson& reserver, UserType& global, wiz::load_data::LoadDataOption2 option, const int lex_thr_num, const int parse_num) // first, strVec.empty() must be true!!
+			static bool _LoadData(InFileReserverJson& reserver, UserType& global, wiz::load_data::LoadDataOption2 option, const int lex_thr_num, const int parse_num, bool load_schema) // first, strVec.empty() must be true!!
 			{
 				const int pivot_num = parse_num - 1;
 				char* buffer = nullptr;
 				long long* token_arr = nullptr;
 				long long buffer_total_len;
 				long long token_arr_len = 0;
-
+				long long lines_len = 0;
+				long long* lines = nullptr;
 				{
 					int a = clock();
 
-					bool success = reserver(option, lex_thr_num, buffer, &buffer_total_len, token_arr, &token_arr_len);
+					bool success = reserver(option, lex_thr_num, buffer, &buffer_total_len, token_arr, &token_arr_len, lines, lines_len, load_schema);
 
 
 					int b = clock();
@@ -678,6 +730,9 @@ namespace wiz {
 						}
 						if (token_arr) {
 							delete[] token_arr;
+						}
+						if (lines) {
+							free(lines);
 						}
 						return true;
 					}
@@ -725,13 +780,15 @@ namespace wiz {
 							long long idx = pivots.empty() ? num - 1 : pivots[0];
 							long long _token_arr_len = idx - 0 + 1;
 
-							thr[0] = std::thread(__LoadData, buffer, token_arr, _token_arr_len, &__global[0], &option, 0, 0, &next[0], &err[0]);
+							thr[0] = std::thread(__LoadData, buffer, token_arr, _token_arr_len, &__global[0], &option, 0, 0, &next[0], lines,
+								lines_len, &err[0]);
 						}
 
 						for (size_t i = 1; i < pivots.size(); ++i) {
 							long long _token_arr_len = pivots[i] - (pivots[i - 1] + 1) + 1;
 
-							thr[i] = std::thread(__LoadData, buffer, token_arr + pivots[i - 1] + 1, _token_arr_len, &__global[i], &option, 0, 0, &next[i], &err[i]);
+							thr[i] = std::thread(__LoadData, buffer, token_arr + pivots[i - 1] + 1, _token_arr_len, &__global[i], &option, 0, 0, &next[i],
+								lines, lines_len, &err[i]);
 
 						}
 
@@ -739,7 +796,7 @@ namespace wiz {
 							long long _token_arr_len = num - 1 - (pivots.back() + 1) + 1;
 
 							thr[pivots.size()] = std::thread(__LoadData, buffer, token_arr + pivots.back() + 1, _token_arr_len, &__global[pivots.size()],
-								&option, 0, 0, &next[pivots.size()], &err[pivots.size()]);
+								&option, 0, 0, &next[pivots.size()], lines, lines_len, &err[pivots.size()]);
 						}
 
 						// wait
@@ -801,6 +858,7 @@ namespace wiz {
 						catch (...) {
 							delete[] buffer;
 							delete[] token_arr;
+							free(lines);
 							buffer = nullptr;
 							throw "in Merge, error";
 						}
@@ -811,6 +869,194 @@ namespace wiz {
 
 				delete[] buffer;
 				delete[] token_arr;
+				free(lines);
+
+				if (!(_global.GetIListSize() == 1)) {
+					return false;
+				}
+
+				global = std::move(_global);
+
+				return true;
+			}
+
+			static bool _LoadData2(InFileReserverJsonSchema& reserver, UserType& global, wiz::load_data::LoadDataOption2 option, const int lex_thr_num, const int parse_num, bool load_schema) // first, strVec.empty() must be true!!
+			{
+				const int pivot_num = parse_num - 1;
+				char* buffer = nullptr;
+				long long* token_arr = nullptr;
+				long long buffer_total_len;
+				long long token_arr_len = 0;
+				long long* lines = nullptr;
+				long long lines_len = 0;
+
+				{
+					int a = clock();
+
+					bool success = reserver(option, lex_thr_num, buffer, &buffer_total_len, token_arr, &token_arr_len, lines, lines_len);
+
+
+					int b = clock();
+					//	std::cout << "scan " << b - a << "ms\n";
+
+						//	{
+						//		for (long long i = 0; i < token_arr_len; ++i) {
+						//			std::string(buffer + GetIdx(token_arr[i]), GetLength(token_arr[i]));
+					//				if (0 == GetIdx(token_arr[i])) {
+						//				std::cout << "chk";
+						//			}
+						//		}
+						//	}
+
+					if (!success) {
+						return false;
+					}
+					if (token_arr_len <= 0) {
+						if (buffer) {
+							delete[] buffer;
+						}
+						if (token_arr) {
+							delete[] token_arr;
+						}
+						if (lines) {
+							free(lines);
+						}
+						return true;
+					}
+				}
+
+				UserType* before_next = nullptr;
+				UserType _global;
+
+				bool first = true;
+				long long sum = 0;
+
+				{
+					std::set<long long> _pivots;
+					std::vector<long long> pivots;
+					const long long num = token_arr_len; //
+
+					if (pivot_num > 0) {
+						std::vector<long long> pivot;
+						pivots.reserve(pivot_num);
+						pivot.reserve(pivot_num);
+
+						for (int i = 0; i < pivot_num; ++i) {
+							pivot.push_back(FindDivisionPlace(buffer, token_arr, (num / (pivot_num + 1)) * (i), (num / (pivot_num + 1)) * (i + 1) - 1, option));
+						}
+
+						for (size_t i = 0; i < pivot.size(); ++i) {
+							if (pivot[i] != -1) {
+								_pivots.insert(pivot[i]);
+							}
+						}
+
+						for (auto& x : _pivots) {
+							pivots.push_back(x);
+						}
+					}
+
+					std::vector<UserType*> next(pivots.size() + 1, nullptr);
+
+					{
+						std::vector<UserType> __global(pivots.size() + 1);
+
+						std::vector<std::thread> thr(pivots.size() + 1);
+						std::vector<int> err(pivots.size() + 1, 0);
+						{
+							long long idx = pivots.empty() ? num - 1 : pivots[0];
+							long long _token_arr_len = idx - 0 + 1;
+
+							thr[0] = std::thread(__LoadData, buffer, token_arr, _token_arr_len, &__global[0], &option, 0, 0, &next[0],
+								lines, lines_len, &err[0]);
+						}
+
+						for (size_t i = 1; i < pivots.size(); ++i) {
+							long long _token_arr_len = pivots[i] - (pivots[i - 1] + 1) + 1;
+
+							thr[i] = std::thread(__LoadData, buffer, token_arr + pivots[i - 1] + 1, _token_arr_len, &__global[i], &option, 0, 0, &next[i],
+								lines, lines_len, &err[i]);
+
+						}
+
+						if (pivots.size() >= 1) {
+							long long _token_arr_len = num - 1 - (pivots.back() + 1) + 1;
+
+							thr[pivots.size()] = std::thread(__LoadData, buffer, token_arr + pivots.back() + 1, _token_arr_len, &__global[pivots.size()],
+								&option, 0, 0, &next[pivots.size()], lines, lines_len, &err[pivots.size()]);
+						}
+
+						// wait
+						for (size_t i = 0; i < thr.size(); ++i) {
+							thr[i].join();
+						}
+
+						for (size_t i = 0; i < err.size(); ++i) {
+							switch (err[i]) {
+							case 0:
+								break;
+							case -1:
+							case -4:
+								std::cout << "Syntax Error\n";
+								break;
+							case -2:
+								std::cout << "error final state is not last_state!\n";
+								break;
+							case -3:
+								std::cout << "error x > buffer + buffer_len:\n";
+								break;
+								// -4, -5?
+							default:
+								std::cout << "unknown parser error\n";
+								break;
+							}
+						}
+
+						// Merge
+						try {
+							if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->IsVirtual()) {
+								std::cout << "not valid file1\n";
+								throw 1;
+							}
+							if (next.back()->GetParent() != nullptr) {
+								std::cout << "not valid file2\n";
+								throw 2;
+							}
+
+							int err = Merge(&_global, &__global[0], &next[0]);
+							if (-1 == err || (pivots.size() == 0 && 1 == err)) {
+								std::cout << "not valid file3\n";
+								throw 3;
+							}
+
+							for (size_t i = 1; i < pivots.size() + 1; ++i) {
+								// linearly merge and error check...
+								int err = Merge(next[i - 1], &__global[i], &next[i]);
+								if (-1 == err) {
+									std::cout << "not valid file4\n";
+									throw 4;
+								}
+								else if (i == pivots.size() && 1 == err) {
+									std::cout << "not valid file5\n";
+									throw 5;
+								}
+							}
+						}
+						catch (...) {
+							delete[] buffer;
+							delete[] token_arr;
+							free(lines);
+							buffer = nullptr;
+							throw "in Merge, error";
+						}
+
+						before_next = next.back();
+					}
+				}
+
+				delete[] buffer;
+				delete[] token_arr;
+				free(lines);
 
 				if (!(_global.GetIListSize() == 1)) {
 					return false;
@@ -821,7 +1067,7 @@ namespace wiz {
 				return true;
 			}
 		public:
-			static bool LoadDataFromFile(const std::string& fileName, UserType& global, int lex_thr_num, int parse_thr_num) /// global should be empty
+			static bool LoadDataFromFile(const std::string& fileName, UserType& global, int lex_thr_num=0, int parse_thr_num=0, bool load_schema = false) /// global should be empty
 			{
 				if (lex_thr_num <= 0) {
 					lex_thr_num = std::thread::hardware_concurrency();
@@ -858,7 +1104,7 @@ namespace wiz {
 					ifReserver.Num = 1 << 19;
 					//	strVec.reserve(ifReserver.Num);
 					// cf) empty file..
-					if (false == _LoadData(ifReserver, globalTemp, option, lex_thr_num, parse_thr_num))
+					if (false == _LoadData(ifReserver, globalTemp, option, lex_thr_num, parse_thr_num, load_schema))
 					{
 						inFile.close();
 						return false; // return true?
@@ -876,7 +1122,61 @@ namespace wiz {
 
 				return true;
 			}
+			static bool LoadDataFromFile2(const std::string& fileName, UserType& global, int lex_thr_num = 0, int parse_thr_num = 0, bool load_schema = false) /// global should be empty
+			{
+				if (lex_thr_num <= 0) {
+					lex_thr_num = std::thread::hardware_concurrency();
+				}
+				if (lex_thr_num <= 0) {
+					lex_thr_num = 1;
+				}
 
+				if (parse_thr_num <= 0) {
+					parse_thr_num = std::thread::hardware_concurrency();
+				}
+				if (parse_thr_num <= 0) {
+					parse_thr_num = 1;
+				}
+
+				bool success = true;
+				std::ifstream inFile;
+				inFile.open(fileName, std::ios::binary);
+
+
+				if (true == inFile.fail())
+				{
+					inFile.close(); return false;
+				}
+
+				UserType globalTemp;
+
+				try {
+
+					InFileReserverJsonSchema ifReserver(inFile);
+					wiz::load_data::LoadDataOption2 option;
+
+					char* buffer = nullptr;
+					ifReserver.Num = 1 << 19;
+					//	strVec.reserve(ifReserver.Num);
+					// cf) empty file..
+					if (false == _LoadData2(ifReserver, globalTemp, option, lex_thr_num, parse_thr_num, load_schema))
+					{
+						inFile.close();
+						return false; // return true?
+					}
+
+					inFile.close();
+				}
+				catch (const char* err) { std::cout << err << "\n"; inFile.close(); return false; }
+				catch (const std::string& e) { std::cout << e << "\n"; inFile.close(); return false; }
+				catch (const std::exception& e) { std::cout << e.what() << "\n"; inFile.close(); return false; }
+				catch (...) { std::cout << "not expected error" << "\n"; inFile.close(); return false; }
+
+
+				global = std::move(globalTemp);
+
+				return true;
+			}
 			static bool LoadWizDB(UserType& global, const std::string& fileName, const int thr_num) {
 				UserType globalTemp = UserType("global");
 
@@ -957,7 +1257,13 @@ namespace wiz {
 			{
 				return wiz::load_data::LoadData2::LoadDataFromFile(fileName, global, scan_thr, parse_thr);
 			}
-		
+			
+			// my version schema...
+			static bool LoadDataFromFileWithJsonSchema(const std::string& fileName, UserType& global, int scan_thr = 0, int parse_thr = 0) /// global should be empty
+			{
+				return wiz::load_data::LoadData2::LoadDataFromFile2(fileName, global, scan_thr, parse_thr, true);
+			}
+			
 		public:
 
 			static bool LoadDataFromString(const std::string& str, UserType& ut)
@@ -971,8 +1277,6 @@ namespace wiz {
 					InFileReserver ifReserver(str);
 					wiz::load_data::LoadDataOption option;
 
-					char* buffer = nullptr;
-					ifReserver.Num = 1 << 19;
 					//	strVec.reserve(ifReserver.Num);
 					// cf) empty file..
 					if (false == _LoadData(ifReserver, globalTemp, option, 1, 1))
@@ -1074,13 +1378,13 @@ namespace wiz {
 			}
 		private:
 			static long long GetIdx(long long x) {
-				return (x >> 32) & 0x00000000FFFFFFFF;
+				return (x >> 33) & 0x000000007FFFFFFF;
 			}
 			static long long GetLength(long long x) {
-				return (x & 0x00000000FFFFFFF8) >> 3;
+				return (x & 0x00000001FFFFFFF0) >> 4;
 			}
 			static long long GetType(long long x) { //to enum or enum class?
-				return (x & 6) >> 1;
+				return (x & 0xE) >> 1;
 			}
 		private:
 			static bool __LoadData(const char* buffer, const long long* token_arr, long long token_arr_len, UserType* _global, const wiz::load_data::LoadDataOption* _option,
@@ -1094,7 +1398,7 @@ namespace wiz {
 				if (token_arr_len <= 0) {
 					return false;
 				}
-
+				
 				UserType& global = *_global;
 				wiz::load_data::LoadDataOption option = *_option;
 
@@ -1420,10 +1724,10 @@ namespace wiz {
 				}
 
 
-				if (token_arr_len < 1000) {
+				if (token_arr_len < 100) {
 					int err;
 					UserType _global;
-					UserType* next;
+					UserType* next = nullptr;
 
 					__LoadData(buffer, token_arr, token_arr_len, &_global, &option, 0, 0, &next, &err);
 
@@ -1607,7 +1911,6 @@ namespace wiz {
 					InFileReserver ifReserver(inFile);
 					wiz::load_data::LoadDataOption option;
 
-					char* buffer = nullptr;
 					ifReserver.Num = 1 << 19;
 					//	strVec.reserve(ifReserver.Num);
 					// cf) empty file..
@@ -1629,6 +1932,7 @@ namespace wiz {
 
 				return true;
 			}
+		
 		private:
 			UserType global; // ToDo - remove!
 		public:
@@ -2489,7 +2793,7 @@ namespace wiz {
 				if (finded.first) {
 					for (int i = 0; i < finded.second.size(); ++i) {
 						int item_n = utTemp.GetIListSize();
-						int user_n = utTemp.GetIListSize();
+						int user_n = utTemp.GetUserTypeListSize();
 
 						
 						for (int k = utTemp.GetIListSize() - 1; k >= 0; --k) {
@@ -3257,7 +3561,7 @@ namespace wiz {
 
 			static WIZ_STRING_TYPE ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::UserType& temp, const ExecuteData& excuteData);
 			static WIZ_STRING_TYPE ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::ItemType<WIZ_STRING_TYPE>& temp, const ExecuteData& excuteData);
-		private:
+		//private:
 			static WIZ_STRING_TYPE _ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::UserType& temp, const ExecuteData& excuteData);
 			static WIZ_STRING_TYPE ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const std::string& temp, const ExecuteData& excuteData);
 		};

@@ -89,16 +89,6 @@ namespace wiz {
 	inline bool USE_EMPTY_VECTOR_IN_LOAD_DATA_TYPES = false;
 
 
-	inline long long GetIdx(long long x)  noexcept {
-		return (x >> 32) & 0x00000000FFFFFFFF;
-	}
-	inline long long GetLength(long long x)  noexcept {
-		return (x & 0x00000000FFFFFFFC) >> 2;
-	}
-	inline long long GetType(long long x) noexcept {
-		return x & 3; // % 4
-	}
-
 
 	// 0~n-2 : sorted, 
 	// 0~n-1 : not sorted(maybe?)
@@ -126,6 +116,47 @@ namespace wiz {
 		vec[idx] = std::move(last);
 	}
 
+	inline long long GetIdx(long long x) {
+		return (x >> 33) & 0x000000007FFFFFFF;
+	}
+	inline long long GetLength(long long x) {
+		return (x & 0x00000001FFFFFFF0) >> 4;
+	}
+	inline long long GetType(long long x) { //to enum or enum class?
+		return (x & 0xE) >> 1;
+	}
+
+	class LineInfo {
+	public:
+		explicit LineInfo() { }
+		explicit LineInfo(long long line, long long distance)
+			:line(line), distance(distance)
+		{
+			//
+		}
+		~LineInfo() {
+			//
+		}
+	public:
+		long long line = -1;
+		long long distance = -2;
+
+	public:
+		LineInfo& operator=(const LineInfo& other) {
+			if (other.line == -1) {
+				//
+			}
+			else {
+				line = other.line;
+				distance = other.distance;
+			}
+			return *this;
+		}
+	};
+
+
+	LineInfo GetLineInfo(long long idx, long long* lines, long long lines_len, long long& start);
+
 	class DataType {
 	public:
 		int before_pos = -1;
@@ -136,12 +167,18 @@ namespace wiz {
 		mutable int type = 0;
 		mutable bool change = false;
 	public:
+		LineInfo lineInfo;
+	public:
 		DataType() { int_value = 0; float_value = 0; }
 		DataType(const char* cstr);
 		DataType(const char* cstr, size_t len);
 		DataType(const std::string& str);
+
+		DataType(const char* cstr, size_t len, const LineInfo& lineOpt);
+		DataType(const std::string& str, const LineInfo& lineOpt);
+
 		DataType(std::string&& str);
-		~DataType() {
+		virtual ~DataType() {
 			//
 		}
 	public:
@@ -208,7 +245,7 @@ namespace wiz {
 	DataType operator+(const std::string& str, const DataType& type);
 }
 
-#define WIZ_STRING_TYPE DataType
+using WIZ_STRING_TYPE = wiz::DataType;
 
 namespace wiz {
 	inline std::string ToString(WIZ_STRING_TYPE&& x) {
@@ -436,11 +473,9 @@ namespace wiz{
 		bool operator() (const T t1, const T t2) const { return *t1 == *t2; }
 	};
 
-    /// TO DO
-    /// PASC_PEE, PDSC_PEE, PNOT_EE, PEE_SAME_VALUE, PNOT_EE_SAME_VALUE
-    /// LEFT_HAS_SMALL_VALUE, LEFT_HAS_LARGE_VALUE, PLEFT_HAS_SMALL_VALUE, PLEFT_HAS_LARGE_VALUE
+
 	template <typename T> /// T <- char, int, long, long long...
-	std::string toStr(const T x, const int base); /// chk!!
+	std::string toStr(const T x, const int base = 10);
 
 	template <class T, class COMP = ASC<T>, class COMP2 = ASC<int>, class EE = EQ<T> > /// 쒖꽌 諛붽씀湲 - 2015.07.18
 	class WrapForInfinity
@@ -580,9 +615,8 @@ namespace wiz{
 		// -( x - ( (x/10) * 10 ) )
 	}
 	template <typename T> /// T <- char, int, long, long long...
-	std::string toStr(const T x) /// chk!!
+	std::string toStr(const T x, const int base) /// chk!!
 	{
-		const int base = 10;
 		if( base < 2 || base > 16 ) { return "base is not valid"; }
 		T i = x;
 
@@ -621,9 +655,8 @@ namespace wiz{
 
     /// chk.... need more thinking..., ToDo...
 	template <typename T> /// T <- char, int, long, long long...
-	std::string toStr2(const T x, const int str_space) /// chk!!
+	std::string toStr2(const T x, const int base, const int str_space) /// chk!!
 	{
-		const int base = 10;
 	    if( base < 2 || base > 16 ) { return "base is not valid"; }
 		T i = x;
 		T k2 = 0;
