@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 	//	wiz::Out << e << ENTER;
 	//	GETCH();
 	//}
-	catch (const std::exception&e) {
+	catch (const std::exception& e) {
 		wiz::Out << e.what() << ENTER;
 		GETCH();
 	}
