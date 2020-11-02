@@ -315,64 +315,57 @@ namespace wiz {
 					delete thr[i];
 				}
 
-				{
-					long long _count = 0;
-					for (int i = 0; i < thr_num; ++i) {
-						for (long long j = 0; j < token_arr_size[i]; ++j) {
-							tokens[token_count] = tokens[start[i] + j];
-							token_count++;
-						}
-					}
-				}
-
 				int state = 0;
 				long long qouted_start;
 				long long slush_start;
+				
+				for (int t = 0; t < thr_num; ++t) {
+					for (long long j = 0; j < token_arr_size[t]; ++j) {
+						const long long i = start[t] + j;
+						const long long len = GetLength(tokens[i]);
+						const char ch = text[GetIdx(tokens[i])];
+						const long long idx = GetIdx(tokens[i]);
+						const bool isToken2 = IsToken2(tokens[i]);
 
-				for (long long i = 0; i < token_count; ++i) {
-					const long long len = GetLength(tokens[i]);
-					const char ch = text[GetIdx(tokens[i])];
-					const long long idx = GetIdx(tokens[i]);
-					const bool isToken2 = IsToken2(tokens[i]);
+						if (isToken2) {
+							if (0 == state && '\"' == ch) {
+								state = 1;
+								qouted_start = i;
+							}
+							else if (0 == state && option.LineComment == ch) {
+								state = 2;
+							}
+							else if (1 == state && '\\' == ch) {
+								state = 3;
+								slush_start = idx;
+							}
+							else if (1 == state && '\"' == ch) {
+								state = 0;
 
-					if (isToken2) {
-						if (0 == state && '\"' == ch) {
-							state = 1;
-							qouted_start = i;
-						}
-						else if (0 == state && option.LineComment == ch) {
-							state = 2;
-						}
-						else if (1 == state && '\\' == ch) {
-							state = 3;
-							slush_start = idx;
-						}
-						else if (1 == state && '\"' == ch) {
-							state = 0;
+								{
+									long long idx = GetIdx(tokens[qouted_start]);
+									long long len = GetLength(tokens[qouted_start]);
 
-							{
-								long long idx = GetIdx(tokens[qouted_start]);
-								long long len = GetLength(tokens[qouted_start]);
+									len = GetIdx(tokens[i]) - idx + 1;
 
-								len = GetIdx(tokens[i]) - idx + 1;
-
-								tokens[real_token_arr_count] = Get(idx, len, text[idx], option);
-								real_token_arr_count++;
+									tokens[real_token_arr_count] = Get(idx, len, text[idx], option);
+									real_token_arr_count++;
+								}
+							}
+							else if (3 == state) {
+								if (idx != slush_start + 1) {
+									--j;
+								}
+								state = 1;
+							}
+							else if (2 == state && ('\n' == ch || '\0' == ch)) {
+								state = 0;
 							}
 						}
-						else if (3 == state) {
-							if (idx != slush_start + 1) {
-								--i;
-							}
-							state = 1;
+						else if (0 == state) { // '\\' case?
+							tokens[real_token_arr_count] = tokens[i];
+							real_token_arr_count++;
 						}
-						else if (2 == state && ('\n' == ch || '\0' == ch)) {
-							state = 0;
-						}
-					}
-					else if (0 == state) { // '\\' case?
-						tokens[real_token_arr_count] = tokens[i];
-						real_token_arr_count++;
 					}
 				}
 
@@ -922,16 +915,6 @@ namespace wiz {
 					}
 				}
 
-				{
-					long long _count = 0;
-					for (int i = 0; i < thr_num; ++i) {
-						for (long long j = 0; j < token_arr_size[i]; ++j) {
-							tokens[token_count] = tokens[start[i] + j];
-							token_count++;
-						}
-					}
-				}
-
 				bool var = false;
 				bool val = false;
 				bool parse_state = 0;
@@ -946,59 +929,61 @@ namespace wiz {
 				long long qouted_start;
 				long long slush_start;
 
-				for (long long i = 0; i < token_count; ++i) {
-					long long len = GetLength(tokens[i]);
-					char ch = text[GetIdx(tokens[i])];
-					long long idx = GetIdx(tokens[i]);
-					const bool isToken2 = IsToken2(tokens[i]);
-					const long long type = GetType(tokens[i]);
+				for (int t = 0; t < thr_num; ++t) {
+					for (long long j = 0; j < token_arr_size[t]; ++j) {
+						const long long i = start[t] + j;
+						long long len = GetLength(tokens[i]);
+						char ch = text[GetIdx(tokens[i])];
+						long long idx = GetIdx(tokens[i]);
+						const bool isToken2 = IsToken2(tokens[i]);
+						const long long type = GetType(tokens[i]);
 
-					bool pass = false;
+						bool pass = false;
 
-					
-					if (isToken2) {
-						//if ('\n' == ch) {
-						//	line++;
-						//}
-						if (0 == state && '\"' == ch) {
-							state = 1;
-							qouted_start = i;
-						}
-						else if (1 == state && '\\' == ch) {
-							state = 3;
-							slush_start = idx;
-						}
-						else if (1 == state && '\"' == ch) {
-							state = 0;
 
-							{
-								long long _idx = GetIdx(tokens[qouted_start]);
-								long long _len = GetLength(tokens[qouted_start]);
+						if (isToken2) {
+							//if ('\n' == ch) {
+							//	line++;
+							//}
+							if (0 == state && '\"' == ch) {
+								state = 1;
+								qouted_start = i;
+							}
+							else if (1 == state && '\\' == ch) {
+								state = 3;
+								slush_start = idx;
+							}
+							else if (1 == state && '\"' == ch) {
+								state = 0;
 
-								_len = GetIdx(tokens[i]) - _idx + 1;
+								{
+									long long _idx = GetIdx(tokens[qouted_start]);
+									long long _len = GetLength(tokens[qouted_start]);
 
-								tokens[real_token_arr_count] = Get(_idx, _len, text[_idx], option);
-								real_token_arr_count++;
+									_len = GetIdx(tokens[i]) - _idx + 1;
 
-								pass = true;
+									tokens[real_token_arr_count] = Get(_idx, _len, text[_idx], option);
+									real_token_arr_count++;
 
-								len = _len;
-								idx = _idx;
-								ch = text[_idx];
+									pass = true;
 
-								if (!Utility::ValidateUTF8(text, idx + 1, len - 2)) {
-									std::cout << "not valid char";
+									len = _len;
+									idx = _idx;
+									ch = text[_idx];
+
+									if (!Utility::ValidateUTF8(text, idx + 1, len - 2)) {
+										std::cout << "not valid char";
+									}
 								}
 							}
-						}
-						else if (3 == state) {
-							if (idx != slush_start + 1) {
-								--i;
-							}
+							else if (3 == state) {
+								if (idx != slush_start + 1) {
+									--j;
+								}
 
-							long long back_slush_count = 0;
+								long long back_slush_count = 0;
 
-							switch (text[slush_start + 1]) {
+								switch (text[slush_start + 1]) {
 								case '\"':
 								case '\\':
 								case '/':
@@ -1017,131 +1002,181 @@ namespace wiz {
 									state = 1;
 									std::cout << "Syntax Error in pre-parsing0\n";
 									break;
-							}
-
-							if (slush_start + 1 + 4 >= length) {
-								std::cout << "Syntax Error in pre-parsing0.25\n";
-							}
-
-							for(long long k = 2; k < back_slush_count + 2; ++k) {
-								if (text[slush_start + k] >= '0' && text[slush_start + k] <= '9') {
-									//
-								}
-								else if (text[slush_start + k] >= 'a' && text[slush_start + k] <= 'f') {
-									//
-								}
-								else if (text[slush_start + k] >= 'A' && text[slush_start + k] <= 'F') {
-									//
-								}
-								else {
-									std::cout << "Syntax Error in pre-parsing0.5\n";
-								}
-							}
-
-							state = 1;
-						}
-					}
-					else if (0 == state) {
-						tokens[real_token_arr_count] = tokens[i];
-						real_token_arr_count++;
-
-						pass = true;
-					}
-
-					if (pass) {
-						//PrintToken(text, tokens[real_token_arr_count - 1]);
-
-
-						if (_stack.empty()) {
-							std::cout << "Syntax Error in pre-parsing1\n";
-						}
-
-						if (expect_comma) {
-							if (len == 1 && ch == ',') {
-								real_token_arr_count--;
-								expect_comma = false;
-								comma_on = true;
-								continue;
-							}
-							else {
-								if (type == 2) {
-									//
-								}
-								else {
-									std::cout << "Syntax Error in pre-parsing2\n";
-								}
-							}
-						}
-						else {
-							if (len == 1 && ch == ',') {
-								std::cout << "Syntax Error in pre-parsing3.5\n";
-							}
-						}
-
-						expect_comma = false;
-
-
-						// pre-parsing? - checking syntax errors. for comma.
-						if (0 == parse_state) {
-							if (1 == type) { // LEFT
-								_stack.push(ch);
-							}
-							else if (2 == type) { // RIGHT
-								if (comma_on) {
-									std::cout << "Syntax Error in pre-parsing3.75\n";
 								}
 
-								if (_stack.top() == option.Left && ch == option.Right) {
-									_stack.pop();
-								}
-								else if (_stack.top() == option.Left2 && ch == option.Right2) {
-									_stack.pop();
-								}
-								else {
-									std::cout << "Syntax Error in pre-parsing4\n";
+								if (slush_start + 1 + 4 >= length) {
+									std::cout << "Syntax Error in pre-parsing0.25\n";
 								}
 
-								expect_comma = true;
-							}
-							else if (3 == type) { // ASSIGN
-								if (comma_on) {
-									std::cout << "Syntax Error in pre-parsing4.5\n";
-								}
-
-								if (_stack.top() == option.Left2) { // array
-									std::cout << "Syntax Error in pre-parsing5\n";
-								}
-								if (!var) {
-									std::cout << "Syntax Error in pre-parsing6\n";
-								}
-								parse_state = 1;
-							}
-							else {
-								if (1 == len && ch == ',') {
-									std::cout << "Syntax Error in pre-parsing7\n";
-								}
-								if (var) {
-									std::cout << " " << "Syntax Eror in pre-parsing7.5\n";
-								}
-								if (_stack.top() == option.Left) {
-									var = true;
-									val = false;
-								}
-								else { // _stack.top() == option.Left2
-									var = false;
-									val = true;
-								}
-
-								if (var && !load_schema) {
-									if (text[idx] == '\"' &&
-										text[idx + len - 1] == '\"' && len >= 2) {
+								for (long long k = 2; k < back_slush_count + 2; ++k) {
+									if (text[slush_start + k] >= '0' && text[slush_start + k] <= '9') {
+										//
+									}
+									else if (text[slush_start + k] >= 'a' && text[slush_start + k] <= 'f') {
+										//
+									}
+									else if (text[slush_start + k] >= 'A' && text[slush_start + k] <= 'F') {
 										//
 									}
 									else {
-										std::cout << "Syntax Error in pre-parsing8\n";
+										std::cout << "Syntax Error in pre-parsing0.5\n";
 									}
 								}
-								else if (val) {
+
+								state = 1;
+							}
+						}
+						else if (0 == state) {
+							tokens[real_token_arr_count] = tokens[i];
+							real_token_arr_count++;
+
+							pass = true;
+						}
+
+						if (pass) {
+							//PrintToken(text, tokens[real_token_arr_count - 1]);
+
+
+							if (_stack.empty()) {
+								std::cout << "Syntax Error in pre-parsing1\n";
+							}
+
+							if (expect_comma) {
+								if (len == 1 && ch == ',') {
+									real_token_arr_count--;
+									expect_comma = false;
+									comma_on = true;
+									continue;
+								}
+								else {
+									if (type == 2) {
+										//
+									}
+									else {
+										std::cout << "Syntax Error in pre-parsing2\n";
+									}
+								}
+							}
+							else {
+								if (len == 1 && ch == ',') {
+									std::cout << "Syntax Error in pre-parsing3.5\n";
+								}
+							}
+
+							expect_comma = false;
+
+
+							// pre-parsing? - checking syntax errors. for comma.
+							if (0 == parse_state) {
+								if (1 == type) { // LEFT
+									_stack.push(ch);
+								}
+								else if (2 == type) { // RIGHT
+									if (comma_on) {
+										std::cout << "Syntax Error in pre-parsing3.75\n";
+									}
+
+									if (_stack.top() == option.Left && ch == option.Right) {
+										_stack.pop();
+									}
+									else if (_stack.top() == option.Left2 && ch == option.Right2) {
+										_stack.pop();
+									}
+									else {
+										std::cout << "Syntax Error in pre-parsing4\n";
+									}
+
+									expect_comma = true;
+								}
+								else if (3 == type) { // ASSIGN
+									if (comma_on) {
+										std::cout << "Syntax Error in pre-parsing4.5\n";
+									}
+
+									if (_stack.top() == option.Left2) { // array
+										std::cout << "Syntax Error in pre-parsing5\n";
+									}
+									if (!var) {
+										std::cout << "Syntax Error in pre-parsing6\n";
+									}
+									parse_state = 1;
+								}
+								else {
+									if (1 == len && ch == ',') {
+										std::cout << "Syntax Error in pre-parsing7\n";
+									}
+									if (var) {
+										std::cout << " " << "Syntax Eror in pre-parsing7.5\n";
+									}
+									if (_stack.top() == option.Left) {
+										var = true;
+										val = false;
+									}
+									else { // _stack.top() == option.Left2
+										var = false;
+										val = true;
+									}
+
+									if (var && !load_schema) {
+										if (text[idx] == '\"' &&
+											text[idx + len - 1] == '\"' && len >= 2) {
+											//
+										}
+										else {
+											std::cout << "Syntax Error in pre-parsing8\n";
+										}
+									}
+									else if (val) {
+										if (text[idx] == '\"' &&
+											text[idx + len - 1] == '\"' && len >= 2) {
+											//
+										}
+										else if (IsSame(text, tokens[real_token_arr_count - 1], "true")) {
+											//
+										}
+										else if (IsSame(text, tokens[real_token_arr_count - 1], "false")) {
+											//
+										}
+										else if (IsSame(text, tokens[real_token_arr_count - 1], "null")) {
+											//
+										}
+										else if (Utility::IsNumberInJson(std::string_view(text + idx, len))) {
+											//
+										}
+										else {
+											std::cout << "Syntax Error in pre-parsing8.25\n";
+										}
+
+										expect_comma = true;
+										val = false;
+									}
+								}
+							}
+							else if (1 == parse_state) {
+								if (comma_on) {
+									std::cout << "Syntax Error in pre-parsing8.5\n";
+								}
+
+								if (1 == type) { // LEFT
+									_stack.push(ch);
+									var = false;
+									val = false;
+									expect_comma = false;
+								}
+								else if (0 == type) {
+									if (len == 1 && ch == ',') {
+										std::cout << "Syntax Error in pre-parsing9\n";
+									}
+									else {
+										var = false;
+										val = true;
+
+										if (val) {
+											expect_comma = true;
+											val = false;
+										}
+									}
+
 									if (text[idx] == '\"' &&
 										text[idx + len - 1] == '\"' && len >= 2) {
 										//
@@ -1159,68 +1194,19 @@ namespace wiz {
 										//
 									}
 									else {
-										std::cout << "Syntax Error in pre-parsing8.25\n";
-									}
-
-									expect_comma = true;
-									val = false;
-								}
-							}
-						}
-						else if (1 == parse_state) {
-							if (comma_on) {
-								std::cout << "Syntax Error in pre-parsing8.5\n";
-							}
-
-							if (1 == type) { // LEFT
-								_stack.push(ch);
-								var = false;
-								val = false;
-								expect_comma = false;
-							}
-							else if (0 == type) {
-								if (len == 1 && ch == ',') {
-									std::cout << "Syntax Error in pre-parsing9\n";
-								}
-								else {
-									var = false;
-									val = true;
-
-									if (val) {
-										expect_comma = true;
-										val = false;
+										std::cout << "Syntax Error in pre-parsing9.5\n";
 									}
 								}
-
-								if (text[idx] == '\"' &&
-									text[idx + len - 1] == '\"' && len >= 2) {
-									//
-								}
-								else if (IsSame(text, tokens[real_token_arr_count - 1], "true")) {
-									//
-								}
-								else if (IsSame(text, tokens[real_token_arr_count - 1], "false")) {
-									//
-								}
-								else if (IsSame(text, tokens[real_token_arr_count - 1], "null")) {
-									//
-								}
-								else if (Utility::IsNumberInJson(std::string_view(text + idx, len))) {
-									//
-								}
 								else {
-									std::cout << "Syntax Error in pre-parsing9.5\n";
+									// error
+									std::cout << "Syntax Error in pre-parsing10\n";
 								}
-							}
-							else {
-								// error
-								std::cout << "Syntax Error in pre-parsing10\n";
+
+								parse_state = 0;
 							}
 
-							parse_state = 0;
+							comma_on = false;
 						}
-
-						comma_on = false;
 					}
 				}
 

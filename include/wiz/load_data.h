@@ -169,7 +169,11 @@ namespace wiz {
 		std::vector<wiz::load_data::UserType*>* _events = nullptr;
 		wiz::load_data::UserType* events = nullptr;
 		wiz::load_data::UserType* Main = nullptr;
+	public:
+		Option() { }
 
+		Option(const Option&) = delete;
+		void operator=(const Option&) = delete;
 
 	public:
 		virtual ~Option()
@@ -233,6 +237,8 @@ namespace wiz {
 		}
 
 	public:
+
+		void MStyleTest(wiz::load_data::UserType* pUt);
 
 		void ShellMode(wiz::load_data::UserType& global);
 
@@ -3515,12 +3521,7 @@ namespace wiz {
 				}
 				return result;
 			}
-
-			static inline bool Exist(wiz::load_data::UserType* ut, const std::string& dir)
-			{
-				auto x = wiz::load_data::UserType::Find(ut, dir);
-				return x.first;
-			}
+			
 			// to do - rename!
 			static std::pair<std::string, std::string> Find2(wiz::load_data::UserType* ut, const std::string& str)
 			{
@@ -3533,6 +3534,14 @@ namespace wiz {
 				}
 				return{ wiz::String::substring(str, 0, idx), wiz::String::substring(str,idx + 1) };
 			}
+
+
+			static inline bool Exist(wiz::load_data::UserType* ut, const std::string& dir)
+			{
+				auto x = wiz::load_data::UserType::Find(ut, dir);
+				return x.first;
+			}
+	
 
 			static inline std::string FindParameters(const wiz::ArrayMap<std::string, std::string>& parameters, const std::string& operand)
 			{

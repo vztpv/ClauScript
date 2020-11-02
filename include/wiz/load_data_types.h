@@ -12,6 +12,8 @@
 #include "queues.h"
 #include "cpp_string.h"
 
+using namespace std::literals;
+
 namespace wiz {
 	namespace load_data {
 		class Type {
@@ -228,6 +230,10 @@ namespace wiz {
 			};
 
 			static void Delete(void* ptr) {
+				if (nullptr == ptr) {
+					return;
+				}
+
 				std::vector<Wrap> _stack;
 				
 				_stack.push_back(Wrap((UserType*)ptr));
@@ -245,7 +251,9 @@ namespace wiz {
 						continue;
 					}
 
-					_stack.push_back(Wrap(_stack.back().ut->GetUserTypeList(_stack.back().idx)));
+					if (_stack.back().ut->GetUserTypeList(_stack.back().idx)) {
+						_stack.push_back(Wrap(_stack.back().ut->GetUserTypeList(_stack.back().idx)));
+					}
 				}
 			}
 
@@ -671,6 +679,29 @@ namespace wiz {
 				std::vector<ItemType<WIZ_STRING_TYPE>> tempDic;
 				for (int i = 0; i < itemList.size(); ++i) {
 					if (varName != wiz::ToString(itemList[i].GetName())) {
+						tempDic.push_back(itemList[i]);
+						k = _GetIndex(ilist, 1, k + 1);
+					}
+					else {
+						// remove item, ilist left shift 1.
+						for (int j = k + 1; j < ilist.size(); ++j) {
+							ilist[j - 1] = ilist[j];
+						}
+						ilist.resize(ilist.size() - 1);
+						k = _GetIndex(ilist, 1, k);
+					}
+				}
+				itemList = std::move(tempDic);
+
+				useSortedItemList2 = false;
+			}
+			void RemoveItemList(const WIZ_STRING_TYPE& varName, const WIZ_STRING_TYPE& valName)
+			{
+
+				int k = _GetIndex(ilist, 1, 0);
+				std::vector<ItemType<WIZ_STRING_TYPE>> tempDic;
+				for (int i = 0; i < itemList.size(); ++i) {
+					if (!(varName == wiz::ToString(itemList[i].GetName()) && (valName == "%any"sv || valName == itemList[i].Get().ToString()))) {
 						tempDic.push_back(itemList[i]);
 						k = _GetIndex(ilist, 1, k + 1);
 					}
@@ -1125,7 +1156,7 @@ namespace wiz {
 				}
 
 				if (chk && USE_EMPTY_VECTOR_IN_LOAD_DATA_TYPES && temp.empty()) {
-					//temp.push_back(-1); // ItemType<DataType>("", ""));
+					temp.push_back(-1); // ItemType<DataType>("", ""));
 				}
 				return temp;
 			}
@@ -1216,6 +1247,74 @@ namespace wiz {
 					}
 				}
 				*/
+
+				return temp;
+			}
+			std::vector<long long> GetUserTypeItemIdx(const std::string& name) const { /// chk...
+				std::vector<long long> temp;
+
+				if (String::startsWith(name, "$.") && name.size() >= 5) {
+					// later, change to binary search?
+					std::string str = name.substr(3, name.size() - 4);
+					std::regex rgx(str.data());
+
+					for (int i = 0; i < userTypeList.size(); ++i) {
+						if (std::regex_match(wiz::ToString(userTypeList[i]->GetName()), rgx)) {
+							temp.push_back(i);
+						}
+					}
+
+					return temp;
+				}
+/*
+				if (false == useSortedUserTypeList) {
+					// make sortedUserTypeList.
+					sortedUserTypeList = userTypeList;
+
+					std::sort(sortedUserTypeList.begin(), sortedUserTypeList.end(), UserTypeCompare());
+
+					useSortedUserTypeList = true;
+				}
+				// binary search
+				{
+					int idx = binary_find_ut(sortedUserTypeList, name);
+					if (idx >= 0) {
+						int start = idx;
+						int last = idx;
+
+						for (int i = idx - 1; i >= 0; --i) {
+							if (name == sortedUserTypeList[i]->GetName()) {
+								start--;
+							}
+							else {
+								break;
+							}
+						}
+						for (int i = idx + 1; i < sortedUserTypeList.size(); ++i) {
+							if (name == sortedUserTypeList[i]->GetName()) {
+								last++;
+							}
+							else {
+								break;
+							}
+						}
+
+						for (int i = start; i <= last; ++i) {
+							temp.push_back(i);				
+						}
+					}
+					else {
+						////std::cout << "no found" << ENTER;
+					}
+				}
+				*/
+				
+				for (int i = 0; i < userTypeList.size(); ++i) {
+					if (userTypeList[i]->GetName() == name) {
+						temp.push_back(i);
+					}
+				}
+				
 
 				return temp;
 			}

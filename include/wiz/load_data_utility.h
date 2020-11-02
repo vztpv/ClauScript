@@ -1052,6 +1052,34 @@ namespace wiz {
 
 				return UNDEFINED;
 			}
+		public:
+			static void ChangeStr2(const std::string& str, const std::vector<std::string>& changed_str, const std::vector<std::string>& result_str, std::string& temp) {
+				temp = "";
+				int state = 1;
+
+				for (std::string::size_type i = 0; i < str.size(); ++i)
+				{
+					if (_ChangeStr(str, changed_str, result_str, i, state, temp)) {
+						//
+					}
+					else {
+						temp.push_back(str[i]);
+					}
+				}
+
+				//return temp;
+			}
+			static bool _ChangeStr(const std::string& str, const std::vector<std::string>& changed_str, const std::vector<std::string>& result_str, std::string::size_type& i, int& state, std::string& temp) {
+				for (std::string::size_type j = 0; j < changed_str.size(); ++j) {
+					if (wiz::String::Comp(changed_str[j].c_str(), str.c_str() + i, changed_str[j].size())) {
+						state = 1;
+						temp.append(result_str[j]);
+						i = i + changed_str[j].size() - 1;
+						return true;
+					}
+				}
+				return false;
+			}
 
 		public:
 #ifdef _WIN32
