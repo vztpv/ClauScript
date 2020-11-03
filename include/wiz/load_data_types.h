@@ -241,8 +241,9 @@ namespace wiz {
 				while (!_stack.empty()) {
 					if (_stack.back().idx >= _stack.back().max) {
 						_stack.back().ut->userTypeList.clear();
-						delete _stack.back().ut;
-
+						if (_stack.back().ut) {
+							delete _stack.back().ut;
+						}
 						_stack.pop_back();
 						if (_stack.empty()) {
 							break;
@@ -379,11 +380,12 @@ namespace wiz {
 					this->AddItem(strTa.GetName(), strTa.Get(i));
 				}
 			}
-			void AddItemType(ItemType<WIZ_STRING_TYPE>&& strTa)
+			bool AddItemType(ItemType<WIZ_STRING_TYPE>&& strTa)
 			{
 				for (int i = 0; i < strTa.size(); ++i) {
 					this->AddItem(std::move(strTa.GetName()), std::move(strTa.Get(i)));
 				}
+				return true;
 			}
 		public:
 			void SetParent(UserType* other)
@@ -395,8 +397,20 @@ namespace wiz {
 
 			void LinkUserType(UserType* ut) // danger fucntion?
 			{
-				userTypeList.push_back(ut);
 				ilist.push_back(2);
+
+				userTypeList.push_back(ut);
+
+				ut->parent = this;
+
+				useSortedUserTypeList = false;
+			}
+
+			void LinkUserTypeAtFront(UserType* ut) {
+				ilist.insert(ilist.begin(), 2);
+
+				userTypeList.insert(userTypeList.begin(), ut);
+
 				ut->parent = this;
 
 				useSortedUserTypeList = false;
@@ -695,8 +709,23 @@ namespace wiz {
 
 				useSortedItemList2 = false;
 			}
-			void RemoveItemList(const WIZ_STRING_TYPE& varName, const WIZ_STRING_TYPE& valName)
+			bool RemoveItemList(const WIZ_STRING_TYPE& _varName, const WIZ_STRING_TYPE& valName)
 			{
+				WIZ_STRING_TYPE varName = _varName;
+
+				if (String::startsWith(varName.ToString(), "&"sv) && varName.ToString().size() >= 2) {
+					long long idx = std::stoll(varName.ToString().substr(1));
+
+					if (idx < 0 || idx >= itemList.size()) {
+						return false;
+					}
+
+					if (itemList[idx].Get() == valName || valName == "%any"sv) {
+						RemoveItemList(idx);
+					}
+
+					return true;
+				}
 
 				int k = _GetIndex(ilist, 1, 0);
 				std::vector<ItemType<WIZ_STRING_TYPE>> tempDic;
@@ -717,6 +746,8 @@ namespace wiz {
 				itemList = std::move(tempDic);
 
 				useSortedItemList2 = false;
+
+				return true;
 			}
 			void RemoveItemList() /// ALL
 			{
@@ -1056,6 +1087,7 @@ namespace wiz {
 				}
 			}
 			void AddItemAtFront(WIZ_STRING_TYPE&& name, std::string&& item) {
+				
 				itemList.emplace(itemList.begin(), name, item);
 
 				ilist.insert(ilist.begin(), 1);
@@ -1108,7 +1140,14 @@ namespace wiz {
 			// $it?
 			std::vector<ItemType<WIZ_STRING_TYPE>> GetItem(const std::string& name, bool chk = false) const {
 				std::vector<ItemType<WIZ_STRING_TYPE>> temp;
-				if (String::startsWith(name, "$.") && name.size() >= 5) {
+
+				if (String::startsWith(name, "&") && name.size() >= 2) {
+					std::string str = name.substr(1);
+					long long x = std::stoll(str);
+
+					temp.push_back(itemList[x]);
+				}
+				else if (String::startsWith(name, "$.") && name.size() >= 5) {
 					// later, change to binary search?
 					std::string str = name.substr(3, name.size() - 4);
 					std::regex rgx(str);
@@ -1163,6 +1202,15 @@ namespace wiz {
 
 			// regex to SetItem?
 			bool SetItem(const WIZ_STRING_TYPE& name, const WIZ_STRING_TYPE& value) {
+				if (String::startsWith(name.ToString(), "&"sv) && name.ToString().size() >= 2) {
+					long long idx = std::stoll(name.ToString().substr(1));
+					if (idx < 0 || idx >= itemList.size()) {
+						return false;
+					}
+					itemList[idx].Set(0, value);
+					return true;
+				}
+
 				int index = -1;
 
 				for (int i = 0; i < itemList.size(); ++i) {
@@ -1185,7 +1233,13 @@ namespace wiz {
 			std::vector<UserType*> GetUserTypeItem(const std::string& name) const { /// chk...
 				std::vector<UserType*> temp;
 
-				if (String::startsWith(name, "$.") && name.size() >= 5) {
+				if (name == ".."sv) {
+					temp.push_back(this->parent);
+					return temp;
+				}
+
+
+				if (String::startsWith(name, "$."sv) && name.size() >= 5) {
 					// later, change to binary search?
 					std::string str = name.substr(3, name.size() - 4);
 					std::regex rgx(str.data());
