@@ -27,7 +27,7 @@ public:
 	}
 };
 
-std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::UserType* _global, const ExecuteData& excuteData, Option& opt, int chk)
+std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data::UserType* _global, const ExecuteData& excuteData, Option& opt, int chk)
 {
 	wiz::Map2<std::string, std::pair<std::vector<std::string>, bool>>* __map = opt._map;
 	opt._map = Node<wiz::Map2<std::string, std::pair<std::vector<std::string>, bool>>>::f(__map);
@@ -194,9 +194,16 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 			eventPtr = excuteData.pEvents;
 		}
 
+		if (!Main.GetUserTypeItem("Event").empty()) {
+			eventPtr->AddUserTypeItem(*Main.GetUserTypeItem("Event")[0]);
+		}
+
 		// event table setting
 		for (int i = 0; i < eventPtr->GetUserTypeListSize(); ++i)
 		{
+			if (eventPtr->GetUserTypeList(i)->GetName() != "Event"sv) {
+				continue;
+			}
 			auto x = eventPtr->GetUserTypeList(i)->GetItem("id");
 			if (!x.empty()) {
 				//wiz::Out <<	x[0] << ENTER;
@@ -556,7 +563,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						_excuteData.noUseOutput = excuteData.noUseOutput;
 
 						Option opt;
-						eventStack.top().return_value = excute_module("", &subGlobal, _excuteData, opt, 0); // return ?
+						eventStack.top().return_value = execute_module("", &subGlobal, _excuteData, opt, 0); // return ?
 					}
 
 					eventStack.top().userType_idx.top()++;
@@ -950,7 +957,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					_excuteData.noUseInput = excuteData.noUseInput;
 					_excuteData.noUseOutput = excuteData.noUseOutput;
 
-					std::thread* A = new std::thread(excute_module, "", &global, _excuteData, opt, 0);
+					std::thread* A = new std::thread(execute_module, "", &global, _excuteData, opt, 0);
 
 					waits.push_back(A);
 					}*/
@@ -980,7 +987,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 						_excuteData.noUseInput = excuteData.noUseInput;
 						_excuteData.noUseOutput = excuteData.noUseOutput;
 						Option _opt;
-						eventStack.top().return_value = excute_module("", &subGlobal, _excuteData, _opt, 0);  // return ?
+						eventStack.top().return_value = execute_module("", &subGlobal, _excuteData, _opt, 0);  // return ?
 					}
 
 					eventStack.top().userType_idx.top()++;
@@ -1007,7 +1014,7 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 					_excuteData.noUseInput = excuteData.noUseInput;
 					_excuteData.noUseOutput = excuteData.noUseOutput;
 					Option _opt;
-					eventStack.top().return_value = excute_module("", &subGlobal, _excuteData, _opt, 0);  // return ?
+					eventStack.top().return_value = execute_module("", &subGlobal, _excuteData, _opt, 0);  // return ?
 				}
 
 				eventStack.top().userType_idx.top()++;
@@ -2301,11 +2308,15 @@ std::string ClauText::excute_module(const std::string& MainStr, wiz::load_data::
 	*/
 
 	if (1 == chk && !events.empty()) {
-		auto _events = events.GetUserTypeItem("Event");
+		auto _events = events.GetUserTypeItemIdx("Event");
 		for (int i = 0; i < _events.size(); ++i) {
-			_global->LinkUserType(_events[i]);
+			if (events.GetUserTypeList(_events[i])->GetItem("id")[0].Get() == "NONE"sv) {
+				continue;
+			}
+			_global->LinkUserType(events.GetUserTypeList(_events[i]));
+			events.GetUserTypeList(_events[i]) = nullptr;
 		}
-		events.RemoveUserTypeList("Event", false);
+		events.RemoveUserTypeList("Event");
 	}
 	return module_value;
 }
@@ -2438,7 +2449,7 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 							wiz::load_data::UserType ut = global;
 							const std::string id = wiz::ToString(test.GetItemList(0).Get(0));
 							Option opt;
-							const std::string result = excute_module("Main = { $call = { id = " + id + "} }", &ut, ExecuteData(), opt, 1);
+							const std::string result = execute_module("Main = { $call = { id = " + id + "} }", &ut, ExecuteData(), opt, 1);
 
 							global = std::move(ut);
 							wiz::Out << ENTER << "excute result is : " << result << ENTER;

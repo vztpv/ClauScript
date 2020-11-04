@@ -825,7 +825,7 @@ namespace wiz {
 
 
 				Option opt;
-				operandStack.push(pExcuteModule->excute_module("Main = { $call = { id = NONE" + wiz::toStr(_excuteData.depth) + " } }", &global, _excuteData, opt, 0));
+				operandStack.push(pExcuteModule->execute_module("Main = { $call = { id = NONE" + wiz::toStr(_excuteData.depth) + " } }", &global, _excuteData, opt, 0));
 
 				{
 					for (int idx = 0; idx < eventsTemp->GetUserTypeListSize(); ++idx) {
@@ -921,7 +921,7 @@ namespace wiz {
 						_excuteData.noUseOutput = excuteData.noUseOutput;
 
 						Option opt;
-						result = pExcuteModule->excute_module(mainStr, &ut, _excuteData, opt, 0);
+						result = pExcuteModule->execute_module(mainStr, &ut, _excuteData, opt, 0);
 					}
 					{
 						wiz::load_data::UserType ut;
