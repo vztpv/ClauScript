@@ -211,10 +211,10 @@ namespace wiz {
 
 namespace wiz {
 	namespace load_data {
-		class EXCUTE_MODULE_BASE
+		class execute_module_BASE
 		{
 		public:
-			virtual std::string excute_module(const std::string& MainStr,
+			virtual std::string execute_module(const std::string& MainStr,
 				wiz::load_data::UserType* _global, const ExecuteData& excuteData, Option& opt, int chk)
 			{
 				return ""; // error!
@@ -222,7 +222,7 @@ namespace wiz {
 		};
 	}
 
-	class ClauText : public wiz::load_data::EXCUTE_MODULE_BASE {
+	class ClauText : public wiz::load_data::execute_module_BASE {
 	public:
 		ClauText(const ClauText&) = delete;
 		ClauText& operator=(const ClauText&) = delete;
@@ -242,7 +242,7 @@ namespace wiz {
 
 		void ShellMode(wiz::load_data::UserType& global);
 
-		virtual std::string excute_module(const std::string& MainStr, wiz::load_data::UserType* _global, const ExecuteData& excuteData, Option& option, int chk);
+		virtual std::string execute_module(const std::string& MainStr, wiz::load_data::UserType* _global, const ExecuteData& excuteData, Option& option, int chk);
 	};
 }
 
@@ -1255,7 +1255,7 @@ namespace wiz {
 		class LoadData
 		{
 		public:
-			inline static EXCUTE_MODULE_BASE* pExcuteModule = &clauText;
+			inline static execute_module_BASE* pExcuteModule = &clauText;
 
 		public:
 			// global is empty?
@@ -1946,7 +1946,7 @@ namespace wiz {
 			// InitQuery or LoadQuery
 			explicit LoadData() { InitWizDB(); }
 
-			explicit LoadData(EXCUTE_MODULE_BASE* pExcuteModule) {
+			explicit LoadData(execute_module_BASE* pExcuteModule) {
 				this->pExcuteModule = pExcuteModule;
 			}
 			/// need testing!
@@ -2135,7 +2135,7 @@ namespace wiz {
 								temp.SetInt(j);
 								x[k]->GetItemList(5).Set(0, temp);
 							}
-							std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+							std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
 
 							if (result.empty() == false) {
 								UserType resultUT;
@@ -2184,7 +2184,7 @@ namespace wiz {
 						}
 
 						Option opt;
- 						std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+ 						std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
 
 						if (result.empty() == false) {
 							UserType resultUT;
@@ -2277,7 +2277,7 @@ namespace wiz {
 							}
 
 							Option opt;
-							std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+							std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
 
 							if (result.empty() == false) {
 								UserType resultUT;
@@ -2324,7 +2324,7 @@ namespace wiz {
 						}
 
 						Option opt;
-						std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+						std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
 
 						if (result.empty() == false) {
 							UserType resultUT;
@@ -2416,7 +2416,7 @@ namespace wiz {
 								temp.SetInt(itemData[itemNum]);
 								x[k]->GetItemList(5).Set(0, temp);
 							}
-							std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+							std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
 
 							if (result.empty() == false) {
 								UserType resultUT;
@@ -2463,7 +2463,7 @@ namespace wiz {
 							}
 
 							Option opt;
-							std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+							std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
 
 							if (result.empty() == false) {
 								UserType resultUT;
@@ -2559,7 +2559,7 @@ namespace wiz {
 							}
 
 							Option opt;
-							std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+							std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
 
 							if (result.empty() == false) {
 								UserType resultUT;
@@ -2601,7 +2601,7 @@ namespace wiz {
 						}
 
 						Option opt;
-						std::string result = pExcuteModule->excute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
+						std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
 
 						if (result.empty() == false) {
 							UserType resultUT;

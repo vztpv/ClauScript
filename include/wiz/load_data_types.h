@@ -637,8 +637,11 @@ namespace wiz {
 				return -1;
 			}
 		public:
-			void RemoveItemList(const int idx)
+			bool RemoveItemList(const int idx)
 			{
+				auto varName = itemList[idx].GetName();
+				auto valName = itemList[idx].Get();
+
 				// left shift start idx, to end, at itemList. and resize!
 				for (int i = idx + 1; i < GetItemListSize(); ++i) {
 					itemList[i - 1] = std::move(itemList[i]);
@@ -649,7 +652,7 @@ namespace wiz {
 				for (int i = 0; i < ilist.size(); ++i) {
 					if (ilist[i] == 1) { count++; }
 					if (count == idx + 1) {
-						// i占쏙옙占쏙옙 left shift!and resize!
+						// left shift!and resize!
 						for (int k = i + 1; k < ilist.size(); ++k) {
 							ilist[k - 1] = std::move(ilist[k]);
 						}
@@ -659,6 +662,8 @@ namespace wiz {
 				}
 
 				useSortedItemList2 = false;
+
+				return true;
 			}
 			void RemoveUserTypeList(const int idx, const bool chk = true)
 			{
@@ -713,6 +718,8 @@ namespace wiz {
 			{
 				WIZ_STRING_TYPE varName = _varName;
 
+				
+				
 				if (String::startsWith(varName.ToString(), "&"sv) && varName.ToString().size() >= 2) {
 					long long idx = std::stoll(varName.ToString().substr(1));
 
@@ -726,6 +733,7 @@ namespace wiz {
 
 					return true;
 				}
+
 
 				int k = _GetIndex(ilist, 1, 0);
 				std::vector<ItemType<WIZ_STRING_TYPE>> tempDic;
@@ -1172,6 +1180,40 @@ namespace wiz {
 				return temp;
 			}
 
+			std::vector<long long> GetItemIdx(const std::string& name, bool chk = false) const {
+				std::vector<long long> temp;
+
+				if (String::startsWith(name, "&") && name.size() >= 2) {
+					std::string str = name.substr(1);
+					long long x = std::stoll(str);
+
+					temp.push_back(x);
+				}
+				else if (String::startsWith(name, "$.") && name.size() >= 5) {
+					// later, change to binary search?
+					std::string str = name.substr(3, name.size() - 4);
+					std::regex rgx(str);
+
+					for (int i = 0; i < itemList.size(); ++i) {
+						if (regex_match(wiz::ToString(itemList[i].GetName()), rgx)) {
+							temp.push_back(i);
+						}
+					}
+				}
+				else {
+					for (int i = 0; i < itemList.size(); ++i) {
+						if (itemList[i].GetName() == name) {
+							temp.push_back(i);
+						}
+					}
+				}
+
+				if (chk && USE_EMPTY_VECTOR_IN_LOAD_DATA_TYPES && temp.empty()) {
+					temp.push_back(-1);
+				}
+				return temp;
+			}
+
 			// rename..
 			std::vector<int> GetItemPtr(const std::string& name, bool chk = false) {
 				std::vector<int> temp;
@@ -1202,15 +1244,7 @@ namespace wiz {
 
 			// regex to SetItem?
 			bool SetItem(const WIZ_STRING_TYPE& name, const WIZ_STRING_TYPE& value) {
-				if (String::startsWith(name.ToString(), "&"sv) && name.ToString().size() >= 2) {
-					long long idx = std::stoll(name.ToString().substr(1));
-					if (idx < 0 || idx >= itemList.size()) {
-						return false;
-					}
-					itemList[idx].Set(0, value);
-					return true;
-				}
-
+				
 				int index = -1;
 
 				for (int i = 0; i < itemList.size(); ++i) {
