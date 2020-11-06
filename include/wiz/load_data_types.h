@@ -348,10 +348,10 @@ namespace wiz {
 			size_t GetIListSize()const { return ilist.size(); }
 			size_t GetItemListSize()const { return itemList.size(); }
 			size_t GetUserTypeListSize()const { return userTypeList.size(); }
-			ItemType<WIZ_STRING_TYPE>& GetItemList(const int idx) { return itemList[idx]; }
-			const ItemType<WIZ_STRING_TYPE>& GetItemList(const int idx) const { return itemList[idx]; }
-			UserType*& GetUserTypeList(const int idx) { return userTypeList[idx]; }
-			const UserType*& GetUserTypeList(const int idx) const { return const_cast<const UserType*&>(userTypeList[idx]); }
+			ItemType<WIZ_STRING_TYPE>& GetItemList(const int idx) { return itemList.at(idx); }
+			const ItemType<WIZ_STRING_TYPE>& GetItemList(const int idx) const { return itemList.at(idx); }
+			UserType*& GetUserTypeList(const int idx) { return userTypeList.at(idx); }
+			const UserType*& GetUserTypeList(const int idx) const { return const_cast<const UserType*&>(userTypeList.at(idx)); }
 			
 			void Sort() {
 				if (!useSortedItemList) {
@@ -373,12 +373,12 @@ namespace wiz {
 					useSortedUserTypeList = true;
 				}
 			}
-			ItemType<WIZ_STRING_TYPE>* GetItemPtrListEX(const int idx) { return sortedItemList[idx]; }
+			ItemType<WIZ_STRING_TYPE>* GetItemPtrListEX(const int idx) { return sortedItemList.at(idx); }
 			const ItemType<WIZ_STRING_TYPE>* GetItemPtrListEX(const int idx) const { 
-				return const_cast<const ItemType<WIZ_STRING_TYPE>*>(sortedItemList[idx]);
+				return const_cast<const ItemType<WIZ_STRING_TYPE>*>(sortedItemList.at(idx));
 			}
-			UserType* GetUserTypeListEX(const int idx) { return sortedUserTypeList[idx]; }
-			const UserType* GetUserTypeListEX(const int idx) const { return const_cast<const UserType*>(sortedUserTypeList[idx]); }
+			UserType* GetUserTypeListEX(const int idx) { return sortedUserTypeList.at(idx); }
+			const UserType* GetUserTypeListEX(const int idx) const { return const_cast<const UserType*>(sortedUserTypeList.at(idx)); }
 
 			bool IsItemList(const int idx) const
 			{
