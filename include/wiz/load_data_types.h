@@ -2103,11 +2103,13 @@ namespace wiz {
 			}
 			std::string ToStringEX() const {
 				int count = 0;
-				return ToStringEX(count);
+				std::string result = ToStringEX(count);
+
+				return result;
 			}
-			std::string ToStringEX(int count, int depth = 0)const
+			std::string ToStringEX(int& count, int depth = 0)const
 			{
-				if (depth > 10) {
+				if (depth > 5) {
 					return " ... ";
 				}
 				std::string temp;
@@ -2134,7 +2136,7 @@ namespace wiz {
 								temp.append(" ");
 							}
 						}
-						temp.append("\n");
+						//temp.append("\n");
 						if (i != ilist.size() - 1) {
 							temp.append(" ");
 						}
@@ -2147,7 +2149,7 @@ namespace wiz {
 							temp.append(" = ");
 						}
 						temp.append(" { \n");
-						temp.append(userTypeList[userTypeListCount]->ToStringEX(depth + 1, count));
+						temp.append(userTypeList[userTypeListCount]->ToStringEX(count, depth + 1));
 						temp.append(" ");
 						temp.append(" } \n");
 						if (i != ilist.size() - 1) {

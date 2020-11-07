@@ -1209,12 +1209,6 @@ namespace wiz {
 				}
 
 
-#if _WIN32
-				if (65001 == GetConsoleOutputCP()) {
-					outFile << (char)0xEF << (char)0xBB << (char)0xBF;
-				}
-#endif
-
 				/// saveFile
 				global.Save1(outFile); // cf) friend
 
@@ -1237,11 +1231,6 @@ namespace wiz {
 					outFile << "\n";
 				}
 
-#if _WIN32
-				if (65001 == GetConsoleOutputCP()) {
-					outFile << (char)0xEF << (char)0xBB << (char)0xBF;
-				}
-#endif
 
 				/// saveFile
 				global.Save2(outFile); // cf) friend
@@ -1431,10 +1420,9 @@ namespace wiz {
 						continue;
 					}
 					long long len = GetLength(token_arr[i]);
-				//	if (option.UseUTF8 && !Utility::CheckValidUTF8(buffer, GetIdx(token_arr[i]), GetLength(token_arr[i]))) {
-				//		*err = -5;
-				//		return false;
-				//	}
+					if (option.UseUTF8 && !Utility::CheckValidUTF8(buffer, GetIdx(token_arr[i]), GetLength(token_arr[i]))) {
+						*err = -5;
+					}
 
 
 					switch (state)
@@ -1694,7 +1682,7 @@ namespace wiz {
 				return -1;
 			}
 
-			static bool _LoadData(InFileReserver& reserver, UserType& global, wiz::load_data::LoadDataOption option, const int lex_thr_num, const int parse_num) // first, strVec.empty() must be true!!
+			static int _LoadData(InFileReserver& reserver, UserType& global, wiz::load_data::LoadDataOption option, const int lex_thr_num, const int parse_num) // first, strVec.empty() must be true!!
 			{
 				const int pivot_num = parse_num - 1;
 				const char* buffer = nullptr;
@@ -1702,6 +1690,8 @@ namespace wiz {
 				long long buffer_total_len;
 				long long token_arr_len = 0;
 				bool has_error = false;
+
+				bool utf8 = true;
 				{
 					int a = clock();
 
@@ -1721,7 +1711,7 @@ namespace wiz {
 					//	}
 
 					if (!success) {
-						return false;
+						return 0;
 					}
 					if (token_arr_len <= 0) {
 						if (reserver.pInFile) {
@@ -1730,7 +1720,7 @@ namespace wiz {
 						if (token_arr) {
 							delete[] token_arr;
 						}
-						return true;
+						return 1;
 					}
 				}
 
@@ -1752,27 +1742,31 @@ namespace wiz {
 					{
 						switch (err) {
 						case 0:
-							return true;
+							return -1;
 						case -1:
 						case -4:
 							std::cout << "Syntax Error\n";
+							return 0;
 							break;
 						case -2:
 							std::cout << "error final state is not last_state!\n";
+							return 0;
 							break;
 						case -3:
 							std::cout << "error x > buffer + buffer_len:\n";
+							return 0;
 							break;
 						case -5:
 							std::cout << "not valid utf-8\n";
+							return 1; // chk.
 							break;
 						default:
 							std::cout << "unknown parser error\n";
+							return 0;
 							break;
 						}
 					}
 
-					return false;
 				}
 
 				UserType* before_next = nullptr;
@@ -1856,9 +1850,10 @@ namespace wiz {
 								has_error = true;
 								std::cout << "error x > buffer + buffer_len:\n";
 								break;
-							case -5:
-								has_error = true;
+							case -5: // special case.
+								//has_error = true;
 								std::cout << "not valid utf-8\n";
+								utf8 = false;
 								break;
 							default:
 								has_error = true;
@@ -1918,15 +1913,20 @@ namespace wiz {
 				delete[] token_arr;
 
 				if (has_error) {
-					return false;
+					return 0;
 				}
 				global = std::move(_global);
 
-				return true;
+				if (utf8) {
+					return -1; // utf8, valid ut
+				}
+				return 1; // ansi, valid ut
 			}
 		public:
-			static bool LoadDataFromFile(const std::string& fileName, UserType& global, int lex_thr_num = 0, int parse_thr_num = 0) /// global should be empty
+			static int LoadDataFromFile(const std::string& fileName, UserType& global, int lex_thr_num = 0, int parse_thr_num = 0) /// global should be empty
 			{
+				int x = 0;
+				
 				if (lex_thr_num <= 0) {
 					lex_thr_num = std::thread::hardware_concurrency();
 				}
@@ -1948,7 +1948,7 @@ namespace wiz {
 
 				if (true == inFile.fail())
 				{
-					inFile.close(); return false;
+					inFile.close(); return 0;
 				}
 
 				UserType globalTemp;
@@ -1961,10 +1961,11 @@ namespace wiz {
 					ifReserver.Num = 1 << 19;
 					//	strVec.reserve(ifReserver.Num);
 					// cf) empty file..
-					if (false == _LoadData(ifReserver, globalTemp, option, lex_thr_num, parse_thr_num))
+					
+					if (0 == (x = _LoadData(ifReserver, globalTemp, option, lex_thr_num, parse_thr_num)))
 					{
 						inFile.close();
-						return false; // return true?
+						return 0; // return true?
 					}
 
 					inFile.close();
@@ -1977,7 +1978,7 @@ namespace wiz {
 
 				global = std::move(globalTemp);
 
-				return true;
+				return x;
 			}
 		
 		private:
@@ -3303,11 +3304,7 @@ namespace wiz {
 				if (option2 == "") {
 					outFile.open(fileName);
 					if (outFile.fail()) { return false; }
-#if _WIN32
-					if (65001 == GetConsoleOutputCP()) {
-						outFile << (char)0xEF << (char)0xBB << (char)0xBF;
-					}
-#endif
+
 				}
 				else {
 					outFile.open(fileName, std::ios::app);

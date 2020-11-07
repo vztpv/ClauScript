@@ -1136,9 +1136,7 @@ namespace wiz {
 			}
 
 		public:
-#ifdef _WIN32
-			inline static UINT defaultConsoleEncoding = GetConsoleOutputCP();
-#endif
+
 		};
 	}
 }
