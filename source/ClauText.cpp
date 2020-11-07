@@ -1826,21 +1826,6 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
-				else if ("$encoding_utf-8"sv == val->GetName()) {
-#if _WIN32
-					SetConsoleOutputCP(65001); // UTF-8 Codepage 
-#endif
-
-					eventStack.top().userType_idx.top()++;
-					break;
-				}
-				else if ("$encoding_default"sv == val->GetName()) {
-#if _WIN32
-					SetConsoleOutputCP(wiz::load_data::Utility::defaultConsoleEncoding); // UTF-8 Codepage 
-#endif
-					eventStack.top().userType_idx.top()++;
-					break;
-				}
 				else if ("$clear_screen"sv == val->GetName())
 				{
 #if _WIN32
