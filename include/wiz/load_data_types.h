@@ -2101,6 +2101,64 @@ namespace wiz {
 				}
 				return temp;
 			}
+			std::string ToStringEX() const {
+				int count = 0;
+				return ToStringEX(count);
+			}
+			std::string ToStringEX(int count, int depth = 0)const
+			{
+				if (depth > 10) {
+					return " ... ";
+				}
+				std::string temp;
+				int itemListCount = 0;
+				int userTypeListCount = 0;
+
+				for (int i = 0; i < ilist.size(); ++i) {
+					if (count > 1000) {
+						return temp + " ... ";
+					}
+
+					count++;
+
+					////std::cout << "ItemList" << endl;
+					if (ilist[i] == 1) {
+						for (int j = 0; j < itemList[itemListCount].size(); j++) {
+							if (wiz::ToString(itemList[itemListCount].GetName()) != "") {
+								temp.append(wiz::ToString(itemList[itemListCount].GetName()));
+								temp.append(" = ");
+							}
+							temp.append(wiz::ToString(itemList[itemListCount].Get(j)));
+							if (j != itemList[itemListCount].size() - 1)
+							{
+								temp.append(" ");
+							}
+						}
+						temp.append("\n");
+						if (i != ilist.size() - 1) {
+							temp.append(" ");
+						}
+						itemListCount++;
+					}
+					else if (ilist[i] == 2) {
+						// //std::cout << "UserTypeList" << endl;
+						if (wiz::ToString(userTypeList[userTypeListCount]->GetName()) != "") {
+							temp.append(wiz::ToString(userTypeList[userTypeListCount]->GetName()));
+							temp.append(" = ");
+						}
+						temp.append(" { \n");
+						temp.append(userTypeList[userTypeListCount]->ToStringEX(depth + 1, count));
+						temp.append(" ");
+						temp.append(" } \n");
+						if (i != ilist.size() - 1) {
+							temp.append(" ");
+						}
+
+						userTypeListCount++;
+					}
+				}
+				return temp;
+			}
 		public:
 			static std::pair<bool, std::vector< UserType*> > Find(UserType* global, const std::string& _position) /// option, option_offset
 			{

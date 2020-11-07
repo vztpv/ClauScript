@@ -977,6 +977,60 @@ namespace wiz {
 				}
 			}
 
+		private:
+			static bool IsTrailing(unsigned char b) {
+				return (b & 0xC0) == 0x80;
+			}
+			static bool IsLeading1(unsigned char b) {
+				return (b & 0x80) == 0;
+			}
+			static bool IsLeading2(unsigned char b) {
+				return (b & 0xE0) == 0xC0;
+			}
+			static bool IsLeading3(unsigned char b) {
+				return (b & 0xF0) == 0xE0;
+			}
+			static bool IsLeading4(unsigned char b) {
+				return (b & 0xF8) == 0xF0;
+			}
+		public:
+
+			static bool CheckValidUTF8(const char* buffer, long long start, long long len) {
+				int expected = 0;
+
+				for (size_t i = start; i < start + len; ++i) {
+					unsigned char b = buffer[i];
+					if (IsTrailing(b)) {
+						expected--;
+						if (expected >= 0) {
+							continue;
+						}
+						else {
+							return false;
+						}
+					}
+					else if (expected > 0) {
+						return false;
+					}
+
+					if (IsLeading1(b)) {
+						expected = 0;
+					}
+					else if (IsLeading2(b)) {
+						expected = 1;
+					}
+					else if (IsLeading3(b)) {
+						expected = 2;
+					}
+					else if (IsLeading4(b)) {
+						expected = 3;
+					}
+					else {
+						return false;
+					}
+				}
+				return expected == 0;
+			}
 		public:
 			class BomInfo
 			{

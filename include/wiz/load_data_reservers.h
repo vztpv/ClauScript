@@ -20,10 +20,11 @@ namespace wiz {
 			const char Left = '{';
 			const char Right = '}';	// { }
 			const char Assignment = '=';	// = 
+			const bool UseUTF8 = true; // chk...
 		};
 
-		class LoadDataOption2
-		{
+		class LoadDataOption2 // for json
+ 		{
 		public:
 			const char LineComment = '#'; // // cf) /**/
 			const char Left = '{';	// objectt start

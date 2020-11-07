@@ -1431,6 +1431,11 @@ namespace wiz {
 						continue;
 					}
 					long long len = GetLength(token_arr[i]);
+				//	if (option.UseUTF8 && !Utility::CheckValidUTF8(buffer, GetIdx(token_arr[i]), GetLength(token_arr[i]))) {
+				//		*err = -5;
+				//		return false;
+				//	}
+
 
 					switch (state)
 					{
@@ -1696,7 +1701,7 @@ namespace wiz {
 				long long* token_arr = nullptr;
 				long long buffer_total_len;
 				long long token_arr_len = 0;
-
+				bool has_error = false;
 				{
 					int a = clock();
 
@@ -1731,7 +1736,7 @@ namespace wiz {
 
 
 				if (token_arr_len < 100) {
-					int err;
+					int err = 0;
 					UserType _global;
 					UserType* next = nullptr;
 
@@ -1744,7 +1749,30 @@ namespace wiz {
 
 					global = std::move(_global);
 
-					return true;
+					{
+						switch (err) {
+						case 0:
+							return true;
+						case -1:
+						case -4:
+							std::cout << "Syntax Error\n";
+							break;
+						case -2:
+							std::cout << "error final state is not last_state!\n";
+							break;
+						case -3:
+							std::cout << "error x > buffer + buffer_len:\n";
+							break;
+						case -5:
+							std::cout << "not valid utf-8\n";
+							break;
+						default:
+							std::cout << "unknown parser error\n";
+							break;
+						}
+					}
+
+					return false;
 				}
 
 				UserType* before_next = nullptr;
@@ -1810,67 +1838,77 @@ namespace wiz {
 						for (int i = 0; i < thr.size(); ++i) {
 							thr[i].join();
 						}
-
+						
 						for (int i = 0; i < err.size(); ++i) {
 							switch (err[i]) {
 							case 0:
 								break;
 							case -1:
 							case -4:
+								has_error = true;
 								std::cout << "Syntax Error\n";
 								break;
 							case -2:
+								has_error = true;
 								std::cout << "error final state is not last_state!\n";
 								break;
 							case -3:
+								has_error = true;
 								std::cout << "error x > buffer + buffer_len:\n";
 								break;
+							case -5:
+								has_error = true;
+								std::cout << "not valid utf-8\n";
+								break;
 							default:
+								has_error = true;
 								std::cout << "unknown parser error\n";
 								break;
 							}
 						}
 
-						// Merge
-						try {
-							if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->GetName() == "#") {
-								std::cout << "not valid file1\n";
-								throw 1;
-							}
-							if (next.back()->GetParent() != nullptr) {
-								std::cout << "not valid file2\n";
-								throw 2;
-							}
-
-							int err = Merge(&_global, &__global[0], &next[0]);
-							if (-1 == err || (pivots.size() == 0 && 1 == err)) {
-								std::cout << "not valid file3\n";
-								throw 3;
-							}
-
-							for (int i = 1; i < pivots.size() + 1; ++i) {
-								// linearly merge and error check...
-								int err = Merge(next[i - 1], &__global[i], &next[i]);
-								if (-1 == err) {
-									std::cout << "not valid file4\n";
-									throw 4;
+						if (!has_error) {
+							// Merge
+							try {
+								if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->GetName() == "#") {
+									std::cout << "not valid file1\n";
+									throw 1;
 								}
-								else if (i == pivots.size() && 1 == err) {
-									std::cout << "not valid file5\n";
-									throw 5;
+								if (next.back()->GetParent() != nullptr) {
+									std::cout << "not valid file2\n";
+									throw 2;
+								}
+
+								int err = Merge(&_global, &__global[0], &next[0]);
+								if (-1 == err || (pivots.size() == 0 && 1 == err)) {
+									std::cout << "not valid file3\n";
+									throw 3;
+								}
+
+								for (int i = 1; i < pivots.size() + 1; ++i) {
+									// linearly merge and error check...
+									int err = Merge(next[i - 1], &__global[i], &next[i]);
+									if (-1 == err) {
+										std::cout << "not valid file4\n";
+										throw 4;
+									}
+									else if (i == pivots.size() && 1 == err) {
+										std::cout << "not valid file5\n";
+										throw 5;
+									}
 								}
 							}
-						}
-						catch (...) {
-							if (reserver.pInFile) {
-								delete[] buffer;
+							catch (...) {
+								if (reserver.pInFile) {
+									delete[] buffer;
+								}
+								delete[] token_arr;
+								buffer = nullptr;
+								throw "in Merge, error";
 							}
-							delete[] token_arr;
-							buffer = nullptr;
-							throw "in Merge, error";
-						}
 
-						before_next = next.back();
+							before_next = next.back();
+						}
 					}
 				}
 
@@ -1879,6 +1917,9 @@ namespace wiz {
 				}
 				delete[] token_arr;
 
+				if (has_error) {
+					return false;
+				}
 				global = std::move(_global);
 
 				return true;
