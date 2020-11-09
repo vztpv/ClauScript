@@ -536,6 +536,10 @@ namespace wiz {
 					inFile.read(buffer, file_length);
 
 					buffer[file_length] = '\0';
+					
+					long long new_length = file_length;
+
+					//buffer = Utility::ConvertToUTF8(buffer, file_length + 1, &new_length);
 
 					{
 						//int a = clock();
@@ -543,10 +547,10 @@ namespace wiz {
 						long long token_arr_size;
 
 						if (thr_num == 1) {
-							Scanning(buffer, file_length, token_arr, token_arr_size, option);
+							Scanning(buffer, new_length, token_arr, token_arr_size, option);
 						}
 						else {
-							ScanningNew(buffer, file_length, thr_num, token_arr, token_arr_size, option);
+							ScanningNew(buffer, new_length, thr_num, token_arr, token_arr_size, option);
 						}
 
 						//int b = clock();

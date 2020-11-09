@@ -2101,13 +2101,13 @@ namespace wiz {
 				}
 				return temp;
 			}
-			std::string ToStringEX() const {
+			std::string ToStringEX(long long start=0) const {
 				int count = 0;
-				std::string result = ToStringEX(count);
+				std::string result = ToStringEX(count, 0, start);
 
 				return result;
 			}
-			std::string ToStringEX(int& count, int depth = 0)const
+			std::string ToStringEX(int& count, int depth = 0, long long start = 0)const
 			{
 				if (depth > 5) {
 					return " ... ";
@@ -2116,7 +2116,17 @@ namespace wiz {
 				int itemListCount = 0;
 				int userTypeListCount = 0;
 
-				for (int i = 0; i < ilist.size(); ++i) {
+				for (int i = 0; i < start; ++i) {
+					if (ilist[i] == 1) {
+						itemListCount++;
+					}
+					else {
+						userTypeListCount++;
+					}
+				}
+
+
+				for (int i = start; i < ilist.size(); ++i) {
 					if (count > 1000) {
 						return temp + " ... ";
 					}

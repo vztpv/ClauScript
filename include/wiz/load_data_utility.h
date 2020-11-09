@@ -33,11 +33,11 @@ namespace wiz {
 			static bool equal(char x, char filter, char filter_size) {
 				bool bx[8] = { false, }, bf[8] = { false, };
 				for (int i = 0; i < 8; ++i) {
-					if (x < 0) {
+					if (x & 0x80) {
 						bx[i] = true;
 						x = x << 1;
 					}
-					if (filter < 0) {
+					if (filter & 0x80) {
 						bf[i] = true;
 						filter = filter << 1;
 					}
@@ -85,7 +85,87 @@ namespace wiz {
 				return false;
 			}
 		public:
+			/*
+			static char* ConvertToUTF8(const char* text, long long len, long long* new_length) {
+				UConverter* cnv;
+				long long capacity = len * 2 + 2;
+				char* u8 = new char[capacity];
+
+				{
+					UErrorCode uerr = U_ZERO_ERROR;
+					UCharsetDetector* ucd = ucsdet_open(&uerr);
+					const UCharsetMatch* ucm;
+					UErrorCode status = U_ZERO_ERROR;
+					
+					ucsdet_setText(ucd, text, len, &status);
+					ucsdet_enableInputFilter(ucd, TRUE);
+					ucm = ucsdet_detect(ucd, &status);
+					ucsdet_close(ucd);
+
+					const char* name = ucsdet_getName(ucm, &status);
+					
+					cnv = ucnv_open(name, &status);
+				}
+
+
+				UErrorCode errorCode = U_ZERO_ERROR;
+
+				*new_length = myToUTF8(cnv, text, len, u8, capacity, &errorCode);
+
+
+				ucnv_close(cnv);
+
+				return u8;
+			}
+		private:
+			static int32_t
+				myToUTF8(UConverter* cnv,
+					const char* s, int32_t length,
+					char*& u8, int32_t capacity,
+					UErrorCode* pErrorCode) {
+				UConverter* utf8Cnv;
+				char* target;
+
+				if (U_FAILURE(*pErrorCode)) {
+					return 0;
+				}
+
+				utf8Cnv = ucnv_open("UTF-8", pErrorCode);
+				if (U_FAILURE(*pErrorCode)) {
+					return 0;
+				}
+
+				if (length < 0) {
+					length = strlen(s);
+				}
+				target = u8;
+				do {
+					ucnv_convertEx(utf8Cnv, cnv,
+						&target, u8 + capacity,
+						&s, s + length,
+						NULL, NULL, NULL, NULL,
+						true, true,
+						pErrorCode);
+					
+					if (*pErrorCode == U_BUFFER_OVERFLOW_ERROR) {
+						delete[] u8;
+						capacity *= 2;
+						u8 = new char[capacity];
+					}
+						
+				} while (*pErrorCode == U_BUFFER_OVERFLOW_ERROR);
+
+				ucnv_close(utf8Cnv);
+
+				// return the output string length, but without preflighting
+				return (int32_t)(target - u8);
+
+			}
+			*/
+
+		public:
 			static bool ValidateUTF8(const char* text, long long idx, long long len) {
+				// old version
 				for (long long i = 0; i < len; ++i) {
 					if (!validate(text + idx, std::min((long long)4, len - i))) {
 						return false;
