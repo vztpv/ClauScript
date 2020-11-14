@@ -866,7 +866,7 @@ namespace wiz {
 				int k = _GetIndex(ilist, 2, 0);
 				std::vector<UserType*> tempDic;
 				for (int i = 0; i < userTypeList.size(); ++i) {
-					if (varName != wiz::ToString(userTypeList[i]->GetName())) {
+					if (userTypeList[i] && varName != wiz::ToString(userTypeList[i]->GetName())) {
 						tempDic.push_back(userTypeList[i]);
 						k = _GetIndex(ilist, 2, k + 1);
 					}
