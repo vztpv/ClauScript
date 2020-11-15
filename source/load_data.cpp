@@ -205,12 +205,12 @@ namespace wiz {
 				auto y = operandStack.pop();
 
 				if (x.GetType() == 5 && y.GetType() == 5) {
-					DataType temp;
+					WIZ_STRING_TYPE temp;
 					temp.SetFloat(x.ToFloat() + y.ToFloat());
 					operandStack.push(temp);
 				}
 				else if (x.GetType() == 3 && y.GetType() == 3) {
-					DataType temp;
+					WIZ_STRING_TYPE temp;
 					temp.SetInt(x.ToInt() + y.ToInt());
 					operandStack.push(temp);
 				}
@@ -229,12 +229,12 @@ namespace wiz {
 				_y = y.ToString();
 
 				if (x.GetType() == 5 && y.GetType() == 5) {
-					DataType temp;
+					WIZ_STRING_TYPE temp;
 					temp.SetFloat(x.ToFloat() * y.ToFloat());
 					operandStack.push(temp);
 				}
 				else if (x.GetType() == 3 && y.GetType() == 3) {
-					DataType temp;
+					WIZ_STRING_TYPE temp;
 					temp.SetInt(x.ToInt() * y.ToInt());
 					operandStack.push(temp);
 				}
@@ -254,12 +254,12 @@ namespace wiz {
 				_y = y.ToString();
 
 				if (x.GetType() == 5 && y.GetType() == 5) {
-					DataType temp;
+					WIZ_STRING_TYPE temp;
 					temp.SetFloat(x.ToFloat() / y.ToFloat());
 					operandStack.push(temp);
 				}
 				else if (x.GetType() == 3 && y.GetType() == 3) {
-					DataType temp;
+					WIZ_STRING_TYPE temp;
 					temp.SetInt(x.ToInt() / y.ToInt());
 					operandStack.push(temp);
 				}
@@ -279,7 +279,7 @@ namespace wiz {
 				std::string _y = y.ToString();
 
 				if (x.GetType() == 3 && y.GetType() == 3) {
-					DataType temp;
+					WIZ_STRING_TYPE temp;
 					temp.SetInt(x.ToInt() % y.ToInt());
 					operandStack.push(temp);
 				}

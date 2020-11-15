@@ -121,7 +121,7 @@ namespace wiz {
 
 	DataType::DataType(const char* cstr, size_t len)
 	{
-		if (len <= 0) {
+		if (len < 0) {
 			std::cout << "chk\n";
 		}
 		this->str_value = std::string(cstr, len);
@@ -150,7 +150,7 @@ namespace wiz {
 
 	DataType::DataType(const char* cstr, size_t len, const LineInfo& opt)
 	{
-		if (len <= 0) {
+		if (len < 0) {
 			std::cout << "chk\n";
 		}
 		this->str_value = std::string(cstr, len);
@@ -299,7 +299,10 @@ namespace wiz {
 	{
 		return str == this->str_value;
 	}
-
+	bool DataType::operator!=(std::string_view str) const
+	{
+		return this->str_value != str;
+	}
 	bool DataType::operator!=(const DataType& type) const
 	{
 		return type.str_value != this->str_value;

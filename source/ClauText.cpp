@@ -1584,8 +1584,10 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 						wiz::load_data::UserType ut;
 						std::string fileName = wiz::ToString(val->GetItemList(i).Get(0));
 						fileName = wiz::String::substring(fileName, 1, fileName.size() - 2);
-
+						int a = clock();
 						if (wiz::load_data::LoadData::LoadDataFromFile(fileName, ut)) {
+							int b = clock();
+							std::cout << b - a << "ms\n";
 							{
 								int item_count = 0;
 								int userType_count = 0;
@@ -1735,8 +1737,10 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 						utTemp = global.GetUserTypeItem(dirName)[0];
 					}
 
-
+					int a = clock();
 					if (wiz::load_data::LoadData::LoadDataFromFileWithJson(fileName, ut)) {
+						int b = clock();
+						std::cout << b - a << "ms\n";
 						{
 							//for (int i = 0; i < ut.GetCommentListSize(); ++i) {
 							//	utTemp->PushComment(std::move(ut.GetCommentList(i)));
