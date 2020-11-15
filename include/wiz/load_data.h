@@ -387,22 +387,22 @@ namespace wiz {
 								nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 								for (size_t x = 0; x < varVec.size(); ++x) {
-									auto info1 = GetLineInfo((varVec[x]), lines, lines_len, start);
-									auto info2 = GetLineInfo((valVec[x]), lines, lines_len, start);
+									//auto info1 = GetLineInfo((varVec[x]), lines, lines_len, start);
+									//auto info2 = GetLineInfo((valVec[x]), lines, lines_len, start);
 
-									nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
-										buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
+									nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]),
+										buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
 									{
 										std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).GetName().ToString();
 										temp = wiz::load_data::Utility::Convert(std::move(temp));
 
-										nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName(wiz::DataType(temp));
+										nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName(WIZ_STRING_TYPE(temp));
 									}
 									{
 										std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Get().ToString();
 										temp = wiz::load_data::Utility::Convert(std::move(temp));
 
-										nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, wiz::DataType(temp));
+										nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, WIZ_STRING_TYPE(temp));
 									}
 								}
 
@@ -440,22 +440,22 @@ namespace wiz {
 									nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 									for (size_t x = 0; x < varVec.size(); ++x) {
-										auto info1 = GetLineInfo(varVec[x], lines, lines_len, start);
-										auto info2 = GetLineInfo(valVec[x], lines, lines_len, start);
+									//	auto info1 = GetLineInfo(varVec[x], lines, lines_len, start);
+									//	auto info2 = GetLineInfo(valVec[x], lines, lines_len, start);
 
-										nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
-											buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
+										nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), 
+											buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
 										{
 											std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).GetName().ToString();
 											temp = wiz::load_data::Utility::Convert(std::move(temp));
 
-											nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName(wiz::DataType(temp));
+											nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName(WIZ_STRING_TYPE(temp));
 										}
 										{
 											std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Get().ToString();
 											temp = wiz::load_data::Utility::Convert(std::move(temp));
 
-											nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, wiz::DataType(temp));
+											nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, WIZ_STRING_TYPE(temp));
 										}
 									}
 								}
@@ -557,23 +557,23 @@ namespace wiz {
 							nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 							for (size_t x = 0; x < varVec.size(); ++x) {
-								auto info1 = GetLineInfo((varVec[x]), lines, lines_len, start);
-								auto info2 = GetLineInfo((valVec[x]), lines, lines_len, start);
+							//	auto info1 = GetLineInfo((varVec[x]), lines, lines_len, start);
+							//	auto info2 = GetLineInfo((valVec[x]), lines, lines_len, start);
 
-								nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
-									buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
+								nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), 
+									buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
 
 								{
 									std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).GetName().ToString();
 									temp = wiz::load_data::Utility::Convert(std::move(temp));
 
-									nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName(wiz::DataType(temp));
+									nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName(WIZ_STRING_TYPE(temp));
 								}
 								{
 									std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Get().ToString();
 									temp = wiz::load_data::Utility::Convert(std::move(temp));
 
-									nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, wiz::DataType(temp));
+									nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, WIZ_STRING_TYPE(temp));
 								}
 							}
 
@@ -583,15 +583,15 @@ namespace wiz {
 
 							///
 							{
-								auto info1 = GetLineInfo((var), lines, lines_len, start);
-								nestedUT[braceNum]->AddUserTypeItem(UserType(buffer + GetIdx(var), GetLength(var), info1));
+								//auto info1 = GetLineInfo((var), lines, lines_len, start);
+								nestedUT[braceNum]->AddUserTypeItem(UserType(buffer + GetIdx(var), GetLength(var)));
 
 								{
 									{
 										std::string temp = nestedUT[braceNum]->GetUserTypeList(nestedUT[braceNum]->GetUserTypeListSize() - 1)->GetName().ToString();
 										temp = wiz::load_data::Utility::Convert(std::move(temp));
 
-										nestedUT[braceNum]->GetUserTypeList(nestedUT[braceNum]->GetUserTypeListSize() - 1)->SetName(wiz::DataType(temp));
+										nestedUT[braceNum]->GetUserTypeList(nestedUT[braceNum]->GetUserTypeListSize() - 1)->SetName(WIZ_STRING_TYPE(temp));
 									}
 								}
 
@@ -640,11 +640,11 @@ namespace wiz {
 					nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 					for (size_t x = 0; x < varVec.size(); ++x) {
-						auto info1 = GetLineInfo(varVec[x], lines, lines_len, start);
-						auto info2 = GetLineInfo(valVec[x], lines, lines_len, start);
+					//	auto info1 = GetLineInfo(varVec[x], lines, lines_len, start);
+					//	auto info2 = GetLineInfo(valVec[x], lines, lines_len, start);
 
-						nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
-							buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
+						nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]),
+							buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
 					}
 
 
@@ -716,7 +716,8 @@ namespace wiz {
 
 
 					int b = clock();
-				//	std::cout << "scan " << b - a << "ms\n";
+					std::cout << "scan " << b - a << "ms\n";
+					std::cout << "count " << token_arr_len << "\n";
 
 					//	{
 					//		for (long long i = 0; i < token_arr_len; ++i) {
@@ -1699,8 +1700,8 @@ namespace wiz {
 
 
 					int b = clock();
-					//std::cout << "scan " << b - a << "ms\n";
-
+					std::cout << "scan " << b - a << "ms\n";
+					std::cout << "count " << token_arr_len << "\n";
 					//	{
 					//		for (long long i = 0; i < token_arr_len; ++i) {
 					//			std::string(buffer + GetIdx(token_arr[i]), GetLength(token_arr[i]));
@@ -2173,7 +2174,7 @@ namespace wiz {
 								x[k]->GetItemList(2).Set(0, ut[i]->GetItemList(itemCount + k).Get(0));
 								x[k]->GetItemList(3).Set(0, "FALSE");
 								x[k]->GetItemList(4).Set(0, GetRealDir(dir, ut[i]));
-								wiz::DataType temp;
+								WIZ_STRING_TYPE temp;
 								temp.SetInt(j);
 								x[k]->GetItemList(5).Set(0, temp);
 							}
@@ -2220,7 +2221,7 @@ namespace wiz {
 							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName().ToString();
 							x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utCount)));
 							
-							wiz::DataType temp;
+							WIZ_STRING_TYPE temp;
 							temp.SetInt(j);
 							x[k]->GetItemList(5).Set(0, temp);
 						}
@@ -2454,7 +2455,7 @@ namespace wiz {
 								x[k]->GetItemList(2).Set(0, ut[i]->GetItemList(itemData[itemNum]).Get(0));
 								x[k]->GetItemList(3).Set(0, "FALSE");
 								x[k]->GetItemList(4).Set(0, GetRealDir(dir, ut[i]));
-								wiz::DataType temp;
+								WIZ_STRING_TYPE temp;
 								temp.SetInt(itemData[itemNum]);
 								x[k]->GetItemList(5).Set(0, temp);
 							}
@@ -2499,7 +2500,7 @@ namespace wiz {
 								const std::string name = ut[i]->GetUserTypeList(utData[utNum])->GetName().ToString();
 								x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utData[utNum])));
 
-								wiz::DataType temp;
+								WIZ_STRING_TYPE temp;
 								temp.SetInt(utData[utNum]);
 								x[k]->GetItemList(5).Set(0, temp);
 							}

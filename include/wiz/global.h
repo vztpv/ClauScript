@@ -159,7 +159,7 @@ namespace wiz {
 
 	class DataType {
 	public:
-		int before_pos = -1;
+		//int before_pos = -1;
 	private:
 		std::string str_value;
 		mutable long long int_value;
@@ -196,6 +196,7 @@ namespace wiz {
 		bool operator==(const char* cstr) const;
 		bool operator==(const std::string& str) const;
 		bool operator==(std::string_view str) const;
+		bool operator!=(std::string_view str) const;
 		bool operator!=(const DataType& type) const;
 		bool operator!=(const char* cstr) const;
 		bool operator!=(const std::string& str) const;

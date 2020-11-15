@@ -17,8 +17,6 @@ using namespace std::literals;
 namespace wiz {
 	namespace load_data {
 		class Type {
-		public:
-			mutable WIZ_STRING_TYPE toBool4;
 		protected:
 			WIZ_STRING_TYPE name;
 
@@ -33,10 +31,15 @@ namespace wiz {
 				*/
 			}
 		public:
+			explicit Type(const char* str, size_t len)
+				:name(str, len)
+			{
+
+			}
 			explicit Type(const WIZ_STRING_TYPE& name = "", const bool valid = true) : name(name) { }//chk();  }
 			explicit Type(WIZ_STRING_TYPE&& name, const bool valid = true) : name(std::move(name)) { }//chk(); }
 			Type(const Type& type)
-				: name(type.name), toBool4(type.toBool4)
+				: name(type.name)//, toBool4(type.toBool4)
 			{
 				//chk();
 			}
@@ -71,13 +74,13 @@ namespace wiz {
 			Type& operator=(const Type& type)
 			{
 				name = type.name;
-				this->toBool4 = type.toBool4;
+			//	this->toBool4 = type.toBool4;
 				return *this;
 			}
 			void operator=(Type&& type)
 			{
 				name = std::move(type.name);
-				this->toBool4 = std::move(type.toBool4);
+			//	this->toBool4 = std::move(type.toBool4);
 			}
 			virtual bool IsItemType()const = 0;
 			virtual bool IsUserType()const {
@@ -90,7 +93,6 @@ namespace wiz {
 		public:
 			typedef T item_type; //
 		private:
-			//std::vector<T> arr;
 			T data;
 			bool inited;
 		public:
@@ -107,7 +109,7 @@ namespace wiz {
 			}
 		public:
 			explicit ItemType()
-				: Type("", true), inited(false) { }
+				: Type("", 0), inited(false) { }
 			explicit ItemType(const WIZ_STRING_TYPE& name, const T& value, const bool valid=true)
 				:Type(name, valid), data(value), inited(true)
 			{
@@ -115,6 +117,11 @@ namespace wiz {
 			}
 			explicit ItemType(WIZ_STRING_TYPE&& name, T&& value, const bool valid = true)
 				:Type(std::move(name), valid), data(std::move(value)), inited(true)
+			{
+				//
+			}
+			explicit ItemType(const char* str1, size_t len1, const char* str2, size_t len2) :
+				Type(str1, len1), data(str2, len2), inited(true)
 			{
 				//
 			}
@@ -389,14 +396,14 @@ namespace wiz {
 				return ilist[idx] == 2;
 			}
 			void AddItem(const char* str1, size_t len1, const char* str2, size_t len2) {
-				itemList.emplace_back(WIZ_STRING_TYPE(std::string(str1, len1)), WIZ_STRING_TYPE(std::string(str2, len2)));
+				itemList.emplace_back(str1, len1, str2, len2);
 				ilist.push_back(1);
 
 				useSortedItemList = false;
 			}
 
 			void AddItem(const char* str1, size_t len1, const LineInfo& info1, const char* str2, size_t len2, const LineInfo& info2) {
-				itemList.emplace_back(WIZ_STRING_TYPE(std::string(str1, len1), info1), WIZ_STRING_TYPE(std::string(str2, len2), info2));
+				itemList.emplace_back(WIZ_STRING_TYPE(str1, len1, info1), WIZ_STRING_TYPE(str2, len2, info2));
 				ilist.push_back(1);
 
 				useSortedItemList = false;
@@ -519,12 +526,14 @@ namespace wiz {
 				std::vector<UserType*> _stack;
 				std::vector<Wrap2> _stack2;
 
+				//int a = clock();
 				_stack.push_back(this);
 				_stack2.push_back(Wrap2((const UserType*)&ut));
 
 				while (!_stack2.empty()) {
 					if (_stack2.back().idx >= _stack2.back().max) {
 						{
+							_stack.back()->sortedItemList.clear();
 							_stack.back()->sortedUserTypeList.clear();
 
 							_stack.back()->name = _stack2.back().ut->name;
@@ -562,6 +571,8 @@ namespace wiz {
 					_stack2.push_back(Wrap2(_stack2.back().ut->GetUserTypeList(_stack2.back().idx)));
 					_stack.back()->ReserveUserTypeList(_stack2.back().ut->GetUserTypeListSize());
 				}
+				//int b = clock();
+				//std::cout << b - a << "ms\n";
 			}
 			void Reset2(UserType&& ut) {
 				//std::swap( userTypeList_sortFlagA, ut.userTypeList_sortFlagA );
@@ -582,7 +593,7 @@ namespace wiz {
 				userTypeList.reserve(ut.userTypeList.size());
 
 				for (int i = 0; i < ut.userTypeList.size(); ++i) {
-					userTypeList.push_back(std::move(ut.userTypeList[i]));
+					userTypeList.push_back((ut.userTypeList[i]));
 					ut.userTypeList[i] = nullptr;
 					userTypeList.back()->parent = this;
 				}
@@ -596,6 +607,7 @@ namespace wiz {
 
 				itemList = std::vector< ItemType<WIZ_STRING_TYPE> >();
 
+				sortedItemList.clear();
 				sortedUserTypeList.clear();
 				useSortedItemList = false;
 				useSortedUserTypeList = false;
@@ -830,7 +842,7 @@ namespace wiz {
 
 				RemoveUserTypeList();
 
-
+				sortedItemList.clear();
 				sortedUserTypeList.clear();
 
 				useSortedItemList = false;
@@ -1206,7 +1218,7 @@ namespace wiz {
 				}
 
 				if (chk && USE_EMPTY_VECTOR_IN_LOAD_DATA_TYPES && temp.empty()) {
-					temp.push_back(ItemType<DataType>("", ""));
+					temp.push_back(ItemType<WIZ_STRING_TYPE>("", ""));
 				}
 				return temp;
 			}
