@@ -37,6 +37,13 @@ namespace wiz {
 				return { start_line, last_line };
 			}
 
+			explicit Type(const char* str, size_t len)
+				:name(str, len)
+			{
+
+			}
+
+
 			explicit Type(const char* str, size_t len, LineInfo x, LineInfo y)
 				:name(str, len), start_line(x.line), last_line(y.line)
 			{
