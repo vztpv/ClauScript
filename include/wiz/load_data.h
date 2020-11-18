@@ -2229,7 +2229,63 @@ namespace wiz {
 
 				return x;
 			}
-		
+			static int LoadDataFromFile2(const std::string& fileName, UserType& global, int lex_thr_num = 0, int parse_thr_num = 0) /// global should be empty
+			{
+				int x = 0;
+
+				if (lex_thr_num <= 0) {
+					lex_thr_num = std::thread::hardware_concurrency();
+				}
+				if (lex_thr_num <= 0) {
+					lex_thr_num = 1;
+				}
+
+				if (parse_thr_num <= 0) {
+					parse_thr_num = std::thread::hardware_concurrency();
+				}
+				if (parse_thr_num <= 0) {
+					parse_thr_num = 1;
+				}
+
+				bool success = true;
+				std::ifstream inFile;
+				inFile.open(fileName, std::ios::binary);
+
+
+				if (true == inFile.fail())
+				{
+					inFile.close(); return 0;
+				}
+
+				UserType globalTemp;
+
+				try {
+
+					InFileReserver2 ifReserver(inFile);
+					wiz::load_data::LoadDataOption option;
+
+					//ifReserver.Num = 1 << 19;
+					//	strVec.reserve(ifReserver.Num);
+					// cf) empty file..
+
+					if (0 == (x = _LoadData2(ifReserver, globalTemp, option, lex_thr_num, parse_thr_num)))
+					{
+						inFile.close();
+						return 0; // return true?
+					}
+
+					inFile.close();
+				}
+				catch (const char* err) { std::cout << err << "\n"; inFile.close(); return false; }
+				catch (const std::string& e) { std::cout << e << "\n"; inFile.close(); return false; }
+				catch (const std::exception& e) { std::cout << e.what() << "\n"; inFile.close(); return false; }
+				catch (...) { std::cout << "not expected error" << "\n"; inFile.close(); return false; }
+
+
+				global = std::move(globalTemp);
+
+				return x;
+			}
 		private:
 			UserType global; // ToDo - remove!
 		public:

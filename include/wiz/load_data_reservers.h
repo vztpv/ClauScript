@@ -668,9 +668,7 @@ namespace wiz {
 				long long len = GetLength(x);
 				long long idx = GetIdx(x);
 
-				for (long long i = 0; i < len; ++i) {
-					std::cout << text[idx + i];
-				}
+				std::cout << std::string_view(text + idx, len);
 				std::cout << "\n";
 			}
 
@@ -917,16 +915,6 @@ namespace wiz {
 					delete thr[i];
 				}
 
-				{
-					long long _count = 0;
-					for (int i = 0; i < thr_num; ++i) {
-						for (long long j = 0; j < token_arr_size[i]; ++j) {
-							tokens[token_count] = tokens[start[i] + j];
-							token_count++;
-						}
-					}
-				}
-
 				int state = 0;
 				long long qouted_start;
 				long long slush_start;
@@ -986,15 +974,6 @@ namespace wiz {
 									//	PrintToken(text, tokens[real_token_arr_count - 1]);
 								}
 							}
-							else if (4 == state && '*' == ch) {
-								state = 5;
-							}
-							else if (5 == state && '/' == ch) {
-								state = 0;
-							}
-							else if (5 == state) {
-								state = 4;
-							}
 							else if (1 == state && '\\' == ch) {
 								state = 3;
 								slush_start = idx;
@@ -1042,7 +1021,7 @@ namespace wiz {
 								state = 0;
 							}
 						}
-						else if (0 == state) { // '\\' case?
+						else if (0 == state) { // '\\' case
 							tokens[real_token_arr_count] = tokens[i];
 							real_token_arr_count++;
 						}
