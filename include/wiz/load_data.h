@@ -1656,6 +1656,283 @@ namespace wiz {
 				return true;
 			}
 
+			static bool __LoadData3(const char* buffer, const long long* token_arr, long long token_arr_len, UserType* _global, const wiz::load_data::LoadDataOption* _option,
+				int start_state, int last_state, UserType** next, int* err, long long* lines, long long lines_len)
+			{
+				std::vector<long long> varVec;
+				std::vector<long long> valVec;
+
+
+				if (token_arr_len <= 0) {
+					return false;
+				}
+
+				UserType& global = *_global;
+				wiz::load_data::LoadDataOption option = *_option;
+
+				int state = start_state;
+				int braceNum = 0;
+				std::vector< UserType* > nestedUT(1);
+				long long var = 0, val = 0;
+
+				nestedUT.reserve(10);
+				nestedUT[0] = &global;
+
+				long long start = 0;
+
+				long long count = 0;
+				const long long* x = token_arr;
+				const long long* x_next = x;
+
+				for (long long i = 0; i < token_arr_len; ++i) {
+					x = x_next;
+					{
+						x_next = x + 1;
+					}
+					if (count > 0) {
+						count--;
+						continue;
+					}
+					long long len = GetLength(token_arr[i]);
+
+					if (option.UseUTF8 && !Utility::CheckValidUTF8(buffer, GetIdx(token_arr[i]), GetLength(token_arr[i]))) {
+						*err = -5;
+					}
+
+
+					switch (state)
+					{
+					case 0:
+					{
+						// Left 1
+						if (len == 1 && (-1 != Equal(TYPE_LEFT, GetType(token_arr[i])))) {
+							if (!varVec.empty()) {
+								nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
+								nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
+
+								for (size_t x = 0; x < varVec.size(); ++x) {
+									auto info1 = GetLineInfo(GetIdx(varVec[x]), lines, lines_len, start);
+									auto info2 = GetLineInfo(GetIdx(valVec[x]), lines, lines_len, start);
+
+									nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
+										buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
+								}
+
+								varVec.clear();
+								valVec.clear();
+							}
+
+							
+							UserType temp("");
+							nestedUT[braceNum]->AddUserTypeItem(temp);
+							UserType* pTemp = nullptr;
+							nestedUT[braceNum]->GetLastUserTypeItemRef(pTemp);
+
+							braceNum++;
+
+							/// new nestedUT
+							if (nestedUT.size() == braceNum) { /// changed 2014.01.23..
+								nestedUT.push_back(nullptr);
+							}
+
+							/// initial new nestedUT.
+							nestedUT[braceNum] = pTemp;
+							
+							///
+
+							state = 0;
+						}
+						// Right 2
+						else if (len == 1 && (-1 != Equal(TYPE_RIGHT, GetType(token_arr[i])))) {
+							state = 0;
+
+							if (!varVec.empty()) {
+
+								{
+									nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
+									nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
+
+									for (size_t x = 0; x < varVec.size(); ++x) {
+										nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]),
+											buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
+									}
+								}
+
+								varVec.clear();
+								valVec.clear();
+							}
+
+							if (braceNum == 0) {
+								UserType ut;
+								ut.AddUserTypeItem(UserType("#", 1)); // json -> "var_name" = val  // clautext, # is line comment delimiter.
+								UserType* pTemp = nullptr;
+								ut.GetLastUserTypeItemRef(pTemp);
+								int utCount = 0;
+								int itCount = 0;
+								auto max = nestedUT[braceNum]->GetIListSize();
+								for (auto i = 0; i < max; ++i) {
+									if (nestedUT[braceNum]->IsUserTypeList(i)) {
+										ut.GetUserTypeList(0)->AddUserTypeItem(std::move(*(nestedUT[braceNum]->GetUserTypeList(utCount))));
+										utCount++;
+									}
+									else {
+										ut.GetUserTypeList(0)->AddItemType(std::move(nestedUT[braceNum]->GetItemList(itCount)));
+										itCount++;
+									}
+								}
+
+								nestedUT[braceNum]->Remove();
+								nestedUT[braceNum]->AddUserTypeItem(std::move(*(ut.GetUserTypeList(0))));
+
+								braceNum++;
+							}
+
+							{
+								if (braceNum < nestedUT.size()) {
+									nestedUT[braceNum] = nullptr;
+								}
+								braceNum--;
+							}
+						}
+						else {
+							if (x < token_arr + token_arr_len - 1) {
+								long long _len = GetLength(token_arr[i + 1]);
+								// EQ 3
+								if (_len == 1 && -1 != Equal(TYPE_ASSIGN, GetType(token_arr[i + 1]))) {
+									var = token_arr[i];
+
+									state = 1;
+
+									{
+										count = 1;
+									}
+								}
+								else {
+									// var1
+									if (x <= token_arr + token_arr_len - 1) {
+
+										val = token_arr[i];
+
+										varVec.push_back(check_syntax_error1(var, err));
+										valVec.push_back(check_syntax_error1(val, err));
+
+										val = 0;
+
+										state = 0;
+
+									}
+								}
+							}
+							else
+							{
+								// var1
+								if (x <= token_arr + token_arr_len - 1)
+								{
+									val = token_arr[i];
+									varVec.push_back(check_syntax_error1(var, err));
+									valVec.push_back(check_syntax_error1(val, err));
+									val = 0;
+
+									state = 0;
+								}
+							}
+						}
+					}
+					break;
+					case 1:
+					{
+						// LEFT 1
+						if (len == 1 && (-1 != Equal(TYPE_LEFT, GetType(token_arr[i])))) {
+							nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
+							nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
+
+							for (size_t x = 0; x < varVec.size(); ++x) {
+								auto info1 = GetLineInfo(GetIdx(varVec[x]), lines, lines_len, start);
+								auto info2 = GetLineInfo(GetIdx(valVec[x]), lines, lines_len, start);
+
+								nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
+									buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
+							}
+
+
+							varVec.clear();
+							valVec.clear();
+
+							///
+							{
+								nestedUT[braceNum]->AddUserTypeItem(UserType(buffer + GetIdx(var), GetLength(var)));
+								UserType* pTemp = nullptr;
+								nestedUT[braceNum]->GetLastUserTypeItemRef(pTemp);
+								var = 0;
+								braceNum++;
+
+								/// new nestedUT
+								if (nestedUT.size() == braceNum) {
+									nestedUT.push_back(nullptr);
+								}
+
+								/// initial new nestedUT.
+								nestedUT[braceNum] = pTemp;
+							}
+							///
+							state = 0;
+						}
+						else {
+							if (x <= token_arr + token_arr_len - 1) {
+								val = token_arr[i];
+
+								varVec.push_back(check_syntax_error1(var, err));
+								valVec.push_back(check_syntax_error1(val, err));
+								var = 0; val = 0;
+
+								state = 0;
+							}
+						}
+					}
+					break;
+					default:
+						// syntax err!!
+						*err = -1;
+						return false; // throw "syntax error ";
+						break;
+					}
+				}
+
+				if (next) {
+					*next = nestedUT[braceNum];
+				}
+
+				if (varVec.empty() == false) {
+					nestedUT[braceNum]->ReserveIList(nestedUT[braceNum]->GetIListSize() + varVec.size());
+					nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
+
+					for (size_t x = 0; x < varVec.size(); ++x) {
+						auto info1 = GetLineInfo(GetIdx(varVec[x]), lines, lines_len, start);
+						auto info2 = GetLineInfo(GetIdx(valVec[x]), lines, lines_len, start);
+
+						nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
+							buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
+					}
+
+
+					varVec.clear();
+					valVec.clear();
+				}
+
+				if (state != last_state) {
+					*err = -2;
+					return false;
+					// throw std::string("error final state is not last_state!  : ") + toStr(state);
+				}
+				if (x > token_arr + token_arr_len) {
+					*err = -3;
+					return false;
+					//throw std::string("error x > buffer + buffer_len: ");
+				}
+
+				return true;
+			}
+
 
 			static long long FindDivisionPlace(const char* buffer, const long long* token_arr, long long start, long long last, const wiz::load_data::LoadDataOption& option)
 			{
@@ -1705,10 +1982,13 @@ namespace wiz {
 
 					bool success = reserver(option, lex_thr_num, buffer, &buffer_total_len, token_arr, &token_arr_len);
 
-
 					int b = clock();
+
+
 					std::cout << "scan " << b - a << "ms\n";
 					std::cout << "count " << token_arr_len << "\n";
+					
+					
 					//	{
 					//		for (long long i = 0; i < token_arr_len; ++i) {
 					//			std::string(buffer + GetIdx(token_arr[i]), GetLength(token_arr[i]));
@@ -2171,6 +2451,248 @@ namespace wiz {
 				}
 				return 1; // ansi, valid ut
 			}
+			static int _LoadData3(InFileReserver3& reserver, UserType& global, wiz::load_data::LoadDataOption option, const int lex_thr_num, const int parse_num) // first, strVec.empty() must be true!!
+			{
+				const int pivot_num = parse_num - 1;
+				const char* buffer = nullptr;
+				long long* token_arr = nullptr;
+				long long buffer_total_len;
+				long long token_arr_len = 0;
+				bool has_error = false;
+				long long lines_len = 0;
+				long long* lines = nullptr;
+
+				bool utf8 = true;
+				{
+					int a = clock();
+
+					bool success = reserver(option, lex_thr_num, buffer, &buffer_total_len, token_arr, &token_arr_len, lines, &lines_len);
+
+
+					int b = clock();
+					std::cout << "scan " << b - a << "ms\n";
+					std::cout << "count " << token_arr_len << "\n";
+					//	{
+					//		for (long long i = 0; i < token_arr_len; ++i) {
+					//			std::string(buffer + GetIdx(token_arr[i]), GetLength(token_arr[i]));
+				//				if (0 == GetIdx(token_arr[i])) {
+					//				std::cout << "chk";
+					//			}
+					//		}
+					//	}
+
+					if (!success) {
+						return 0;
+					}
+					if (token_arr_len <= 0) {
+						if (reserver.pInFile) {
+							delete[] buffer;
+						}
+						if (token_arr) {
+							delete[] token_arr;
+						}
+						return 1;
+					}
+				}
+
+
+				if (token_arr_len < 100) {
+					int err = 0;
+					UserType _global;
+					UserType* next = nullptr;
+
+					__LoadData3(buffer, token_arr, token_arr_len, &_global, &option, 0, 0, &next, &err, lines, lines_len);
+
+					if (reserver.pInFile) {
+						delete[] buffer;
+					}
+					delete[] token_arr;
+
+					global = std::move(_global);
+
+					{
+						switch (err) {
+						case 0:
+							return -1;
+						case -1:
+						case -4:
+							std::cout << "Syntax Error\n";
+							return 0;
+							break;
+						case -2:
+							std::cout << "error final state is not last_state!\n";
+							return 0;
+							break;
+						case -3:
+							std::cout << "error x > buffer + buffer_len:\n";
+							return 0;
+							break;
+						case -5:
+							std::cout << "not valid utf-8\n";
+							return 1; // chk.
+							break;
+						default:
+							std::cout << "unknown parser error\n";
+							return 0;
+							break;
+						}
+					}
+
+				}
+
+				UserType* before_next = nullptr;
+				UserType _global;
+
+				bool first = true;
+				long long sum = 0;
+
+				{
+					std::set<long long> _pivots;
+					std::vector<long long> pivots;
+					const long long num = token_arr_len; //
+
+					if (pivot_num > 0) {
+						std::vector<long long> pivot;
+						pivots.reserve(pivot_num);
+						pivot.reserve(pivot_num);
+
+						for (int i = 0; i < pivot_num; ++i) {
+							pivot.push_back(FindDivisionPlace(buffer, token_arr, (num / (pivot_num + 1)) * (i), (num / (pivot_num + 1)) * (i + 1) - 1, option));
+						}
+
+						for (int i = 0; i < pivot.size(); ++i) {
+							if (pivot[i] != -1) {
+								_pivots.insert(pivot[i]);
+							}
+						}
+
+						for (auto& x : _pivots) {
+							pivots.push_back(x);
+						}
+					}
+
+					std::vector<UserType*> next(pivots.size() + 1, nullptr);
+
+					{
+						std::vector<UserType> __global(pivots.size() + 1);
+
+						std::vector<std::thread> thr(pivots.size() + 1);
+						std::vector<int> err(pivots.size() + 1, 0);
+						{
+							long long idx = pivots.empty() ? num - 1 : pivots[0];
+							long long _token_arr_len = idx - 0 + 1;
+
+							thr[0] = std::thread(__LoadData3, buffer, token_arr, _token_arr_len, &__global[0], &option, 0, 0, &next[0], &err[0], lines, lines_len);
+						}
+
+						for (int i = 1; i < pivots.size(); ++i) {
+							long long _token_arr_len = pivots[i] - (pivots[i - 1] + 1) + 1;
+
+							thr[i] = std::thread(__LoadData3, buffer, token_arr + pivots[i - 1] + 1, _token_arr_len, &__global[i], &option, 0, 0, &next[i], &err[i], lines, lines_len);
+
+						}
+
+						if (pivots.size() >= 1) {
+							long long _token_arr_len = num - 1 - (pivots.back() + 1) + 1;
+
+							thr[pivots.size()] = std::thread(__LoadData3, buffer, token_arr + pivots.back() + 1, _token_arr_len, &__global[pivots.size()],
+								&option, 0, 0, &next[pivots.size()], &err[pivots.size()], lines, lines_len);
+						}
+
+						// wait
+						for (int i = 0; i < thr.size(); ++i) {
+							thr[i].join();
+						}
+
+						for (int i = 0; i < err.size(); ++i) {
+							switch (err[i]) {
+							case 0:
+								break;
+							case -1:
+							case -4:
+								has_error = true;
+								std::cout << "Syntax Error\n";
+								break;
+							case -2:
+								has_error = true;
+								std::cout << "error final state is not last_state!\n";
+								break;
+							case -3:
+								has_error = true;
+								std::cout << "error x > buffer + buffer_len:\n";
+								break;
+							case -5: // special case.
+								//has_error = true;
+								std::cout << "not valid utf-8\n";
+								utf8 = false;
+								break;
+							default:
+								has_error = true;
+								std::cout << "unknown parser error\n";
+								break;
+							}
+						}
+
+						if (!has_error) {
+							// Merge
+							try {
+								if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->GetName() == "#") {
+									std::cout << "not valid file1\n";
+									throw 1;
+								}
+								if (next.back()->GetParent() != nullptr) {
+									std::cout << "not valid file2\n";
+									throw 2;
+								}
+
+								int err = Merge(&_global, &__global[0], &next[0]);
+								if (-1 == err || (pivots.size() == 0 && 1 == err)) {
+									std::cout << "not valid file3\n";
+									throw 3;
+								}
+
+								for (int i = 1; i < pivots.size() + 1; ++i) {
+									// linearly merge and error check...
+									int err = Merge(next[i - 1], &__global[i], &next[i]);
+									if (-1 == err) {
+										std::cout << "not valid file4\n";
+										throw 4;
+									}
+									else if (i == pivots.size() && 1 == err) {
+										std::cout << "not valid file5\n";
+										throw 5;
+									}
+								}
+							}
+							catch (...) {
+								if (reserver.pInFile) {
+									delete[] buffer;
+								}
+								delete[] token_arr;
+								buffer = nullptr;
+								throw "in Merge, error";
+							}
+
+							before_next = next.back();
+						}
+					}
+				}
+
+				if (reserver.pInFile) {
+					delete[] buffer;
+				}
+				delete[] token_arr;
+
+				if (has_error) {
+					return 0;
+				}
+				global = std::move(_global);
+
+				if (utf8) {
+					return -1; // utf8, valid ut
+				}
+				return 1; // ansi, valid ut
+			}
 		public:
 			static int LoadDataFromFile(const std::string& fileName, UserType& global, int lex_thr_num = 0, int parse_thr_num = 0) /// global should be empty
 			{
@@ -2286,7 +2808,67 @@ namespace wiz {
 
 				return x;
 			}
-		private:
+			
+			//
+			static int LoadDataFromFile3(const std::string& fileName, UserType& global, int lex_thr_num = 0, int parse_thr_num = 0) /// global should be empty
+			{
+				int x = 0;
+
+				if (lex_thr_num <= 0) {
+					lex_thr_num = std::thread::hardware_concurrency();
+				}
+				if (lex_thr_num <= 0) {
+					lex_thr_num = 1;
+				}
+
+				if (parse_thr_num <= 0) {
+					parse_thr_num = std::thread::hardware_concurrency();
+				}
+				if (parse_thr_num <= 0) {
+					parse_thr_num = 1;
+				}
+
+				bool success = true;
+				std::ifstream inFile;
+				inFile.open(fileName, std::ios::binary);
+
+
+				if (true == inFile.fail())
+				{
+					inFile.close(); return 0;
+				}
+
+				UserType globalTemp;
+
+				try {
+
+					InFileReserver3 ifReserver(inFile);
+					wiz::load_data::LoadDataOption option;
+
+					//ifReserver.Num = 1 << 19;
+					//	strVec.reserve(ifReserver.Num);
+					// cf) empty file..
+
+					if (0 == (x = _LoadData3(ifReserver, globalTemp, option, lex_thr_num, parse_thr_num)))
+					{
+						inFile.close();
+						return 0; // return true?
+					}
+
+					inFile.close();
+				}
+				catch (const char* err) { std::cout << err << "\n"; inFile.close(); return false; }
+				catch (const std::string& e) { std::cout << e << "\n"; inFile.close(); return false; }
+				catch (const std::exception& e) { std::cout << e.what() << "\n"; inFile.close(); return false; }
+				catch (...) { std::cout << "not expected error" << "\n"; inFile.close(); return false; }
+
+
+				global = std::move(globalTemp);
+
+				return x;
+			}
+
+	private:
 			UserType global; // ToDo - remove!
 		public:
 			/// To Do.. static function -> ~.function.!

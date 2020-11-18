@@ -19,6 +19,8 @@ namespace wiz {
 		class Type {
 		protected:
 			std::string name;
+			int start_line = -1;
+			int last_line = -1;
 
 			void chk() {
 				/*
@@ -31,8 +33,12 @@ namespace wiz {
 				*/
 			}
 		public:
-			explicit Type(const char* str, size_t len)
-				:name(str, len)
+			std::vector<int> GetLine() const {
+				return { start_line, last_line };
+			}
+
+			explicit Type(const char* str, size_t len, LineInfo x, LineInfo y)
+				:name(str, len), start_line(x.line), last_line(y.line)
 			{
 
 			}
@@ -41,6 +47,7 @@ namespace wiz {
 			explicit Type(std::string&& name, const bool valid = true) : name(std::move(name)) { }//chk(); }
 			Type(const Type& type)
 				: name(type.name)//, toBool4(type.toBool4)
+				,start_line(type.start_line), last_line(type.last_line)
 			{
 				//chk();
 			}
@@ -75,12 +82,16 @@ namespace wiz {
 			Type& operator=(const Type& type)
 			{
 				name = type.name;
+				start_line = type.start_line;
+				last_line = type.last_line;
 			//	this->toBool4 = type.toBool4;
 				return *this;
 			}
 			void operator=(Type&& type)
 			{
 				name = std::move(type.name);
+				start_line = type.start_line;
+				last_line = type.last_line;
 			//	this->toBool4 = std::move(type.toBool4);
 			}
 			virtual bool IsItemType()const = 0;
@@ -126,6 +137,12 @@ namespace wiz {
 			{
 				//
 			}
+			explicit ItemType(const char* str1, size_t len1, const LineInfo& x, const char* str2, size_t len2, const LineInfo& y) :
+				Type(str1, len1, x, y), data(str2, len2), inited(true)
+			{
+				//
+			}
+
 			virtual ~ItemType() { 
 				////std::cout << "chk" << "\n";
 			}
@@ -411,7 +428,7 @@ namespace wiz {
 			}
 
 			void AddItem(const char* str1, size_t len1, const LineInfo& info1, const char* str2, size_t len2, const LineInfo& info2) {
-				itemList.emplace_back(str1, len1, str2, len2);
+				itemList.emplace_back(str1, len1, info1, str2, len2, info2);
 				ilist.push_back(1);
 
 				useSortedItemList = false;

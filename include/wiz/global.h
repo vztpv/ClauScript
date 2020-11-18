@@ -129,7 +129,7 @@ namespace wiz {
 	class LineInfo {
 	public:
 		explicit LineInfo() { }
-		explicit LineInfo(long long line, long long distance)
+		explicit LineInfo(int line, int distance)
 			:line(line), distance(distance)
 		{
 			//
@@ -138,8 +138,8 @@ namespace wiz {
 			//
 		}
 	public:
-		long long line = -1;
-		long long distance = -2;
+		int line = -1;
+		int distance = -2;
 
 	public:
 		LineInfo& operator=(const LineInfo& other) {

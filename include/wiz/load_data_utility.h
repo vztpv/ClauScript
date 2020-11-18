@@ -21,6 +21,16 @@ namespace wiz {
 	namespace load_data {
 		class Utility
 		{
+		public:
+			static void PrintToken(const char* text, long long x) {
+				long long len = GetLength(x);
+				long long idx = GetIdx(x);
+
+				for (long long i = 0; i < len; ++i) {
+					std::cout << text[idx + i];
+				}
+				std::cout << "\n";
+			}
 		private:
 			static char convert(const char* arr) {
 				char sum = 0;
