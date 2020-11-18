@@ -97,7 +97,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 		EventInfo info;
 		info.eventUT = Main.GetUserTypeList(0);
 		info.userType_idx.push(0);
-		std::pair<std::string, std::string> id_data = std::make_pair<std::string, std::string>("id", wiz::ToString(info.eventUT->GetUserTypeItem("$call")[0]->GetItem("id")[0].Get(0)));
+		std::pair<std::string, std::string> id_data = std::make_pair<std::string, std::string>("id", wiz::ToString(info.eventUT->GetUserTypeItem("$call")[0]->GetItem("id")[0].Get()));
 		info.parameters.insert(
 			id_data
 		);
