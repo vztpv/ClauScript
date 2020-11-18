@@ -900,11 +900,11 @@ namespace wiz {
 					// in order.
 					std::string mainStr = "Main = { $call = { id = NONE } } ";
 					std::string eventStr = "Event = { id = NONE $call = { id = " +
-						ut.GetUserTypeItem("Event")[0]->GetItem("id")[0].Get(0).ToString() + " ";
+						ut.GetUserTypeItem("Event")[0]->GetItem("id")[0].Get(0) + " ";
 
 					// if opeandNum != ut[0].GetUserType("$parameter").size() then push error?
 					for (int i = 0; i < param[0]->GetItemListSize(); ++i) {
-						eventStr += param[0]->GetItemList(i).Get(0).ToString() + " = \'" + store[i + 1].substr(1, store[i + 1].size() - 2) + "\' ";
+						eventStr += param[0]->GetItemList(i).Get(0) + " = \'" + store[i + 1].substr(1, store[i + 1].size() - 2) + "\' ";
 					}
 
 					eventStr += " }  $return = { $return_value = { } } } ";
@@ -1114,7 +1114,7 @@ namespace wiz {
 				//std::cout << operandStack[i] << " ";
 			//}
 			//std::cout << "\n";
-			if (String::startsWith(temp.GetName().ToString(), "$") && temp.GetName().ToString().size() > 1) {
+			if (String::startsWith(temp.GetName(), "$") && temp.GetName().size() > 1) {
 				wiz::ArrayStack<WIZ_STRING_TYPE> _stack;
 
 				while (operandStack.empty() == false) {
@@ -1131,17 +1131,17 @@ namespace wiz {
 			return result;
 		}
 
-		WIZ_STRING_TYPE LoadData::ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::ItemType<WIZ_STRING_TYPE>& temp, const ExecuteData& excuteData)
+		WIZ_STRING_TYPE LoadData::ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::ItemType<std::string>& temp, const ExecuteData& excuteData)
 		{
 			WIZ_STRING_TYPE result;
 			if (temp.GetName().empty() == false) {
 				result += temp.GetName() + " = ";
 			}
 
-			auto tokens = tokenize(temp.Get().ToString(), '/');
+			auto tokens = tokenize(temp.Get(), '/');
 
 			if (tokens.size() <= 1) {
-				return result + ToBool4(now, global, temp.Get().ToString(), excuteData);
+				return result + ToBool4(now, global, temp.Get(), excuteData);
 			}
 			
 			WIZ_STRING_TYPE _result = "/";

@@ -4,7 +4,7 @@
 
 // memory leak test.
 #ifdef _DEBUG 
-//#include <vld.h>
+#include <vld.h>
 #endif
 
 // Log
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 			a = clock();
 			{
 			
-				wiz::load_data::LoadData::LoadDataFromFile(fileName, global, 0, 0);
+				wiz::load_data::LoadData::LoadDataFromFile(fileName, global, 1, 1);
 			
 			}
 			b = clock();
@@ -66,11 +66,11 @@ int main(int argc, char* argv[])
 		}
 		//global.Remove();
 
-		a = clock();
+	//	a = clock();
 		{
 			//wiz::load_data::LoadData::LoadDataFromFile4(fileName, global); // parallel lexing + parallel parsing
 		}
-		b = clock();
+	//	b = clock();
 		//wiz::Out << "time " << b - a << "ms" << ENTER;
 
 		wiz::Out << "fileName is " << fileName << ENTER;

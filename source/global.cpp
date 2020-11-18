@@ -120,11 +120,11 @@ namespace wiz {
 
 
 	DataType::DataType(const char* cstr, size_t len)
+		:str_value(cstr, len)
 	{
 		if (len < 0) {
 			std::cout << "chk\n";
 		}
-		this->str_value = std::string(cstr, len);
 
 		if (USE_REMOVE_IN_DATATYPE) {
 			this->str_value = Remove(str_value);
@@ -257,6 +257,33 @@ namespace wiz {
 		this->change = true; // false;
 	}
 
+	DataType::DataType(std::string&& str, const LineInfo& opt)
+	{
+		this->str_value = std::move(str);
+
+		if (USE_REMOVE_IN_DATATYPE) {
+			this->str_value = Remove(str_value);
+		}
+
+		this->lineInfo = opt;
+		/*
+		this->change = true;
+
+		if (wiz::load_data::Utility::IsInteger(this->str_value)) {
+			this->type = 3;
+			this->int_value = ToInt();
+		}
+		else if (wiz::load_data::Utility::IsDouble(this->str_value)) {
+			this->type = 5;
+			this->float_value = ToFloat();
+		}
+		else {
+			this->type = 1;
+		}
+		*/
+		this->change = true; // false;
+	}
+
 	DataType::DataType(std::string&& str)
 	{
 		this->str_value = std::move(str);
@@ -353,7 +380,7 @@ namespace wiz {
 	}
 	bool operator==(std::string_view str, const DataType& type)
 	{
-		return type == str;
+		return type == str.data();
 	}
 	bool operator==(const std::string& str, const DataType& type)
 	{

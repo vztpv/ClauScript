@@ -1398,7 +1398,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					std::string value = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(2), _excuteData).ToString();
 
 					int _idx = stoi(idx);
-					wiz::load_data::UserType::Find(&global, dir).second[0]->SetItem(_idx, value);
+					wiz::load_data::UserType::Find(&global, dir).second[0]->SetItem(_idx, std::move(value));
 
 					eventStack.top().userType_idx.top()++;
 					break;
@@ -1589,6 +1589,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 							int b = clock();
 							std::cout << b - a << "ms\n";
 							{
+
 								int item_count = 0;
 								int userType_count = 0;
 
@@ -1971,7 +1972,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					for (int i = 0; i < temp.size(); ++i)
 					{
 						if (siVec[i].iElement == 1) {
-							ut.AddItem(siVec[i].data, static_cast<wiz::load_data::ItemType<WIZ_STRING_TYPE>*>(temp[siVec[i].idx])->Get(0));
+							ut.AddItem(siVec[i].data, static_cast<wiz::load_data::ItemType<std::string>*>(temp[siVec[i].idx])->Get(0));
 						}
 						else {
 							ut.AddUserTypeItem(*(static_cast<wiz::load_data::UserType*>(temp[siVec[i].idx])));
@@ -2166,7 +2167,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					for (int i = 0; i < temp.size(); ++i)
 					{
 						if (siVec[i].iElement == 1) {
-							ut.AddItem(siVec[i].data, static_cast<wiz::load_data::ItemType<std::string>*>(temp[siVec[i].idx])->Get(0));
+							ut.AddItem((siVec[i].data), static_cast<wiz::load_data::ItemType<std::string>*>(temp[siVec[i].idx])->Get(0));
 						}
 						else {
 							ut.AddUserTypeItem(*(static_cast<wiz::load_data::UserType*>(temp[siVec[i].idx])));
@@ -3098,7 +3099,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 							wiz::Out << "what is new UserType name? : ";
 							std::cin >> var;
 							FFLUSH();
-							utVec2[braceNum]->AddUserTypeItem(wiz::load_data::UserType(var));
+							utVec2[braceNum]->AddUserTypeItem(wiz::load_data::UserType(std::move(var)));
 						}
 						// addd Item?
 						else if (2 == select) {
@@ -3108,7 +3109,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 							wiz::Out << "val : ";
 							FFLUSH();
 							std::getline(std::cin, val);
-							utVec2[braceNum]->AddItem(var, val);
+							utVec2[braceNum]->AddItem(std::move(var), std::move(val));
 						}
 						else if (3 == select)
 						{
@@ -3129,7 +3130,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 							for (int h = 0; h < utVec[braceNum].size(); ++h) {
 								for (int i = 0; i < utVec[braceNum].Get(h)->GetUserTypeListSize(); ++i) {
 									if (count == idx) {
-										utVec[braceNum].Get(h)->GetUserTypeList(i)->SetName(temp);
+										utVec[braceNum].Get(h)->GetUserTypeList(i)->SetName(std::move(temp));
 									}
 									count++;
 								}
@@ -3157,7 +3158,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 								for (int h = 0; h < utVec[braceNum].size(); ++h) {
 									for (int i = 0; i < utVec[braceNum].Get(h)->GetItemListSize(); ++i) {
 										if (idxVec.back() == count) {
-											utVec[braceNum].Get(h)->GetItemList(i).Get(idx) = value;
+											utVec[braceNum].Get(h)->GetItemList(i).Get(idx) = std::move(value);
 										}
 										count++;
 									}
@@ -3189,7 +3190,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 								for (int h = 0; h < utVec[braceNum].size(); ++h) {
 									for (int i = 0; i < utVec[braceNum].Get(h)->GetItemListSize(); ++i) {
 										if (idx == count) {
-											utVec[braceNum].Get(h)->GetItemList(i).SetName(name);
+											utVec[braceNum].Get(h)->GetItemList(i).SetName(std::move(name));
 										}
 										count++;
 									}
@@ -3208,7 +3209,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 										if (temp == " " || temp == "_") {
 											temp = "";
 										}
-										utVec[braceNum].Get(h)->RemoveUserTypeList(temp);
+										utVec[braceNum].Get(h)->RemoveUserTypeList(std::move(temp));
 									}
 									count++;
 								}
@@ -3232,7 +3233,7 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 											std::string temp = mdVec[idx].varName;
 											if (temp == " " || temp == "_") { temp = ""; }
 
-											utVec[braceNum].Get(h)->RemoveItemList(temp);
+											utVec[braceNum].Get(h)->RemoveItemList(std::move(temp));
 										}
 										count++;
 									}
