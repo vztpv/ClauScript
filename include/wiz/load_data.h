@@ -1268,6 +1268,36 @@ namespace wiz {
 				return true;
 			}
 
+			static bool LoadDataFromString2(const std::string& str, UserType& ut)
+			{
+				bool success = true;
+
+				UserType globalTemp;
+
+				try {
+
+					InFileReserver2 ifReserver(str);
+					wiz::load_data::LoadDataOption option;
+
+					//	strVec.reserve(ifReserver.Num);
+					// cf) empty file..
+					if (false == _LoadData2(ifReserver, globalTemp, option, 1, 1))
+					{
+						return false; // return true?
+					}
+				}
+				catch (const char* err) { std::cout << err << "\n";  return false; }
+				catch (const std::string& e) { std::cout << e << "\n";  return false; }
+				catch (const std::exception& e) { std::cout << e.what() << "\n";  return false; }
+				catch (...) { std::cout << "not expected error" << "\n"; return false; }
+
+
+				ut = std::move(globalTemp);
+
+				return true;
+			}
+
+
 			enum {
 				TYPE_LEFT = 1, // 01
 				TYPE_RIGHT = 2, // 10
@@ -1811,6 +1841,247 @@ namespace wiz {
 							thr[i].join();
 						}
 						
+						for (int i = 0; i < err.size(); ++i) {
+							switch (err[i]) {
+							case 0:
+								break;
+							case -1:
+							case -4:
+								has_error = true;
+								std::cout << "Syntax Error\n";
+								break;
+							case -2:
+								has_error = true;
+								std::cout << "error final state is not last_state!\n";
+								break;
+							case -3:
+								has_error = true;
+								std::cout << "error x > buffer + buffer_len:\n";
+								break;
+							case -5: // special case.
+								//has_error = true;
+								std::cout << "not valid utf-8\n";
+								utf8 = false;
+								break;
+							default:
+								has_error = true;
+								std::cout << "unknown parser error\n";
+								break;
+							}
+						}
+
+						if (!has_error) {
+							// Merge
+							try {
+								if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->GetName() == "#") {
+									std::cout << "not valid file1\n";
+									throw 1;
+								}
+								if (next.back()->GetParent() != nullptr) {
+									std::cout << "not valid file2\n";
+									throw 2;
+								}
+
+								int err = Merge(&_global, &__global[0], &next[0]);
+								if (-1 == err || (pivots.size() == 0 && 1 == err)) {
+									std::cout << "not valid file3\n";
+									throw 3;
+								}
+
+								for (int i = 1; i < pivots.size() + 1; ++i) {
+									// linearly merge and error check...
+									int err = Merge(next[i - 1], &__global[i], &next[i]);
+									if (-1 == err) {
+										std::cout << "not valid file4\n";
+										throw 4;
+									}
+									else if (i == pivots.size() && 1 == err) {
+										std::cout << "not valid file5\n";
+										throw 5;
+									}
+								}
+							}
+							catch (...) {
+								if (reserver.pInFile) {
+									delete[] buffer;
+								}
+								delete[] token_arr;
+								buffer = nullptr;
+								throw "in Merge, error";
+							}
+
+							before_next = next.back();
+						}
+					}
+				}
+
+				if (reserver.pInFile) {
+					delete[] buffer;
+				}
+				delete[] token_arr;
+
+				if (has_error) {
+					return 0;
+				}
+				global = std::move(_global);
+
+				if (utf8) {
+					return -1; // utf8, valid ut
+				}
+				return 1; // ansi, valid ut
+			}
+
+			static int _LoadData2(InFileReserver2& reserver, UserType& global, wiz::load_data::LoadDataOption option, const int lex_thr_num, const int parse_num) // first, strVec.empty() must be true!!
+			{
+				const int pivot_num = parse_num - 1;
+				const char* buffer = nullptr;
+				long long* token_arr = nullptr;
+				long long buffer_total_len;
+				long long token_arr_len = 0;
+				bool has_error = false;
+
+				bool utf8 = true;
+				{
+					int a = clock();
+
+					bool success = reserver(option, lex_thr_num, buffer, &buffer_total_len, token_arr, &token_arr_len);
+
+
+					int b = clock();
+					std::cout << "scan " << b - a << "ms\n";
+					std::cout << "count " << token_arr_len << "\n";
+					//	{
+					//		for (long long i = 0; i < token_arr_len; ++i) {
+					//			std::string(buffer + GetIdx(token_arr[i]), GetLength(token_arr[i]));
+				//				if (0 == GetIdx(token_arr[i])) {
+					//				std::cout << "chk";
+					//			}
+					//		}
+					//	}
+
+					if (!success) {
+						return 0;
+					}
+					if (token_arr_len <= 0) {
+						if (reserver.pInFile) {
+							delete[] buffer;
+						}
+						if (token_arr) {
+							delete[] token_arr;
+						}
+						return 1;
+					}
+				}
+
+
+				if (token_arr_len < 100) {
+					int err = 0;
+					UserType _global;
+					UserType* next = nullptr;
+
+					__LoadData(buffer, token_arr, token_arr_len, &_global, &option, 0, 0, &next, &err);
+
+					if (reserver.pInFile) {
+						delete[] buffer;
+					}
+					delete[] token_arr;
+
+					global = std::move(_global);
+
+					{
+						switch (err) {
+						case 0:
+							return -1;
+						case -1:
+						case -4:
+							std::cout << "Syntax Error\n";
+							return 0;
+							break;
+						case -2:
+							std::cout << "error final state is not last_state!\n";
+							return 0;
+							break;
+						case -3:
+							std::cout << "error x > buffer + buffer_len:\n";
+							return 0;
+							break;
+						case -5:
+							std::cout << "not valid utf-8\n";
+							return 1; // chk.
+							break;
+						default:
+							std::cout << "unknown parser error\n";
+							return 0;
+							break;
+						}
+					}
+
+				}
+
+				UserType* before_next = nullptr;
+				UserType _global;
+
+				bool first = true;
+				long long sum = 0;
+
+				{
+					std::set<long long> _pivots;
+					std::vector<long long> pivots;
+					const long long num = token_arr_len; //
+
+					if (pivot_num > 0) {
+						std::vector<long long> pivot;
+						pivots.reserve(pivot_num);
+						pivot.reserve(pivot_num);
+
+						for (int i = 0; i < pivot_num; ++i) {
+							pivot.push_back(FindDivisionPlace(buffer, token_arr, (num / (pivot_num + 1)) * (i), (num / (pivot_num + 1)) * (i + 1) - 1, option));
+						}
+
+						for (int i = 0; i < pivot.size(); ++i) {
+							if (pivot[i] != -1) {
+								_pivots.insert(pivot[i]);
+							}
+						}
+
+						for (auto& x : _pivots) {
+							pivots.push_back(x);
+						}
+					}
+
+					std::vector<UserType*> next(pivots.size() + 1, nullptr);
+
+					{
+						std::vector<UserType> __global(pivots.size() + 1);
+
+						std::vector<std::thread> thr(pivots.size() + 1);
+						std::vector<int> err(pivots.size() + 1, 0);
+						{
+							long long idx = pivots.empty() ? num - 1 : pivots[0];
+							long long _token_arr_len = idx - 0 + 1;
+
+							thr[0] = std::thread(__LoadData, buffer, token_arr, _token_arr_len, &__global[0], &option, 0, 0, &next[0], &err[0]);
+						}
+
+						for (int i = 1; i < pivots.size(); ++i) {
+							long long _token_arr_len = pivots[i] - (pivots[i - 1] + 1) + 1;
+
+							thr[i] = std::thread(__LoadData, buffer, token_arr + pivots[i - 1] + 1, _token_arr_len, &__global[i], &option, 0, 0, &next[i], &err[i]);
+
+						}
+
+						if (pivots.size() >= 1) {
+							long long _token_arr_len = num - 1 - (pivots.back() + 1) + 1;
+
+							thr[pivots.size()] = std::thread(__LoadData, buffer, token_arr + pivots.back() + 1, _token_arr_len, &__global[pivots.size()],
+								&option, 0, 0, &next[pivots.size()], &err[pivots.size()]);
+						}
+
+						// wait
+						for (int i = 0; i < thr.size(); ++i) {
+							thr[i].join();
+						}
+
 						for (int i = 0; i < err.size(); ++i) {
 							switch (err[i]) {
 							case 0:
