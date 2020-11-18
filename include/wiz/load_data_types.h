@@ -18,7 +18,7 @@ namespace wiz {
 	namespace load_data {
 		class Type {
 		protected:
-			WIZ_STRING_TYPE name;
+			std::string name;
 
 			void chk() {
 				/*
@@ -36,8 +36,9 @@ namespace wiz {
 			{
 
 			}
-			explicit Type(const WIZ_STRING_TYPE& name = "", const bool valid = true) : name(name) { }//chk();  }
-			explicit Type(WIZ_STRING_TYPE&& name, const bool valid = true) : name(std::move(name)) { }//chk(); }
+
+			explicit Type(const std::string& name = "", const bool valid = true) : name(name) { }//chk();  }
+			explicit Type(std::string&& name, const bool valid = true) : name(std::move(name)) { }//chk(); }
 			Type(const Type& type)
 				: name(type.name)//, toBool4(type.toBool4)
 			{
@@ -47,19 +48,19 @@ namespace wiz {
 			bool IsFail() const { // change body
 				return "" == name;
 			}
-			const WIZ_STRING_TYPE& GetName()const {
+			const std::string& GetName()const {
 				return name;
 			}
-			WIZ_STRING_TYPE& GetName() {
+			std::string& GetName() {
 				return name;
 			}
-			void SetName(const WIZ_STRING_TYPE& name)
+			void SetName(const std::string& name)
 			{
 				this->name = name;
 
 				//chk();
 			}
-			void SetName(WIZ_STRING_TYPE&& name)
+			void SetName(std::string&& name)
 			{
 				this->name = name;
 
@@ -69,7 +70,7 @@ namespace wiz {
 				return name == t.name;
 			}
 			bool operator<(const Type& t) const {
-				return name.ToString() < t.name.ToString();
+				return name < t.name;
 			}
 			Type& operator=(const Type& type)
 			{
@@ -110,12 +111,12 @@ namespace wiz {
 		public:
 			explicit ItemType()
 				: Type("", 0), inited(false) { }
-			explicit ItemType(const WIZ_STRING_TYPE& name, const T& value, const bool valid=true)
+			explicit ItemType(const std::string& name, const T& value, const bool valid=true)
 				:Type(name, valid), data(value), inited(true)
 			{
 				//
 			}
-			explicit ItemType(WIZ_STRING_TYPE&& name, T&& value, const bool valid = true)
+			explicit ItemType(std::string&& name, T&& value, const bool valid = true)
 				:Type(std::move(name), valid), data(std::move(value)), inited(true)
 			{
 				//
@@ -270,25 +271,25 @@ namespace wiz {
 			{
 			public:
 				bool operator() (const UserType* x, const UserType* y) const {
-					return x->GetName().ToString() < y->GetName().ToString();
+					return x->GetName() < y->GetName();
 				}
 			};
 			
 			class ItemTypeStringPtrCompare {
 			public:
-				bool operator() (const ItemType<WIZ_STRING_TYPE>* x, const ItemType<WIZ_STRING_TYPE>* y) const {
-					return x->GetName().ToString() < y->GetName().ToString();
+				bool operator() (const ItemType<std::string>* x, const ItemType<std::string>* y) const {
+					return x->GetName() < y->GetName();
 				}
 			};
 			
 			class ItemTypeStringCompare {
 			public:
-				bool operator() (const ItemType<WIZ_STRING_TYPE>& x, const ItemType<WIZ_STRING_TYPE>& y) const {
-					auto a = x.GetName().ToString();
-					auto b = y.GetName().ToString();
+				bool operator() (const ItemType<std::string>& x, const ItemType<std::string>& y) const {
+					auto a = x.GetName();
+					auto b = y.GetName();
 
 					if (a == b) {
-						return x.Get().ToString() < y.Get().ToString();
+						return x.Get() < y.Get();
 					}
 					return a < b;
 				}
@@ -309,7 +310,7 @@ namespace wiz {
 				int middle = (left + right) / 2;
 
 				while (left <= right) {
-					long long test = strcmp(arr[middle]->GetName().ToString().c_str(), x.data());
+					long long test = strcmp(arr[middle]->GetName().c_str(), x.data());
 					if (0 == test) {
 						return middle;
 					}
@@ -325,14 +326,14 @@ namespace wiz {
 				}
 				return -1;
 			}
-			int binary_find_it(const std::vector<ItemType<WIZ_STRING_TYPE>*>& arr, const ItemType<WIZ_STRING_TYPE>& x) const {
+			int binary_find_it(const std::vector<ItemType<std::string>*>& arr, const ItemType<std::string>& x) const {
 				if (arr.empty()) { return -1; }
 
 				int left = 0, right = arr.size() - 1;
 				int middle = (left + right) / 2;
 
 				while (left <= right) {
-					long long test = strcmp(arr[middle]->GetName().ToString().c_str(), x.GetName().ToString().c_str());
+					long long test = strcmp(arr[middle]->GetName().c_str(), x.GetName().c_str());
 					if (0 == test) {
 						return middle;
 					}
@@ -355,14 +356,14 @@ namespace wiz {
 			size_t GetIListSize()const { return ilist.size(); }
 			size_t GetItemListSize()const { return itemList.size(); }
 			size_t GetUserTypeListSize()const { return userTypeList.size(); }
-			ItemType<WIZ_STRING_TYPE>& GetItemList(const int idx) { return itemList.at(idx); }
-			const ItemType<WIZ_STRING_TYPE>& GetItemList(const int idx) const { return itemList.at(idx); }
+			ItemType<std::string>& GetItemList(const int idx) { return itemList.at(idx); }
+			const ItemType<std::string>& GetItemList(const int idx) const { return itemList.at(idx); }
 			UserType*& GetUserTypeList(const int idx) { return userTypeList.at(idx); }
 			const UserType*& GetUserTypeList(const int idx) const { return const_cast<const UserType*&>(userTypeList.at(idx)); }
 			
 			void Sort() {
 				if (!useSortedItemList) {
-					sortedItemList = std::vector< ItemType<WIZ_STRING_TYPE>* >(itemList.size(), nullptr);
+					sortedItemList = std::vector< ItemType<std::string>* >(itemList.size(), nullptr);
 
 					for (long long i = 0; i < itemList.size(); ++i) {
 						sortedItemList[i] = &itemList[i];
@@ -380,9 +381,9 @@ namespace wiz {
 					useSortedUserTypeList = true;
 				}
 			}
-			ItemType<WIZ_STRING_TYPE>* GetItemPtrListEX(const int idx) { return sortedItemList.at(idx); }
-			const ItemType<WIZ_STRING_TYPE>* GetItemPtrListEX(const int idx) const { 
-				return const_cast<const ItemType<WIZ_STRING_TYPE>*>(sortedItemList.at(idx));
+			ItemType<std::string>* GetItemPtrListEX(const int idx) { return sortedItemList.at(idx); }
+			const ItemType<std::string>* GetItemPtrListEX(const int idx) const { 
+				return const_cast<const ItemType<std::string>*>(sortedItemList.at(idx));
 			}
 			UserType* GetUserTypeListEX(const int idx) { return sortedUserTypeList.at(idx); }
 			const UserType* GetUserTypeListEX(const int idx) const { return const_cast<const UserType*>(sortedUserTypeList.at(idx)); }
@@ -402,19 +403,26 @@ namespace wiz {
 				useSortedItemList = false;
 			}
 
-			void AddItem(const char* str1, size_t len1, const LineInfo& info1, const char* str2, size_t len2, const LineInfo& info2) {
-				itemList.emplace_back(WIZ_STRING_TYPE(str1, len1, info1), WIZ_STRING_TYPE(str2, len2, info2));
+			void AddItem(std::string&& key, const LineInfo& info1, std::string&& data, const LineInfo& info2) {
+				itemList.emplace_back(std::move(key), std::move(data));
 				ilist.push_back(1);
 
 				useSortedItemList = false;
 			}
-			void AddItemType(const ItemType<WIZ_STRING_TYPE>& strTa)
+
+			void AddItem(const char* str1, size_t len1, const LineInfo& info1, const char* str2, size_t len2, const LineInfo& info2) {
+				itemList.emplace_back(str1, len1, str2, len2);
+				ilist.push_back(1);
+
+				useSortedItemList = false;
+			}
+			void AddItemType(const ItemType<std::string>& strTa)
 			{
 				for (int i = 0; i < strTa.size(); ++i) {
 					this->AddItem(strTa.GetName(), strTa.Get(i));
 				}
 			}
-			bool AddItemType(ItemType<WIZ_STRING_TYPE>&& strTa)
+			bool AddItemType(ItemType<std::string>&& strTa)
 			{
 				for (int i = 0; i < strTa.size(); ++i) {
 					this->AddItem(std::move(strTa.GetName()), std::move(strTa.Get(i)));
@@ -454,9 +462,9 @@ namespace wiz {
 
 			UserType* parent = nullptr;
 			std::vector<int> ilist;
-			std::vector< ItemType<WIZ_STRING_TYPE> > itemList;
+			std::vector< ItemType<std::string> > itemList;
 			std::vector< UserType* > userTypeList;
-			mutable std::vector< ItemType<WIZ_STRING_TYPE>* > sortedItemList;
+			mutable std::vector< ItemType<std::string>* > sortedItemList;
 			mutable std::vector< UserType* > sortedUserTypeList;
 			mutable bool useSortedItemList = false;
 			mutable bool useSortedUserTypeList = false;
@@ -480,14 +488,12 @@ namespace wiz {
 				return isVirtual;
 			}
 		public:
-			explicit UserType(const char* str, size_t len) : Type(WIZ_STRING_TYPE(str, len)), parent(nullptr) {
+			explicit UserType(const char* str, size_t len) : Type(std::string(str, len)), parent(nullptr) {
 				//
 			}
-			explicit UserType(const char* str, size_t len, const LineInfo& info) : Type(WIZ_STRING_TYPE(str, len, info)), parent(nullptr) {
-				//
-			}
-			explicit UserType(WIZ_STRING_TYPE&& name, bool noRemove = false) : Type(std::move(name)), parent(nullptr) { }
-			explicit UserType(const WIZ_STRING_TYPE& name = "", bool noRemove = false) : Type(name), parent(nullptr) { } //, userTypeList_sortFlagA(true), userTypeList_sortFlagB(true) { }
+
+			explicit UserType(std::string&& name, bool noRemove = false) : Type(std::move(name)), parent(nullptr) { }
+			explicit UserType(const std::string& name = "", bool noRemove = false) : Type(name), parent(nullptr) { } //, userTypeList_sortFlagA(true), userTypeList_sortFlagB(true) { }
 			UserType(const UserType& ut) : Type(ut) {
 				Reset(ut);  // Initial
 			}
@@ -605,7 +611,7 @@ namespace wiz {
 				//parent = nullptr;
 				ilist = std::vector<int>(); 
 
-				itemList = std::vector< ItemType<WIZ_STRING_TYPE> >();
+				itemList = std::vector< ItemType<std::string> >();
 
 				sortedItemList.clear();
 				sortedUserTypeList.clear();
@@ -732,10 +738,10 @@ namespace wiz {
 
 				useSortedUserTypeList = false;
 			}
-			void RemoveItemList(const WIZ_STRING_TYPE& varName)
+			void RemoveItemList(const std::string& varName)
 			{
 				int k = _GetIndex(ilist, 1, 0); 
-				std::vector<ItemType<WIZ_STRING_TYPE>> tempDic;
+				std::vector<ItemType<std::string>> tempDic;
 				for (int i = 0; i < itemList.size(); ++i) {
 					if (varName != wiz::ToString(itemList[i].GetName())) {
 						tempDic.push_back(itemList[i]);
@@ -754,14 +760,14 @@ namespace wiz {
 
 				useSortedItemList = false;
 			}
-			bool RemoveItemList(const WIZ_STRING_TYPE& _varName, const WIZ_STRING_TYPE& valName)
+			bool RemoveItemList(const std::string& _varName, const std::string& valName)
 			{
-				WIZ_STRING_TYPE varName = _varName;
+				std::string varName = _varName;
 
 				
 				
-				if (String::startsWith(varName.ToString(), "&"sv) && varName.ToString().size() >= 2) {
-					long long idx = std::stoll(varName.ToString().substr(1));
+				if (String::startsWith(varName, "&"sv) && varName.size() >= 2) {
+					long long idx = std::stoll(varName.substr(1));
 
 					if (idx < 0 || idx >= itemList.size()) {
 						return false;
@@ -776,9 +782,9 @@ namespace wiz {
 
 
 				int k = _GetIndex(ilist, 1, 0);
-				std::vector<ItemType<WIZ_STRING_TYPE>> tempDic;
+				std::vector<ItemType<std::string>> tempDic;
 				for (int i = 0; i < itemList.size(); ++i) {
-					if (!(varName == wiz::ToString(itemList[i].GetName()) && (valName == "%any"sv || valName == itemList[i].Get().ToString()))) {
+					if (!(varName == wiz::ToString(itemList[i].GetName()) && (valName == "%any"sv || valName == itemList[i].Get()))) {
 						tempDic.push_back(itemList[i]);
 						k = _GetIndex(ilist, 1, k + 1);
 					}
@@ -799,7 +805,7 @@ namespace wiz {
 			}
 			void RemoveItemList() /// ALL
 			{
-				itemList = std::vector<ItemType<WIZ_STRING_TYPE>>();
+				itemList = std::vector<ItemType<std::string>>();
 				//
 				std::vector<int> temp;
 				for (int i = 0; i < ilist.size(); ++i) {
@@ -815,7 +821,7 @@ namespace wiz {
 			void RemoveEmptyItem() // fixed..
 			{
 				int k = _GetIndex(ilist, 1, 0);
-				std::vector<ItemType<WIZ_STRING_TYPE>> tempDic;
+				std::vector<ItemType<std::string>> tempDic;
 				for (int i = 0; i < itemList.size(); ++i) {
 					if (itemList[i].size() > 0) {
 						tempDic.push_back(itemList[i]);
@@ -838,7 +844,7 @@ namespace wiz {
 			{
 				/// parent->removeUserType(name); - ToDo - X
 				ilist = std::vector<int>();
-				itemList = std::vector< ItemType<WIZ_STRING_TYPE> >();
+				itemList = std::vector< ItemType<std::string> >();
 
 				RemoveUserTypeList();
 
@@ -873,7 +879,7 @@ namespace wiz {
 
 				useSortedUserTypeList = false;
 			}
-			void RemoveUserTypeList(const WIZ_STRING_TYPE& varName, const bool chk = true)
+			void RemoveUserTypeList(const std::string& varName, const bool chk = true)
 			{
 				int k = _GetIndex(ilist, 2, 0);
 				std::vector<UserType*> tempDic;
@@ -927,7 +933,7 @@ namespace wiz {
 			bool empty()const { return ilist.empty(); }
 			
 			// chk
-			void InsertItemByIlist(const int ilist_idx, const WIZ_STRING_TYPE& name, const WIZ_STRING_TYPE& item ) {
+			void InsertItemByIlist(const int ilist_idx, const std::string& name, const std::string& item ) {
 				ilist.push_back(1);
 				for (int i = ilist.size()-1; i > ilist_idx; --i) {
 					ilist[i] = ilist[i - 1];
@@ -937,21 +943,21 @@ namespace wiz {
 
 				int itemIndex = _GetItemIndexFromIlistIndex(ilist, ilist_idx);
 
-				itemList.emplace_back("", WIZ_STRING_TYPE(""));
+				itemList.emplace_back("", std::string(""));
 
 				if (itemIndex != -1) {
 					for (int i = itemList.size() - 1; i > itemIndex; --i) {
 						itemList[i] = std::move(itemList[i - 1]);
 					}
-					itemList[itemIndex] = ItemType<WIZ_STRING_TYPE>(name, item);
+					itemList[itemIndex] = ItemType<std::string>(name, item);
 				}
 				else {
-					itemList[0] = ItemType<WIZ_STRING_TYPE>(name, item); // chk!!
+					itemList[0] = ItemType<std::string>(name, item); // chk!!
 				}
 
 				useSortedItemList = false;
 			}
-			void InsertItemByIlist(const int ilist_idx, WIZ_STRING_TYPE&& name, std::string&& item) {
+			void InsertItemByIlist(const int ilist_idx, std::string&& name, std::string&& item) {
 				ilist.push_back(1);
 
 				
@@ -962,15 +968,15 @@ namespace wiz {
 
 				int itemIndex = _GetItemIndexFromIlistIndex(ilist, ilist_idx);
 
-				itemList.emplace_back("", WIZ_STRING_TYPE(""));
+				itemList.emplace_back("", std::string(""));
 				if (itemIndex != -1) {
 					for (int i = itemList.size() - 1; i > itemIndex; --i) {
 						itemList[i] = std::move(itemList[i - 1]);
 					}
-					itemList[itemIndex] = ItemType<WIZ_STRING_TYPE>(std::move(name), std::move(item));
+					itemList[itemIndex] = ItemType<std::string>(std::move(name), std::move(item));
 				}
 				else {
-					itemList[0] = ItemType<WIZ_STRING_TYPE>(std::move(name), std::move(item));
+					itemList[0] = ItemType<std::string>(std::move(name), std::move(item));
 				}
 
 
@@ -1055,7 +1061,7 @@ namespace wiz {
 				}
 			}
 
-			void AddItem(WIZ_STRING_TYPE&& name, WIZ_STRING_TYPE&& item) {
+			void AddItem(std::string&& name, std::string&& item) {
 				{
 					itemList.emplace_back(std::move(name), std::move(item));
 				}
@@ -1064,13 +1070,13 @@ namespace wiz {
 				useSortedItemList = false;
 
 			}
-			void AddItem(const WIZ_STRING_TYPE& name, const WIZ_STRING_TYPE& item) {
+			void AddItem(const std::string& name, const std::string& item) {
 				itemList.emplace_back(name, item);
 				ilist.push_back(1);
 
 					useSortedItemList = false;
 			}
-			void AddItem(std::vector<WIZ_STRING_TYPE>&& name, std::vector<WIZ_STRING_TYPE>&& item, const int n) {
+			void AddItem(std::vector<std::string>&& name, std::vector<std::string>&& item, const int n) {
 				// name.size() == item.size()
 				int start_idx = itemList.size();
 				itemList.reserve(itemList.size() + n);
@@ -1086,7 +1092,7 @@ namespace wiz {
 
 				useSortedItemList = false;
 			}
-			void AddItem(std::vector<WIZ_STRING_TYPE>& name, std::vector<WIZ_STRING_TYPE>& item, const int n) {
+			void AddItem(std::vector<std::string>& name, std::vector<std::string>& item, const int n) {
 				// name.size() == item.size()
 				int start_idx = itemList.size();
 				itemList.reserve(itemList.size() + n);
@@ -1137,7 +1143,7 @@ namespace wiz {
 					useSortedUserTypeList = false;
 				}
 			}
-			void AddItemAtFront(WIZ_STRING_TYPE&& name, std::string&& item) {
+			void AddItemAtFront(std::string&& name, std::string&& item) {
 				
 				itemList.emplace(itemList.begin(), name, item);
 
@@ -1146,7 +1152,7 @@ namespace wiz {
 				useSortedItemList = false;
 				
 			}
-			void AddItemAtFront(const WIZ_STRING_TYPE& name, const WIZ_STRING_TYPE& item) {
+			void AddItemAtFront(const std::string& name, const std::string& item) {
 				itemList.emplace(itemList.begin(), name, item);
 
 				ilist.insert(ilist.begin(), 1);
@@ -1189,8 +1195,8 @@ namespace wiz {
 
 
 			// $it?
-			std::vector<ItemType<WIZ_STRING_TYPE>> GetItem(const std::string& name, bool chk = false) const {
-				std::vector<ItemType<WIZ_STRING_TYPE>> temp;
+			std::vector<ItemType<std::string>> GetItem(const std::string& name, bool chk = false) const {
+				std::vector<ItemType<std::string>> temp;
 
 				if (String::startsWith(name, "&") && name.size() >= 2) {
 					std::string str = name.substr(1);
@@ -1218,7 +1224,7 @@ namespace wiz {
 				}
 
 				if (chk && USE_EMPTY_VECTOR_IN_LOAD_DATA_TYPES && temp.empty()) {
-					temp.push_back(ItemType<WIZ_STRING_TYPE>("", ""));
+					temp.push_back(ItemType<std::string>("", ""));
 				}
 				return temp;
 			}
@@ -1286,7 +1292,7 @@ namespace wiz {
 			}
 
 			// regex to SetItem?
-			bool SetItem(const WIZ_STRING_TYPE& name, const WIZ_STRING_TYPE& value) {
+			bool SetItem(const std::string& name, const std::string& value) {
 				
 				int index = -1;
 
@@ -1301,7 +1307,7 @@ namespace wiz {
 				return -1 != index;
 			}
 			/// add set Data
-			bool SetItem(const int var_idx, const WIZ_STRING_TYPE& value) {
+			bool SetItem(const int var_idx, const std::string& value) {
 				itemList[var_idx].Set(0, value);
 				return true;
 			}

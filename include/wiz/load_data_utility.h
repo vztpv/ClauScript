@@ -255,21 +255,28 @@ namespace wiz {
 				return result;
 			}
 			
-			static std::string Convert(std::string str) {
+			static std::string Convert(std::string_view str) {
+				std::string result;
+
 				int start = 0;
 				do {    // \u0020
 					int idx = String::find(str, "\\u", start);
 					if (idx != -1) {
 						std::string temp = Convert(str, idx + 2);
-						str = str.substr(0, idx) + temp + str.substr(idx + 6);
+						result = str.substr(0, idx);
+						result += temp;
+						result += str.substr(idx + 6);
 						start = idx + temp.size();
 					}
 					else {
+						if (result.empty()) {
+							result = str;
+						}
 						break;
 					}
 				} while (true);
 				
-				return str;
+				return result;
 			}
 
 			static bool Equal(std::string str1, std::string str2) {

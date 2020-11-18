@@ -387,23 +387,11 @@ namespace wiz {
 								nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 								for (size_t x = 0; x < varVec.size(); ++x) {
-									//auto info1 = GetLineInfo((varVec[x]), lines, lines_len, start);
-									//auto info2 = GetLineInfo((valVec[x]), lines, lines_len, start);
+									auto info1 = GetLineInfo((varVec[x]), lines, lines_len, start);
+									auto info2 = GetLineInfo((valVec[x]), lines, lines_len, start);
 
-									nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]),
-										buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
-									{
-										std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).GetName().ToString();
-										temp = wiz::load_data::Utility::Convert(std::move(temp));
-
-										nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName(WIZ_STRING_TYPE(temp));
-									}
-									{
-										std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Get().ToString();
-										temp = wiz::load_data::Utility::Convert(std::move(temp));
-
-										nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, WIZ_STRING_TYPE(temp));
-									}
+									nestedUT[braceNum]->AddItem(wiz::load_data::Utility::Convert(std::string_view(buffer + GetIdx(varVec[x]), GetLength(varVec[x]))), info1,
+										wiz::load_data::Utility::Convert(std::string_view(buffer + GetIdx(valVec[x]), GetLength(valVec[x]))), info2);
 								}
 
 								varVec.clear();
@@ -440,23 +428,12 @@ namespace wiz {
 									nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 									for (size_t x = 0; x < varVec.size(); ++x) {
-									//	auto info1 = GetLineInfo(varVec[x], lines, lines_len, start);
-									//	auto info2 = GetLineInfo(valVec[x], lines, lines_len, start);
+										auto info1 = GetLineInfo(varVec[x], lines, lines_len, start);
+										auto info2 = GetLineInfo(valVec[x], lines, lines_len, start);
 
-										nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), 
-											buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
-										{
-											std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).GetName().ToString();
-											temp = wiz::load_data::Utility::Convert(std::move(temp));
-
-											nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName(WIZ_STRING_TYPE(temp));
-										}
-										{
-											std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Get().ToString();
-											temp = wiz::load_data::Utility::Convert(std::move(temp));
-
-											nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, WIZ_STRING_TYPE(temp));
-										}
+										nestedUT[braceNum]->AddItem(wiz::load_data::Utility::Convert(std::string_view(buffer + GetIdx(varVec[x]), GetLength(varVec[x]))), info1,
+										wiz::load_data::Utility::Convert(std::string_view(buffer + GetIdx(valVec[x]), GetLength(valVec[x]))), info2);
+					
 									}
 								}
 
@@ -557,23 +534,23 @@ namespace wiz {
 							nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 							for (size_t x = 0; x < varVec.size(); ++x) {
-							//	auto info1 = GetLineInfo((varVec[x]), lines, lines_len, start);
-							//	auto info2 = GetLineInfo((valVec[x]), lines, lines_len, start);
+								auto info1 = GetLineInfo((varVec[x]), lines, lines_len, start);
+								auto info2 = GetLineInfo((valVec[x]), lines, lines_len, start);
 
-								nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), 
-									buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
+								nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
+									buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
 
 								{
-									std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).GetName().ToString();
+									std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).GetName();
 									temp = wiz::load_data::Utility::Convert(std::move(temp));
 
-									nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName(WIZ_STRING_TYPE(temp));
+									nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).SetName((std::move(temp)));
 								}
 								{
-									std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Get().ToString();
+									std::string temp = nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Get();
 									temp = wiz::load_data::Utility::Convert(std::move(temp));
 
-									nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, WIZ_STRING_TYPE(temp));
+									nestedUT[braceNum]->GetItemList(nestedUT[braceNum]->GetItemListSize() - 1).Set(0, (std::move(temp)));
 								}
 							}
 
@@ -588,10 +565,10 @@ namespace wiz {
 
 								{
 									{
-										std::string temp = nestedUT[braceNum]->GetUserTypeList(nestedUT[braceNum]->GetUserTypeListSize() - 1)->GetName().ToString();
+										std::string temp = nestedUT[braceNum]->GetUserTypeList(nestedUT[braceNum]->GetUserTypeListSize() - 1)->GetName();
 										temp = wiz::load_data::Utility::Convert(std::move(temp));
 
-										nestedUT[braceNum]->GetUserTypeList(nestedUT[braceNum]->GetUserTypeListSize() - 1)->SetName(WIZ_STRING_TYPE(temp));
+										nestedUT[braceNum]->GetUserTypeList(nestedUT[braceNum]->GetUserTypeListSize() - 1)->SetName(std::move(temp));
 									}
 								}
 
@@ -1386,7 +1363,6 @@ namespace wiz {
 			static bool __LoadData(const char* buffer, const long long* token_arr, long long token_arr_len, UserType* _global, const wiz::load_data::LoadDataOption* _option,
 				int start_state, int last_state, UserType** next, int* err)
 			{
-
 				std::vector<long long> varVec;
 				std::vector<long long> valVec;
 
@@ -1421,6 +1397,7 @@ namespace wiz {
 						continue;
 					}
 					long long len = GetLength(token_arr[i]);
+					
 					if (option.UseUTF8 && !Utility::CheckValidUTF8(buffer, GetIdx(token_arr[i]), GetLength(token_arr[i]))) {
 						*err = -5;
 					}
@@ -1959,7 +1936,7 @@ namespace wiz {
 					InFileReserver ifReserver(inFile);
 					wiz::load_data::LoadDataOption option;
 
-					ifReserver.Num = 1 << 19;
+					//ifReserver.Num = 1 << 19;
 					//	strVec.reserve(ifReserver.Num);
 					// cf) empty file..
 					
@@ -2176,7 +2153,7 @@ namespace wiz {
 								x[k]->GetItemList(4).Set(0, GetRealDir(dir, ut[i]));
 								WIZ_STRING_TYPE temp;
 								temp.SetInt(j);
-								x[k]->GetItemList(5).Set(0, temp);
+								x[k]->GetItemList(5).Set(0, temp.ToString());
 							}
 							std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
 
@@ -2218,12 +2195,12 @@ namespace wiz {
 							x[k]->GetItemList(1).Set(0, ut[i]->GetUserTypeList(utCount)->GetName());
 							x[k]->GetItemList(2).Set(0, "NONE"); // check..
 							x[k]->GetItemList(3).Set(0, "TRUE");
-							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName().ToString();
+							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName();
 							x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utCount)));
 							
 							WIZ_STRING_TYPE temp;
 							temp.SetInt(j);
-							x[k]->GetItemList(5).Set(0, temp);
+							x[k]->GetItemList(5).Set(0, temp.ToString());
 						}
 
 						Option opt;
@@ -2362,7 +2339,7 @@ namespace wiz {
 							x[k]->GetItemList(1).Set(0, ut[i]->GetUserTypeList(utCount)->GetName());
 							x[k]->GetItemList(2).Set(0, "NONE"); // check..
 							x[k]->GetItemList(3).Set(0, "TRUE");
-							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName().ToString();
+							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName();
 							x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utCount)));
 						}
 
@@ -2457,7 +2434,7 @@ namespace wiz {
 								x[k]->GetItemList(4).Set(0, GetRealDir(dir, ut[i]));
 								WIZ_STRING_TYPE temp;
 								temp.SetInt(itemData[itemNum]);
-								x[k]->GetItemList(5).Set(0, temp);
+								x[k]->GetItemList(5).Set(0, temp.ToString());
 							}
 							std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _excuteData, opt, 0);
 
@@ -2497,12 +2474,12 @@ namespace wiz {
 								x[k]->GetItemList(1).Set(0, ut[i]->GetUserTypeList(utData[utNum])->GetName());
 								x[k]->GetItemList(2).Set(0, "NONE"); // check..
 								x[k]->GetItemList(3).Set(0, "TRUE");
-								const std::string name = ut[i]->GetUserTypeList(utData[utNum])->GetName().ToString();
+								const std::string name = ut[i]->GetUserTypeList(utData[utNum])->GetName();
 								x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utData[utNum])));
 
 								WIZ_STRING_TYPE temp;
 								temp.SetInt(utData[utNum]);
-								x[k]->GetItemList(5).Set(0, temp);
+								x[k]->GetItemList(5).Set(0, temp.ToString());
 							}
 
 							Option opt;
@@ -2639,7 +2616,7 @@ namespace wiz {
 							x[k]->GetItemList(1).Set(0, ut[i]->GetUserTypeList(utCount)->GetName());
 							x[k]->GetItemList(2).Set(0, "NONE"); // check..
 							x[k]->GetItemList(3).Set(0, "TRUE");
-							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName().ToString();
+							const std::string name = ut[i]->GetUserTypeList(utCount)->GetName();
 							x[k]->GetItemList(4).Set(0, GetRealDir(dir + (name.empty() ? "_" : name) + "/", ut[i]->GetUserTypeList(utCount)));
 						}
 
@@ -2939,7 +2916,7 @@ namespace wiz {
 								utName = std::to_string(x);
 							}
 							else {}
-							utTemp.SetName(utName);
+							utTemp.SetName(std::move(utName));
 
 							for (int i = 0; i < finded.second.size(); ++i) {
 								int item_n = 0;
@@ -3021,11 +2998,11 @@ namespace wiz {
 									if (wiz::String::startsWith(_varName, "$it")) {
 										int index = atoi(wiz::String::substring(_varName, 3).c_str());
 
-										finded.second[i]->SetItem(index, data);
+										finded.second[i]->SetItem(index, std::move(data));
 										isTrue = true;
 									}
 									else {
-										finded.second[i]->SetItem(_varName, data); /// chk
+										finded.second[i]->SetItem(_varName, std::move(data)); /// chk
 										isTrue = true;
 									}
 								}
@@ -3056,7 +3033,7 @@ namespace wiz {
 
 					for (long long x = Min; x <= Max; ++x) {
 						for (int i = 0; i < finded.second.size(); ++i) {
-							finded.second[i]->SetItem(var_idx, data); /// chk
+							finded.second[i]->SetItem(var_idx, (data)); /// chk
 							isTrue = true;
 						}
 
@@ -3455,7 +3432,7 @@ namespace wiz {
 				if (_var == " " || _var == "_") { _var = ""; }
 
 				for (int i = 0; i < ut->GetUserTypeListSize(); ++i) {
-					if (ut->GetUserTypeList(i)->GetName().ToString() == _var) {
+					if (ut->GetUserTypeList(i)->GetName() == _var) {
 						{
 							ut->RemoveUserTypeList(i);
 							--i;
@@ -3608,7 +3585,7 @@ namespace wiz {
 				wiz::ArrayStack<WIZ_STRING_TYPE>& operandStack, const ExecuteData& excuteData);
 
 			static WIZ_STRING_TYPE ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::UserType& temp, const ExecuteData& excuteData);
-			static WIZ_STRING_TYPE ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::ItemType<WIZ_STRING_TYPE>& temp, const ExecuteData& excuteData);
+			static WIZ_STRING_TYPE ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::ItemType<std::string>& temp, const ExecuteData& excuteData);
 		//private:
 			static WIZ_STRING_TYPE _ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::UserType& temp, const ExecuteData& excuteData);
 			static WIZ_STRING_TYPE ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const std::string& temp, const ExecuteData& excuteData);

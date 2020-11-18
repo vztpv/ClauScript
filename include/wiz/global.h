@@ -161,13 +161,14 @@ namespace wiz {
 	public:
 		//int before_pos = -1;
 	private:
-		std::string str_value;
+		mutable bool change = false;
+		mutable int type = 0;
 		mutable long long int_value;
 		mutable long double float_value;
-		mutable int type = 0;
-		mutable bool change = false;
 	public:
 		LineInfo lineInfo;
+	private:
+		std::string str_value;
 	public:
 		DataType() { int_value = 0; float_value = 0; }
 		DataType(const char* cstr);
@@ -176,11 +177,35 @@ namespace wiz {
 
 		DataType(const char* cstr, size_t len, const LineInfo& lineOpt);
 		DataType(const std::string& str, const LineInfo& lineOpt);
+		DataType(std::string&& str, const LineInfo& lineOpt);
 
 		DataType(std::string&& str);
 		virtual ~DataType() {
 			//
 		}
+		/*
+
+		DataType(const DataType&) = delete;
+		DataType(DataType&& other) noexcept
+			: change(other.change), type(other.type), int_value(other.int_value), float_value(other.float_value),
+			lineInfo(std::move(other.lineInfo)), str_value(std::move(other.str_value))
+		{
+
+		}
+		*/
+
+		/*
+		void operator=(const DataType&) = delete;
+
+		void operator=(DataType&& other) noexcept {
+			change = other.change;
+			type = other.type;
+			int_value = other.int_value;
+			float_value = other.float_value;
+			lineInfo = std::move(other.lineInfo);
+			str_value = std::move(other.str_value);
+		}
+		*/
 	public:
 		void SetInt(long long val);
 		void SetFloat(long double val);
