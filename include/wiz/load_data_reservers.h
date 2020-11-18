@@ -1414,7 +1414,7 @@ namespace wiz {
 						}
 						break;
 						case '\n':
-							_lines[lines_len] = i;
+							_lines[num + lines_len] = i;
 							lines_len++;
 
 							token_last = i - 1;
@@ -1589,10 +1589,11 @@ namespace wiz {
 					thr[i]->join();
 					delete thr[i];
 				}
+
+				long long lines_len_sum = lines_len[0];
 				{
 					long long _count = lines_len[0];
 					long long len_max = lines[lines_len[0] - 1];
-					long long lines_len_sum = lines_len[0];
 
 					for (int i = 1; i < thr_num; ++i) {
 						lines_len_sum += lines_len[i];
@@ -1617,7 +1618,6 @@ namespace wiz {
 				long long qouted_start;
 				long long slush_start;
 
-				int line = 0;
 
 				for (int i = 0; i < len; ++i) {
 					const long long len = GetLength(tokens[i]);
@@ -1625,9 +1625,6 @@ namespace wiz {
 					const long long idx = GetIdx(tokens[i]);
 					const bool isToken2 = IsToken2(tokens[i]);
 
-					if (ch == '\n' && len == 1) {
-						line++;
-					}
 
 					if (isToken2) {
 						if (0 == state && '\"' == ch) {
@@ -1741,6 +1738,7 @@ namespace wiz {
 					_token_arr = tokens;
 					_token_arr_size = real_token_arr_count;
 					_lines = lines;
+					*_lines_len = lines_len_sum;
 				}
 			}
 

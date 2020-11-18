@@ -19,8 +19,8 @@ namespace wiz {
 		class Type {
 		protected:
 			std::string name;
-			int start_line = -1;
-			int last_line = -1;
+			LineInfo keyInfo;
+			LineInfo dataInfo;
 
 			void chk() {
 				/*
@@ -32,9 +32,16 @@ namespace wiz {
 				}
 				*/
 			}
+
 		public:
-			std::vector<int> GetLine() const {
-				return { start_line, last_line };
+			void SetLineInfo(const LineInfo& info, const LineInfo& info2 = LineInfo()) 
+			{
+				keyInfo = info;
+				dataInfo = info2;
+			}
+
+			std::vector<LineInfo> GetLine() const {
+				return { keyInfo, dataInfo };
 			}
 
 			explicit Type(const char* str, size_t len)
@@ -45,7 +52,7 @@ namespace wiz {
 
 
 			explicit Type(const char* str, size_t len, LineInfo x, LineInfo y)
-				:name(str, len), start_line(x.line), last_line(y.line)
+				:name(str, len), keyInfo(x), dataInfo(y)
 			{
 
 			}
@@ -54,7 +61,7 @@ namespace wiz {
 			explicit Type(std::string&& name, const bool valid = true) : name(std::move(name)) { }//chk(); }
 			Type(const Type& type)
 				: name(type.name)//, toBool4(type.toBool4)
-				,start_line(type.start_line), last_line(type.last_line)
+				, keyInfo(type.keyInfo), dataInfo(type.dataInfo)
 			{
 				//chk();
 			}
@@ -89,16 +96,16 @@ namespace wiz {
 			Type& operator=(const Type& type)
 			{
 				name = type.name;
-				start_line = type.start_line;
-				last_line = type.last_line;
+				keyInfo = type.keyInfo;
+				dataInfo = type.dataInfo;
 			//	this->toBool4 = type.toBool4;
 				return *this;
 			}
 			void operator=(Type&& type)
 			{
 				name = std::move(type.name);
-				start_line = type.start_line;
-				last_line = type.last_line;
+				keyInfo = type.keyInfo;
+				dataInfo = type.dataInfo;
 			//	this->toBool4 = std::move(type.toBool4);
 			}
 			virtual bool IsItemType()const = 0;
@@ -427,9 +434,18 @@ namespace wiz {
 				useSortedItemList = false;
 			}
 
+			void AddItem(const std::string& key, const LineInfo& info1, const std::string& data, const LineInfo& info2) {
+				itemList.emplace_back((key), (data));
+				ilist.push_back(1);
+				itemList.back().SetLineInfo(info1, info2);
+				useSortedItemList = false;
+			}
+
+
 			void AddItem(std::string&& key, const LineInfo& info1, std::string&& data, const LineInfo& info2) {
 				itemList.emplace_back(std::move(key), std::move(data));
 				ilist.push_back(1);
+				itemList.back().SetLineInfo(info1, info2);
 
 				useSortedItemList = false;
 			}
@@ -443,13 +459,15 @@ namespace wiz {
 			void AddItemType(const ItemType<std::string>& strTa)
 			{
 				for (int i = 0; i < strTa.size(); ++i) {
-					this->AddItem(strTa.GetName(), strTa.Get(i));
+					auto x = strTa.GetLine();
+					this->AddItem(strTa.GetName(), x[0], strTa.Get(i), x[1]);
 				}
 			}
 			bool AddItemType(ItemType<std::string>&& strTa)
 			{
 				for (int i = 0; i < strTa.size(); ++i) {
-					this->AddItem(std::move(strTa.GetName()), std::move(strTa.Get(i)));
+					auto x = strTa.GetLine();
+					this->AddItem(std::move(strTa.GetName()), x[0], std::move(strTa.Get(i)), x[1]);
 				}
 				return true;
 			}

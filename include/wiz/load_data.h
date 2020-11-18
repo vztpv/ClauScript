@@ -693,8 +693,8 @@ namespace wiz {
 
 
 					int b = clock();
-					std::cout << "scan " << b - a << "ms\n";
-					std::cout << "count " << token_arr_len << "\n";
+					//std::cout << "scan " << b - a << "ms\n";
+					//std::cout << "count " << token_arr_len << "\n";
 
 					//	{
 					//		for (long long i = 0; i < token_arr_len; ++i) {
@@ -1711,8 +1711,8 @@ namespace wiz {
 								nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 								for (size_t x = 0; x < varVec.size(); ++x) {
-									auto info1 = GetLineInfo(GetIdx(varVec[x]), lines, lines_len, start);
-									auto info2 = GetLineInfo(GetIdx(valVec[x]), lines, lines_len, start);
+									auto info1 = GetLineInfo(varVec[x], lines, lines_len, start);
+									auto info2 = GetLineInfo(valVec[x], lines, lines_len, start);
 
 									nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
 										buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
@@ -1753,8 +1753,12 @@ namespace wiz {
 									nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 									for (size_t x = 0; x < varVec.size(); ++x) {
-										nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]),
-											buffer + GetIdx(valVec[x]), GetLength(valVec[x]));
+
+										auto info1 = GetLineInfo(varVec[x], lines, lines_len, start);
+										auto info2 = GetLineInfo(valVec[x], lines, lines_len, start);
+
+										nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
+											buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
 									}
 								}
 
@@ -1847,8 +1851,9 @@ namespace wiz {
 							nestedUT[braceNum]->ReserveItemList(nestedUT[braceNum]->GetItemListSize() + varVec.size());
 
 							for (size_t x = 0; x < varVec.size(); ++x) {
-								auto info1 = GetLineInfo(GetIdx(varVec[x]), lines, lines_len, start);
-								auto info2 = GetLineInfo(GetIdx(valVec[x]), lines, lines_len, start);
+
+								auto info1 = GetLineInfo(varVec[x], lines, lines_len, start);
+								auto info2 = GetLineInfo(valVec[x], lines, lines_len, start);
 
 								nestedUT[braceNum]->AddItem(buffer + GetIdx(varVec[x]), GetLength(varVec[x]), info1,
 									buffer + GetIdx(valVec[x]), GetLength(valVec[x]), info2);
@@ -1863,7 +1868,7 @@ namespace wiz {
 								nestedUT[braceNum]->AddUserTypeItem(UserType(buffer + GetIdx(var), GetLength(var)));
 								UserType* pTemp = nullptr;
 								nestedUT[braceNum]->GetLastUserTypeItemRef(pTemp);
-								var = 0;
+								
 								braceNum++;
 
 								/// new nestedUT
@@ -1873,6 +1878,11 @@ namespace wiz {
 
 								/// initial new nestedUT.
 								nestedUT[braceNum] = pTemp;
+
+								auto info = GetLineInfo(var, lines, lines_len, start);
+								pTemp->SetLineInfo(info);
+								
+								var = 0;
 							}
 							///
 							state = 0;
@@ -1984,9 +1994,9 @@ namespace wiz {
 
 					int b = clock();
 
-
-					std::cout << "scan " << b - a << "ms\n";
-					std::cout << "count " << token_arr_len << "\n";
+					//
+					//std::cout << "scan " << b - a << "ms\n";
+					//std::cout << "count " << token_arr_len << "\n";
 					
 					
 					//	{
@@ -2228,8 +2238,8 @@ namespace wiz {
 
 
 					int b = clock();
-					std::cout << "scan " << b - a << "ms\n";
-					std::cout << "count " << token_arr_len << "\n";
+					//std::cout << "scan " << b - a << "ms\n";
+					//std::cout << "count " << token_arr_len << "\n";
 					//	{
 					//		for (long long i = 0; i < token_arr_len; ++i) {
 					//			std::string(buffer + GetIdx(token_arr[i]), GetLength(token_arr[i]));
