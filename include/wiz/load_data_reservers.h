@@ -907,7 +907,8 @@ namespace wiz {
 				std::vector<long long> token_arr_size(thr_num);
 
 				for (int i = 0; i < thr_num; ++i) {
-					thr[i] = new std::thread(_Scanning, text + start[i], start[i], last[i] - start[i], tokens, std::ref(token_arr_size[i]), std::cref(option));
+					thr[i] = new std::thread(_Scanning, text + start[i], start[i], last[i] - start[i], tokens, 
+						std::ref(token_arr_size[i]), std::cref(option));
 				}
 
 				for (int i = 0; i < thr_num; ++i) {
@@ -1354,7 +1355,8 @@ namespace wiz {
 				return (x & 1);
 			}
 			static void _Scanning(const char* text, const long long num, const long long length,
-				long long* token_arr, long long& _token_arr_size, long long* _lines, long long& _lines_len, const LoadDataOption& option) {
+				long long* token_arr, long long& _token_arr_size, long long* _lines, long long& _lines_len, const LoadDataOption& option)
+			{
 
 				long long token_arr_size = 0;
 				long long lines_len = 0;
@@ -1432,6 +1434,8 @@ namespace wiz {
 							}
 							break;
 						case '\0':
+							_lines[num + lines_len] = i;
+							lines_len++;
 							token_last = i - 1;
 							if (token_last - token_first + 1 > 0) {
 								token_arr[num + token_arr_count] = Get(token_first + num, token_last - token_first + 1, text[token_first], option);
@@ -1541,7 +1545,7 @@ namespace wiz {
 			static void ScanningNew(const char* text, const long long length, const int thr_num,
 				long long*& _token_arr, long long& _token_arr_size, long long*&  _lines, long long* _lines_len, const LoadDataOption& option)
 			{
-				std::vector<std::thread*> thr(thr_num);
+				std::vector<std::thread> thr(thr_num);
 				std::vector<long long> start(thr_num);
 				std::vector<long long> last(thr_num);
 
@@ -1581,18 +1585,17 @@ namespace wiz {
 				std::vector<long long> token_arr_size(thr_num);
 
 				for (int i = 0; i < thr_num; ++i) {
-					thr[i] = new std::thread(_Scanning, text + start[i], start[i], last[i] - start[i], tokens, 
-							std::ref(token_arr_size[i]), lines + start[i], std::ref(lines_len[i]), std::cref(option));
+					thr[i] = std::thread(_Scanning, text + start[i], start[i], last[i] - start[i], tokens, 
+							std::ref(token_arr_size[i]), lines, std::ref(lines_len[i]), std::cref(option));
 				}
 
 				for (int i = 0; i < thr_num; ++i) {
-					thr[i]->join();
-					delete thr[i];
+					thr[i].join();
 				}
 
 				long long lines_len_sum = lines_len[0];
 				{
-					long long _count = lines_len[0];
+					long long _count = 0;
 					long long len_max = lines[lines_len[0] - 1];
 
 					for (int i = 1; i < thr_num; ++i) {

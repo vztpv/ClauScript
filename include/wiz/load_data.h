@@ -2501,6 +2501,9 @@ namespace wiz {
 						if (token_arr) {
 							delete[] token_arr;
 						}
+						if (lines) {
+							delete[] lines;
+						}
 						return 1;
 					}
 				}
@@ -2678,6 +2681,9 @@ namespace wiz {
 								if (reserver.pInFile) {
 									delete[] buffer;
 								}
+								if (lines) {
+									delete[] lines;
+								}
 								delete[] token_arr;
 								buffer = nullptr;
 								throw "in Merge, error";
@@ -2690,6 +2696,9 @@ namespace wiz {
 
 				if (reserver.pInFile) {
 					delete[] buffer;
+				}
+				if (lines) {
+					delete[] lines;
 				}
 				delete[] token_arr;
 
