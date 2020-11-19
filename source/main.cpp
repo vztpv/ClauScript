@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 			a = clock();
 			{
 			
-				wiz::load_data::LoadData::LoadDataFromFile3(fileName, global, 1, 1);
+				wiz::load_data::LoadData::LoadDataFromFile(fileName, global, 1, 1);
 			
 			}
 			b = clock();

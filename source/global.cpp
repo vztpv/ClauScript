@@ -46,6 +46,7 @@ namespace wiz {
 
 
 	LineInfo GetLineInfo(long long x, long long* lines, long long lines_len, long long& start) {
+
 		if (!lines || 0 == x) {
 			return LineInfo();
 		}
