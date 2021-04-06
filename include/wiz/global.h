@@ -170,16 +170,15 @@ namespace wiz {
 	private:
 		std::string str_value;
 	public:
-		DataType() { int_value = 0; float_value = 0; }
-		DataType(const char* cstr);
-		DataType(const char* cstr, size_t len);
-		DataType(const std::string& str);
+		 DataType() { int_value = 0; float_value = 0; }
+		 DataType(const char* cstr);
+		 DataType(const char* cstr, size_t len);
+		 DataType(const std::string& str);
 
-		DataType(const char* cstr, size_t len, const LineInfo& lineOpt);
-		DataType(const std::string& str, const LineInfo& lineOpt);
-		DataType(std::string&& str, const LineInfo& lineOpt);
-
-		DataType(std::string&& str);
+		 DataType(const char* cstr, size_t len, const LineInfo& lineOpt);
+		 DataType(const std::string& str, const LineInfo& lineOpt);
+		 DataType(std::string&& str, const LineInfo& lineOpt);
+		 DataType(std::string&& str);
 		virtual ~DataType() {
 			//
 		}
@@ -218,13 +217,11 @@ namespace wiz {
 		}
 	public:
 		bool operator==(const DataType& type) const;
-		bool operator==(const char* cstr) const;
-		bool operator==(const std::string& str) const;
+	//	bool operator==(const std::string& str) const;
 		bool operator==(std::string_view str) const;
 		bool operator!=(std::string_view str) const;
 		bool operator!=(const DataType& type) const;
-		bool operator!=(const char* cstr) const;
-		bool operator!=(const std::string& str) const;
+	//	bool operator!=(const std::string& str) const;
 
 		DataType operator+(const DataType& type)const;
 		DataType operator+(const char* cstr) const;
@@ -259,13 +256,14 @@ namespace wiz {
 		}
 	};
 
-	bool operator==(const char* cstr, const DataType& type);
-	bool operator==(const std::string& str, const DataType& type);
-	bool operator==(std::string_view str, const DataType& type);
 
+	inline bool operator==(std::string_view str, const DataType& type) {
+		return type == str;
+	}
 
-	bool operator!=(const char* cstr, const DataType& type);
-	bool operator!=(const std::string& str, const DataType& type);
+	inline bool operator!=(std::string_view str, const DataType& type) {
+		return type != str;
+	}
 
 	DataType operator+(const char* cstr, const DataType& type);
 	DataType operator+(const std::string& str, const DataType& type);
@@ -290,26 +288,10 @@ namespace wiz {
 		}
 		*/
 	}
-
-	inline std::string ToString(WIZ_STRING_TYPE& x) {
-		return x.ToString();
-		/*
-		if (x.index() == 0) {
-			return std::get<0>(x);
-		}
-		else {
-			wiz::Token2 temp = std::get<1>(x);
-
-			if (UseConvertToken2ToString) {
-				x = std::string(temp.str, temp.len);
-				return std::get<0>(x);
-			}
-			else {
-				return std::string(temp.str, temp.len);
-			}
-		}
-		*/
+	inline std::string ToString(const std::string& str) {
+		return str;
 	}
+
 	/*
 	inline bool operator==(const WIZ_STRING_TYPE& x, const WIZ_STRING_TYPE& y)
 	{
