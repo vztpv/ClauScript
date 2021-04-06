@@ -119,7 +119,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					std::string dirName = val->GetUserTypeList(1)->ToString();
 					wiz::load_data::UserType* utTemp;
 
-					if (dirName == "/./" || dirName == "root") {
+					if (dirName == "/./"sv || dirName == "root"sv) {
 						utTemp = &global;
 					}
 					else {
@@ -2605,6 +2605,7 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 		}
 	}
 }
+// for $edit_mode?
 void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 {
 #ifdef _MSC_VER

@@ -315,18 +315,12 @@ namespace wiz {
 	{
 		return type.str_value == this->str_value;
 	}
-	bool DataType::operator==(const char* cstr) const
-	{
-		return cstr == this->str_value;
-	}
+
 	bool DataType::operator==(std::string_view str) const
 	{
 		return this->str_value == str;
 	}
-	bool DataType::operator==(const std::string& str) const
-	{
-		return str == this->str_value;
-	}
+
 	bool DataType::operator!=(std::string_view str) const
 	{
 		return this->str_value != str;
@@ -334,14 +328,6 @@ namespace wiz {
 	bool DataType::operator!=(const DataType& type) const
 	{
 		return type.str_value != this->str_value;
-	}
-	bool DataType::operator!=(const char* cstr) const
-	{
-		return cstr != this->str_value;
-	}
-	bool DataType::operator!=(const std::string& str) const
-	{
-		return str != this->str_value;
 	}
 
 	DataType DataType::operator+(const DataType& type)const
@@ -373,28 +359,6 @@ namespace wiz {
 	{
 		(*this) += DataType(str);
 		return *this;
-	}
-
-	bool operator==(const char* cstr, const DataType& type)
-	{
-		return type == cstr;
-	}
-	bool operator==(std::string_view str, const DataType& type)
-	{
-		return type == str.data();
-	}
-	bool operator==(const std::string& str, const DataType& type)
-	{
-		return type == str;
-	}
-
-	bool operator!=(const char* cstr, const DataType& type)
-	{
-		return type != cstr;
-	}
-	bool operator!=(const std::string& str, const DataType& type)
-	{
-		return type != str;
 	}
 
 	DataType operator+(const char* cstr, const DataType& type)

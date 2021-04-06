@@ -19,7 +19,7 @@ namespace wiz {
 		bool LoadData::operation(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const WIZ_STRING_TYPE& str,
 			wiz::ArrayStack<WIZ_STRING_TYPE>& operandStack, const ExecuteData& excuteData)
 		{
-			if (!operandStack.empty() && operandStack.top() == "ERROR") {
+			if (!operandStack.empty() && operandStack.top() == "ERROR"sv) {
 				return false;
 			}
 
@@ -46,7 +46,7 @@ namespace wiz {
 			}
 
 			for (int i = 0; i < operandNum; ++i) {
-				if ("_" == operandStack[operandStack.size() - 1 - i]) {
+				if ("_"sv == operandStack[operandStack.size() - 1 - i]) {
 					operandStack[operandStack.size() - 1 - i] = "";
 				}
 			}
@@ -57,7 +57,7 @@ namespace wiz {
 				x = operandStack.pop();
 				y = operandStack.pop();
 
-				if (wiz::load_data::Utility::Compare(x.ToString(), y.ToString()) == "== 0") {
+				if (wiz::load_data::Utility::Compare(x.ToString(), y.ToString()) == "== 0"sv) {
 					operandStack.push("TRUE");
 				}
 				else {
@@ -70,7 +70,7 @@ namespace wiz {
 				x = operandStack.pop();
 				y = operandStack.pop();
 
-				if (wiz::load_data::Utility::Compare(x.ToString(), y.ToString()) != "== 0") {
+				if (wiz::load_data::Utility::Compare(x.ToString(), y.ToString()) != "== 0"sv) {
 					operandStack.push("TRUE");
 				}
 				else {
@@ -83,7 +83,7 @@ namespace wiz {
 				x = operandStack.pop();
 				y = operandStack.pop();
 
-				if (x == "TRUE" && y == "TRUE") {
+				if (x == "TRUE"sv && y == "TRUE"sv) {
 					operandStack.push("TRUE");
 				}
 				else {
@@ -96,7 +96,7 @@ namespace wiz {
 					store[i] = operandStack.pop();
 				}
 				for (int i = 0; i < store.size(); ++i) {
-					if ("TRUE" != store[i]) {
+					if ("TRUE"sv != store[i]) {
 						operandStack.push("FALSE");
 						return true;
 					}
@@ -109,7 +109,7 @@ namespace wiz {
 				x = operandStack.pop();
 				y = operandStack.pop();
 
-				if (x == "TRUE" || y == "TRUE") {
+				if (x == "TRUE"sv || y == "TRUE"sv) {
 					operandStack.push("TRUE");
 				}
 				else {
@@ -124,7 +124,7 @@ namespace wiz {
 					store.push_back(operandStack.pop());
 				}
 				for (int i = 0; i < store.size(); ++i) {
-					if ("TRUE" == store[i]) {
+					if ("TRUE"sv == store[i]) {
 						operandStack.push("TRUE");
 						return true;
 					}
@@ -136,7 +136,7 @@ namespace wiz {
 				WIZ_STRING_TYPE x;
 				x = operandStack.pop();
 
-				if (x == "TRUE") {
+				if (x == "TRUE"sv) {
 					operandStack.push("FALSE");
 				}
 				else {
@@ -149,7 +149,7 @@ namespace wiz {
 				x = operandStack.pop();
 				y = operandStack.pop();
 
-				if (wiz::load_data::Utility::Compare(x.ToString(), y.ToString()) == "< 0") {
+				if (wiz::load_data::Utility::Compare(x.ToString(), y.ToString()) == "< 0"sv) {
 					operandStack.push("TRUE");
 				}
 				else
@@ -163,7 +163,7 @@ namespace wiz {
 				x = operandStack.pop();
 				y = operandStack.pop();
 
-				if (wiz::load_data::Utility::Compare(x.ToString(), y.ToString()) == "> 0") {
+				if (wiz::load_data::Utility::Compare(x.ToString(), y.ToString()) == "> 0"sv) {
 					operandStack.push("TRUE");
 				}
 				else
@@ -177,7 +177,7 @@ namespace wiz {
 				x = operandStack.pop().ToString();
 				y = operandStack.pop().ToString();
 
-				if (wiz::load_data::Utility::Compare(x, y) == "< 0" || wiz::load_data::Utility::Compare(x, y) == "== 0") {
+				if (wiz::load_data::Utility::Compare(x, y) == "< 0"sv || wiz::load_data::Utility::Compare(x, y) == "== 0"sv) {
 					operandStack.push("TRUE");
 				}
 				else
@@ -191,7 +191,7 @@ namespace wiz {
 				x = operandStack.pop().ToString();
 				y = operandStack.pop().ToString();
 
-				if (wiz::load_data::Utility::Compare(x, y) == "> 0" || wiz::load_data::Utility::Compare(x, y) == "== 0") {
+				if (wiz::load_data::Utility::Compare(x, y) == "> 0"sv || wiz::load_data::Utility::Compare(x, y) == "== 0"sv) {
 					operandStack.push("TRUE");
 				}
 				else
@@ -335,7 +335,7 @@ namespace wiz {
 					std::string result;
 
 					for (int i = 0; i < operandNum; ++i) {
-						result = result + operandStack.pop().ToString();
+						result += operandStack.pop().ToString();
 						//	cout << "test" <<  result << endl;
 					}
 					//cout << "----" << endl;
