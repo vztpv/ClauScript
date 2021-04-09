@@ -258,9 +258,8 @@ namespace wiz {
 
 
 	inline bool operator==(std::string_view str, const DataType& type) {
-		return type == str;
+		return type.ToString() == str;
 	}
-
 	inline bool operator!=(std::string_view str, const DataType& type) {
 		return type != str;
 	}

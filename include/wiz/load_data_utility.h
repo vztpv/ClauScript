@@ -767,19 +767,14 @@ namespace wiz {
 				}
 				return 9 == state;
 			}
-			static bool IsMinus(std::string str)
+			static bool IsMinus(std::string_view str)
 			{
 			//	if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 			//		str = str.substr(1, str.size() - 2);
 			//	}
 				return str.empty() == false && str[0] == '-';
 			}
-
-			static std::string reverse(std::string str) { /// to std::reverse ?
-				std::reverse(str.begin(), str.end());
-				return str;
-			}
-			static std::string GetType(const std::string& str) {
+			static std::string GetType(std::string_view str) {
 				//if (str.size() > 2 && str[0] == str.back() && (str[0] == '\"' || str[0] == '\'')) {
 				//	str = str.substr(1, str.size() - 2);
 				//}
@@ -884,7 +879,7 @@ namespace wiz {
 				else if (7 == state) { return "DATE"; }
 				else return "STRING";
 			}
-			static std::string Compare(std::string str1, std::string str2,
+			static std::string Compare(std::string_view str1, std::string_view str2,
 				std::string _type1="", std::string _type2="", const int type = 0)
 			{
 				//if (str1.size() > 2 && str1[0] == str1.back() && (str1[0] == '\"' || str1[0] == '\''))
@@ -935,25 +930,19 @@ namespace wiz {
 					const bool minusComp = Utility::IsMinus(str1) && Utility::IsMinus(str2);
 
 					if (false == minusComp) {
+						// str1 > 0  && str2 > 0
+
 						if (str1[0] == '+') { str1 = str1.substr(1); }
 						if (str2[0] == '+') { str2 = str2.substr(1); }
 
-						std::string x = reverse(str1);
-						std::string y = reverse(str2);
-
-
-
-						if (x.size() < y.size()) {
-							while (x.size() < y.size()) {
-								x.push_back('0');
-							}
+						if (str1.size() > str2.size()) {
+							return "> 0";
 						}
-						else {
-							while (y.size() < x.size()) {
-								y.push_back('0');
-							}
+						else if (str1.size() < str2.size()) {
+							return "< 0";
 						}
-						return Compare(reverse(x), reverse(y), "INTEGER", "INTEGER", 1);
+
+						return Compare(str1, str2, "INTEGER", "INTEGER", 1);
 					}
 					else {
 						return Compare(str2.substr(1), str1.substr(1), "INTEGER", "INTEGER");
@@ -964,8 +953,8 @@ namespace wiz {
 					size_t x_pos = str1.find('.');
 					size_t y_pos = str2.find('.');
 
-					std::string x = str1; x = x.substr(0, x_pos);
-					std::string y = str2; y = y.substr(0, y_pos);
+					std::string_view x = str1; x = x.substr(0, x_pos);
+					std::string_view y = str2; y = y.substr(0, y_pos);
 
 					std::string z = Compare(x, y, "INTEGER", "INTEGER");
 					if ("== 0" == z)
@@ -973,17 +962,24 @@ namespace wiz {
 						x = str1; x = x.substr(x_pos + 1);
 						y = str2; y = y.substr(y_pos + 1);
 
-						if (x.size() < y.size()) {
-							while (x.size() < y.size()) {
-								x.push_back('0');
+						int i = 0, j = 0;
+
+						for (; i < x.size() && j < y.size(); ++i, ++j) {
+							if (x[i] > y[j]) {
+								return "> 0";
+							}
+							else if (x[i] < y[j]) {
+								return "< 0";
 							}
 						}
-						else {
-							while (y.size() < x.size()) {
-								y.push_back('0');
-							}
+						
+						if (i < x.size()) {
+							return "> 0";
 						}
-						return Compare(x, y, "INTEGER", "INTEGER", 1);
+						if (j < y.size()) {
+							return "< 0";
+						}
+						return "== 0";
 					}
 					else
 					{
@@ -995,8 +991,8 @@ namespace wiz {
 					size_t x_pos = str1.find('.');
 					size_t y_pos = str2.find('.');
 
-					std::string x = str1; x = x.substr(0, x_pos);
-					std::string y = str2; y = y.substr(0, y_pos);
+					std::string_view x = str1; x = x.substr(0, x_pos);
+					std::string_view y = str2; y = y.substr(0, y_pos);
 
 					for (int i = 0; i < 3; ++i) {
 						const std::string comp = Compare(x, y);
@@ -1014,8 +1010,8 @@ namespace wiz {
 					size_t x_pos = str1.find('.');
 					size_t y_pos = str2.find('.');
 
-					std::string x = str1; x = x.substr(0, x_pos);
-					std::string y = str2; y = y.substr(0, y_pos);
+					std::string_view x = str1; x = x.substr(0, x_pos);
+					std::string_view y = str2; y = y.substr(0, y_pos);
 
 					for (int i = 0; i < 4; ++i) {
 						const std::string comp = Compare(x, y, "INTEGER", "INTEGER");
@@ -1034,8 +1030,8 @@ namespace wiz {
 					size_t x_pos = str1.find('.');
 					size_t y_pos = str2.find('.');
 
-					std::string x = str1; x = x.substr(0, x_pos);
-					std::string y = str2; y = y.substr(0, y_pos);
+					std::string_view x = str1; x = x.substr(0, x_pos);
+					std::string_view y = str2; y = y.substr(0, y_pos);
 
 					for (int i = 0; i < 5; ++i) {
 						const std::string comp = Compare(x, y, "INTEGER", "INTEGER");
