@@ -1469,7 +1469,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
-					std::string dir = std::string(wiz::ToString(wiz::ToString(val->GetItemList(0).Get(0)).c_str())); // + 0
+					std::string dir = std::string(wiz::ToString(val->GetItemList(0).Get(0)).c_str()); // + 0
 					std::string value1;
 					std::string value2;
 
