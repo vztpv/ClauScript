@@ -1076,8 +1076,24 @@ namespace wiz {
 					item_count++;
 				}
 				else {
+					if (!String::startsWith(temp.GetUserTypeList(user_count)->GetName(), "$")) {
+						if (!temp.GetUserTypeList(user_count)->GetName().empty()) {
+							result += " " + temp.GetUserTypeList(user_count)->GetName() + " = { ";
+						}
+						else {
+							result += " { ";
+						}
+					}
+
 					_temp = _ToBool4(now, global, *temp.GetUserTypeList(user_count), excuteData);
 					result += _temp;
+
+
+					if (!String::startsWith(temp.GetUserTypeList(user_count)->GetName(), "$") && !temp.GetUserTypeList(user_count)->GetName().empty()) {
+						result += " } ";
+					}
+
+
 					user_count++;
 				}
 			}
@@ -1102,8 +1118,23 @@ namespace wiz {
 					item_count++;
 				}
 				else {
+					if (!String::startsWith(temp.GetUserTypeList(user_count)->GetName(), "$")) {
+						if (!temp.GetUserTypeList(user_count)->GetName().empty()) {
+							result += " " + temp.GetUserTypeList(user_count)->GetName() + " = { ";
+						}
+						else {
+							result += " { ";
+						}
+					}
+
 					_temp = _ToBool4(now, global, *temp.GetUserTypeList(user_count), excuteData);
 					result += _temp;
+					
+
+					if (!String::startsWith(temp.GetUserTypeList(user_count)->GetName(), "$") && !temp.GetUserTypeList(user_count)->GetName().empty()) {
+						result += " } ";
+					}
+					
 					operandStack.push(_temp);
 					user_count++;
 				}
