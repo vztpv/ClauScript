@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 		{
 			int a = clock();
 			wiz::Out.clear_file();
-			std::string result = clauText.execute_module("", &global, wiz::ExecuteData(), opt, 0);
+			std::string result = clauText.execute_module("", &global, wiz::ExecuteData(true, true), opt, 0);
 			int b = clock();
 			wiz::Out << "excute result is " << result << "\n";
 			wiz::Out << b - a << "ms" << "\n"; //

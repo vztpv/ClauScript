@@ -114,7 +114,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					val = x[i];
 
 					wiz::load_data::UserType ut;
-					std::string fileName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), ExecuteData()).ToString();
+					std::string fileName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), ExecuteData(executeData.noUseInput, executeData.noUseOutput)).ToString();
 					fileName = wiz::String::substring(fileName, 1, fileName.size() - 2);
 					std::string dirName = val->GetUserTypeList(1)->ToString();
 					wiz::load_data::UserType* utTemp;
@@ -123,7 +123,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 						utTemp = &global;
 					}
 					else {
-						dirName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), ExecuteData()).ToString();
+						dirName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), ExecuteData(executeData.noUseInput, executeData.noUseOutput)).ToString();
 						utTemp = global.GetUserTypeItem(dirName)[0];
 					}
 
@@ -1194,7 +1194,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					wiz::load_data::UserType ut;
 					wiz::load_data::LoadData::LoadDataFromString(ut_str, ut);
 
-					// check! ExecuteData() ?
+					// check! ExecuteData(executeData.noUseInput, executeData.noUseOutput) ?
 					std::string data = wiz::load_data::LoadData::ToBool4(nullptr, ut, *val->GetUserTypeList(1), _executeData).ToString();
 
 					if (dir.first == "" && wiz::String::startsWith(dir.second, "$local."))
@@ -1218,6 +1218,9 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
 					std::string value;
 					std::string dir;
 					if (val->GetUserTypeList(0)->GetItemListSize() > 0) {
@@ -1229,11 +1232,6 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					}
 
 					value = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), _executeData).ToString();
-
-					std::string condition = "TRUE";
-					if (val->GetUserTypeListSize() >= 3) {
-						condition = val->GetUserTypeList(2)->ToString();
-					}
 					
 					wiz::load_data::LoadData::AddData(global, dir, value,  _executeData);
 					
@@ -1249,9 +1247,11 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
 					std::string position = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), _executeData).ToString();;
 					std::string data = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), _executeData).ToString();;
-					std::string condition = val->GetUserTypeList(2)->ToString();
 
 					wiz::load_data::LoadData::AddNoNameUserType(global, position, data,  _executeData);
 
@@ -1267,6 +1267,9 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
 					std::string value;
 					int idx = atoi(wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), _executeData).ToString().c_str());
 					std::string dir;
@@ -1280,10 +1283,6 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 
 					value = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(2), _executeData).ToString();
 
-					std::string condition = "TRUE";
-					if (val->GetUserTypeListSize() >= 4) {
-						condition = val->GetUserTypeList(3)->ToString();
-					}
 					wiz::load_data::LoadData::Insert(global, dir, idx, value,  _executeData);
 
 					eventStack.top().userType_idx.top()++;
@@ -1298,6 +1297,9 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pObjectMap = objectMapPtr;
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
 
 					std::string dir;
 					bool is2 = false;
@@ -1322,14 +1324,6 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					}
 					if (dir.empty()) { dir = "."; }
 
-					std::string condition = "TRUE";
-					if (is2 && val->GetUserTypeListSize() >= 2) {
-						condition = val->GetUserTypeList(1)->ToString();
-					}
-					else if (false == is2 && val->GetUserTypeListSize() >= 1) {
-						condition = val->GetUserTypeList(0)->ToString();
-					}
-
 					wiz::load_data::LoadData::AddUserType(global, dir, name, "",  _executeData);
 
 
@@ -1344,6 +1338,9 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pObjectMap = objectMapPtr;
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
 
 					std::string dir = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), _executeData).ToString();
 					std::string value = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), _executeData).ToString();
@@ -1370,14 +1367,14 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
+
 					std::string dir;
 
 					dir = wiz::load_data::LoadData::ToBool4(nullptr, global, val->GetItemList(0), _executeData).ToString();
 
-					std::string condition = "TRUE";
-					if (val->GetUserTypeListSize() >= 1) {
-						condition = val->GetUserTypeList(0)->ToString();
-					}
 					wiz::load_data::LoadData::Remove(global, dir,  _executeData);
 
 					eventStack.top().userType_idx.top()++;
@@ -1393,6 +1390,9 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
 					std::string dir; // item -> userType
 					dir = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), _executeData).ToString();
 					std::string name;
@@ -1405,10 +1405,6 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 						}
 					}
 
-					std::string condition = "TRUE";
-					if (val->GetUserTypeListSize() >= 2) {
-						condition = val->GetUserTypeList(1)->ToString();
-					}
 					wiz::load_data::LoadData::Remove(global, dir, name,  _executeData);
 
 					eventStack.top().userType_idx.top()++;
@@ -1422,6 +1418,9 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pObjectMap = objectMapPtr;
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
 
 					std::string dir = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), _executeData).ToString();
 					std::string value = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), _executeData).ToString();
@@ -1450,6 +1449,10 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
 					std::string dir = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), _executeData).ToString();
 					std::string idx = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), _executeData).ToString();
 					std::string value = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(2), _executeData).ToString();
@@ -1468,6 +1471,12 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pObjectMap = objectMapPtr;
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
+
+
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+
+					_executeData.noUseOutput = executeData.noUseOutput;
 
 					std::string dir = std::string(wiz::ToString(val->GetItemList(0).Get(0)).c_str()); // + 0
 					std::string value1;
@@ -1501,6 +1510,10 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pObjectMap = objectMapPtr;
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
+
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
 
 					if (val->GetUserTypeListSize() == 1
 						&& val->GetUserTypeList(0)->GetItemListSize() == 1)
@@ -1612,6 +1625,10 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
 					std::string dir = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), _executeData).ToString();
 					auto x = wiz::load_data::UserType::Find(&global, dir);
 
@@ -1635,16 +1652,20 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
 					// load data and events from other file! 
 					// itemlist -> usertypelist.tostring?
 					for (int i = 0; i < val->GetItemListSize(); ++i) {
 						wiz::load_data::UserType ut;
 						std::string fileName = wiz::ToString(val->GetItemList(i).Get(0));
 						fileName = wiz::String::substring(fileName, 1, fileName.size() - 2);
-						int a = clock();
+						//int a = clock();
 						if (wiz::load_data::LoadData::LoadDataFromFile(fileName, ut)) {
-							int b = clock();
-							std::cout << b - a << "ms\n";
+							//int b = clock();
+							//std::cout << b - a << "ms\n";
 							{
 
 								int item_count = 0;
@@ -1716,6 +1737,10 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
 					// to do, load data and events from other file!
 					wiz::load_data::UserType ut;
 					std::string fileName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), _executeData).ToString();
@@ -1731,7 +1756,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 						utTemp = &global;
 					}
 					else {
-						dirName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), ExecuteData()).ToString();
+						dirName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), ExecuteData(executeData.noUseInput, executeData.noUseOutput)).ToString();
 						utTemp = global.GetUserTypeItem(dirName)[0];
 					}
 
@@ -1779,6 +1804,10 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
 					// to do, load data and events from other file!
 					wiz::load_data::UserType ut;
 					std::string fileName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), _executeData).ToString();
@@ -1791,14 +1820,14 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 						utTemp = &global;
 					}
 					else {
-						dirName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), ExecuteData()).ToString();
+						dirName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), ExecuteData(executeData.noUseInput, executeData.noUseOutput)).ToString();
 						utTemp = global.GetUserTypeItem(dirName)[0];
 					}
 
-					int a = clock();
+					//int a = clock();
 					if (wiz::load_data::LoadData::LoadDataFromFileWithJson(fileName, ut)) {
-						int b = clock();
-						std::cout << b - a << "ms\n";
+						//int b = clock();
+						//std::cout << b - a << "ms\n";
 						{
 							//for (int i = 0; i < ut.GetCommentListSize(); ++i) {
 							//	utTemp->PushComment(std::move(ut.GetCommentList(i)));
@@ -1847,6 +1876,10 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
 					// to do, load data and events from other file!
 					wiz::load_data::UserType ut;
 					std::string fileName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), _executeData).ToString();
@@ -1858,7 +1891,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 						utTemp = &global;
 					}
 					else {
-						dirName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), ExecuteData()).ToString();
+						dirName = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(1), ExecuteData(executeData.noUseInput, executeData.noUseOutput)).ToString();
 						utTemp = global.GetUserTypeItem(dirName)[0];
 					}
 
@@ -1890,6 +1923,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 				}
 				else if ("$clear_screen"sv == val->GetName())
 				{
+
 #if _WIN32
 					system("cls");
 #endif
@@ -1941,6 +1975,10 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pObjectMap = objectMapPtr;
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
+
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
 
 					eventStack.top().userType_idx.top()++;
 					if (eventStack.size() > 1)
@@ -2001,6 +2039,10 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
 					std::vector<SortInfo> siVec;
 					wiz::load_data::UserType* utTemp =
 						wiz::load_data::UserType::Find(&global,
@@ -2053,6 +2095,10 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pObjectMap = objectMapPtr;
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
+
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
 
 					/// condition = has just one? in one usertype!
 					std::vector<SortInfo> siVec;
@@ -2115,6 +2161,11 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
 					std::vector<SortInfo2> siVec;
 					wiz::load_data::UserType* utTemp =
 						wiz::load_data::UserType::Find(&global,
@@ -2174,16 +2225,43 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
+
 					// check?
 					if (executeData.noUseInput || executeData.noUseOutput) {
 						eventStack.top().userType_idx.top()++;
 						break;
 					}
-					
-					ShellMode(global);
-
+#if _WIN32
+					ShellMode(global, _executeData);
+#endif
 					eventStack.top().userType_idx.top()++;
 					break;
+				}
+				else if ("$edit_mode"sv == val->GetName()) {
+				ExecuteData _executeData; _executeData.depth = executeData.depth;
+				_executeData.chkInfo = true;
+				_executeData.info = eventStack.top();
+				_executeData.pObjectMap = objectMapPtr;
+				_executeData.pEvents = eventPtr;
+				_executeData.pModule = moduleMapPtr;
+
+				_executeData.noUseInput = executeData.noUseInput; //// check!
+				_executeData.noUseOutput = executeData.noUseOutput;
+
+
+				// check?
+				if (executeData.noUseInput || executeData.noUseOutput) {
+					eventStack.top().userType_idx.top()++;
+					break;
+				}
+#if _WIN32
+				MStyleTest(&global, _executeData);
+#endif
+				eventStack.top().userType_idx.top()++;
+				break;
 				}
 				// removal?
 				else if ("$stable_sort"sv == val->GetName()) {
@@ -2193,6 +2271,9 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pObjectMap = objectMapPtr;
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
+
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
 
 					// todo
 					// todo
@@ -2249,18 +2330,11 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					_executeData.pEvents = eventPtr;
 					_executeData.pModule = moduleMapPtr;
 
-					std::string cond;
 
-					/*
-					std::pair<std::vector<std::string>, bool> x;
-					if (_map.end() == _map.find(temp)) {
-					x = wiz::load_data::LoadData::ToBool4_A(nullptr, global, temp, _executeData);
-					_map.insert(std::make_pair(temp, x));
-					}
-					else {
-					x = _map[temp];
-					}
-					*/
+					_executeData.noUseInput = executeData.noUseInput; //// check!
+					_executeData.noUseOutput = executeData.noUseOutput;
+
+					std::string cond;
 					cond = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), _executeData).ToString();
 
 
@@ -2347,13 +2421,6 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 			}
 		}
 	}
-	/*
-	for (int i = 0; i < waits.size(); ++i) {
-	waits[i]->join();
-	delete waits[i];
-	}
-	waits.resize(0);
-	*/
 
 	if (1 == chk && !events.empty()) {
 		auto _events = events.GetUserTypeItemIdx("Event");
@@ -2452,7 +2519,7 @@ void SaveWithOutEvent(std::ostream& stream, wiz::load_data::UserType* ut, int de
 }
 
 // check $~ ??
-void ClauText::ShellMode(wiz::load_data::UserType& global) {
+void ClauText::ShellMode(wiz::load_data::UserType& global, const ExecuteData& executeData) {
 	std::vector<int> chk_brace;
 	std::string command;
 	std::string totalCommand;
@@ -2497,7 +2564,7 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 							wiz::load_data::UserType ut = global;
 							const std::string id = wiz::ToString(test.GetItemList(0).Get(0));
 							Option opt;
-							const std::string result = execute_module("Main = { $call = { id = " + id + "} }", &ut, ExecuteData(), opt, 1);
+							const std::string result = execute_module("Main = { $call = { id = " + id + "} }", &ut, ExecuteData(executeData.noUseInput, executeData.noUseOutput), opt, 1);
 
 							global = std::move(ut);
 							wiz::Out << ENTER << "excute result is : " << result << ENTER;
@@ -2664,7 +2731,7 @@ void ClauText::ShellMode(wiz::load_data::UserType& global) {
 	}
 }
 // for $edit_mode?
-void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
+void ClauText::MStyleTest(wiz::load_data::UserType* pUt, const ExecuteData& executeData)
 {
 #ifdef _MSC_VER
 	wiz::StringBuilder builder(1024);
@@ -3390,22 +3457,22 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 						try {
 							if ("add" == strVecTemp[0])
 							{
-								if (false == wiz::load_data::LoadData::AddData(*utTemp, strVecTemp[1], strVecTemp[2], ExecuteData()))
+								if (false == wiz::load_data::LoadData::AddData(*utTemp, strVecTemp[1], strVecTemp[2], ExecuteData(executeData.noUseInput, executeData.noUseOutput)))
 								{
 									wiz::Out << "fail to add" << ENTER; /// To Do to following code.
 								}
 							}
 							else if ("addusertype" == strVecTemp[0])
 							{
-								wiz::load_data::LoadData::AddUserType(*utTemp, strVecTemp[1], strVecTemp[2], strVecTemp[3], ExecuteData());
+								wiz::load_data::LoadData::AddUserType(*utTemp, strVecTemp[1], strVecTemp[2], strVecTemp[3], ExecuteData(executeData.noUseInput, executeData.noUseOutput));
 							}
 							else if ("set" == strVecTemp[0])
 							{
-								wiz::load_data::LoadData::SetData(*utTemp, strVecTemp[1], strVecTemp[2], strVecTemp[3], ExecuteData());
+								wiz::load_data::LoadData::SetData(*utTemp, strVecTemp[1], strVecTemp[2], strVecTemp[3], ExecuteData(executeData.noUseInput, executeData.noUseOutput));
 							}
 							else if ("remove" == strVecTemp[0])
 							{
-								wiz::load_data::LoadData::Remove(*utTemp, strVecTemp[1], strVecTemp[2], ExecuteData());
+								wiz::load_data::LoadData::Remove(*utTemp, strVecTemp[1], strVecTemp[2], ExecuteData(executeData.noUseInput, executeData.noUseOutput));
 							}
 							//else if ("removenonameitem" == strVecTemp[0])
 							//{
@@ -3413,16 +3480,16 @@ void ClauText::MStyleTest(wiz::load_data::UserType* pUt)
 							//}
 							else if ("removeall" == strVecTemp[0])
 							{
-								wiz::load_data::LoadData::Remove(*utTemp, strVecTemp[1], strVecTemp[2], ExecuteData());
+								wiz::load_data::LoadData::Remove(*utTemp, strVecTemp[1], strVecTemp[2], ExecuteData(executeData.noUseInput, executeData.noUseOutput));
 							}
 							else if ("searchitem" == strVecTemp[0])
 							{
-								wiz::Out << wiz::load_data::LoadData::SearchItem(*utTemp, strVecTemp[1], ExecuteData()) << ENTER;
+								wiz::Out << wiz::load_data::LoadData::SearchItem(*utTemp, strVecTemp[1], ExecuteData(executeData.noUseInput, executeData.noUseOutput)) << ENTER;
 								GETCH();
 							}
 							else if ("searchusertype" == strVecTemp[0])
 							{
-								wiz::Out << wiz::load_data::LoadData::SearchUserType(*utTemp, strVecTemp[1], ExecuteData()) << ENTER;
+								wiz::Out << wiz::load_data::LoadData::SearchUserType(*utTemp, strVecTemp[1], ExecuteData(executeData.noUseInput, executeData.noUseOutput)) << ENTER;
 								GETCH();
 							}
 						}

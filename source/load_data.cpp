@@ -17,7 +17,7 @@ using namespace std::literals;
 namespace wiz {
 	namespace load_data {
 		bool LoadData::operation(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const WIZ_STRING_TYPE& str,
-			wiz::ArrayStack<WIZ_STRING_TYPE>& operandStack, const ExecuteData& excuteData)
+			wiz::ArrayStack<WIZ_STRING_TYPE>& operandStack, const ExecuteData& executeData)
 		{
 			if (!operandStack.empty() && operandStack.top() == "ERROR"sv) {
 				return false;
@@ -387,7 +387,7 @@ namespace wiz {
 			}
 			else if ("$return_value"sv == str)
 			{
-				operandStack.push(excuteData.info.return_value);
+				operandStack.push(executeData.info.return_value);
 			}
 			// cf) empty test!!
 			///ToDo - GetList -> // GetItemListIdxByIListIdx, GetUserTypeLisIdxtByIListIdx ?
@@ -395,7 +395,7 @@ namespace wiz {
 			{
 				WIZ_STRING_TYPE x = operandStack.pop();
 
-				std::string value = wiz::load_data::LoadData::GetItemListData(global, x.ToString(), excuteData);
+				std::string value = wiz::load_data::LoadData::GetItemListData(global, x.ToString(), executeData);
 				wiz::load_data::UserType ut;
 				wiz::load_data::LoadData::LoadDataFromString(value, ut);
 
@@ -450,7 +450,7 @@ namespace wiz {
 			{
 				std::string x = operandStack.pop().ToString();
 
-				std::string value = wiz::load_data::LoadData::GetItemListData(global, x, excuteData);
+				std::string value = wiz::load_data::LoadData::GetItemListData(global, x, executeData);
 				wiz::load_data::UserType ut;
 				wiz::load_data::LoadData::LoadDataFromString(value, ut);
 
@@ -520,11 +520,11 @@ namespace wiz {
 				}
 
 				{
-					std::string temp = FindParameters(excuteData.info.parameters, x);
+					std::string temp = FindParameters(executeData.info.parameters, x);
 					if (!temp.empty()) { x = temp; operandStack.push(x); return true; }
 				}
 				{
-					std::string temp = FindLocals(excuteData.info.locals, x);
+					std::string temp = FindLocals(executeData.info.locals, x);
 					if (!temp.empty()) { x = temp; operandStack.push(x); return true; }
 				}
 
@@ -655,7 +655,7 @@ namespace wiz {
 
 					wiz::load_data::LoadData::LoadDataFromString(_str, ut);
 					
-					WIZ_STRING_TYPE result = ToBool4(now, global, ut, excuteData);
+					WIZ_STRING_TYPE result = ToBool4(now, global, ut, executeData);
 
 					operandStack.push(std::move(result));
 				}
@@ -743,7 +743,7 @@ namespace wiz {
 				object_name = wiz::String::substring(object_name, 1, object_name.size() - 2);
 				std::string event_id = operandStack.pop().ToString();
 
-				wiz::load_data::UserType ut = (*excuteData.pObjectMap)[object_name];
+				wiz::load_data::UserType ut = (*executeData.pObjectMap)[object_name];
 
 				bool pass = false;
 				for (int i = 0; i < ut.GetUserTypeListSize(); ++i) {
@@ -807,29 +807,29 @@ namespace wiz {
 					eventVec.push_back(operandStack.pop().ToString());
 				}
 
-				std::string statements2 = "Event = { id = NONE" + wiz::toStr(excuteData.depth + 1) + " $call = { ";
+				std::string statements2 = "Event = { id = NONE" + wiz::toStr(executeData.depth + 1) + " $call = { ";
 				for (int i = 0; i < eventVec.size(); ++i) {
 					statements2 = statements2 + eventVec[i] + " ";
 				}
 				statements2 = statements2 + " } }";
-				wiz::load_data::UserType* eventsTemp = excuteData.pEvents;
-				wiz::load_data::LoadData::AddData(*eventsTemp, "/root", statements2, ExecuteData());
+				wiz::load_data::UserType* eventsTemp = executeData.pEvents;
+				wiz::load_data::LoadData::AddData(*eventsTemp, "/root", statements2, ExecuteData(executeData.noUseInput, executeData.noUseOutput));
 				//cout << " chk " << statements2 << endl;
-				ExecuteData _excuteData;
-				_excuteData.pModule = excuteData.pModule;
-				_excuteData.pObjectMap = excuteData.pObjectMap;
-				_excuteData.pEvents = eventsTemp;
-				_excuteData.depth = excuteData.depth + 1;
-				_excuteData.noUseInput = excuteData.noUseInput;
-				_excuteData.noUseOutput = excuteData.noUseOutput;
+				ExecuteData _executeData;
+				_executeData.pModule = executeData.pModule;
+				_executeData.pObjectMap = executeData.pObjectMap;
+				_executeData.pEvents = eventsTemp;
+				_executeData.depth = executeData.depth + 1;
+				_executeData.noUseInput = executeData.noUseInput;
+				_executeData.noUseOutput = executeData.noUseOutput;
 
 
 				Option opt;
-				operandStack.push(pExcuteModule->execute_module("Main = { $call = { id = NONE" + wiz::toStr(_excuteData.depth) + " } }", &global, _excuteData, opt, 0));
+				operandStack.push(pExcuteModule->execute_module("Main = { $call = { id = NONE" + wiz::toStr(_executeData.depth) + " } }", &global, _executeData, opt, 0));
 
 				{
 					for (int idx = 0; idx < eventsTemp->GetUserTypeListSize(); ++idx) {
-						if (ToString(eventsTemp->GetUserTypeList(idx)->GetItem("id")[0].Get(0)) == "NONE" + wiz::toStr(_excuteData.depth)) {
+						if (ToString(eventsTemp->GetUserTypeList(idx)->GetItem("id")[0].Get(0)) == "NONE" + wiz::toStr(_executeData.depth)) {
 							eventsTemp->RemoveUserTypeList(idx);
 							break;
 						}
@@ -916,12 +916,12 @@ namespace wiz {
 
 					std::string result;
 					{
-						ExecuteData _excuteData;
-						_excuteData.noUseInput = excuteData.noUseInput;
-						_excuteData.noUseOutput = excuteData.noUseOutput;
+						ExecuteData _executeData;
+						_executeData.noUseInput = executeData.noUseInput;
+						_executeData.noUseOutput = executeData.noUseOutput;
 
 						Option opt;
-						result = pExcuteModule->execute_module(mainStr, &ut, _excuteData, opt, 0);
+						result = pExcuteModule->execute_module(mainStr, &ut, _executeData, opt, 0);
 					}
 					{
 						wiz::load_data::UserType ut;
@@ -1060,7 +1060,7 @@ namespace wiz {
 			// remove "
 		}
 
-		WIZ_STRING_TYPE LoadData::ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::UserType& temp, const ExecuteData& excuteData)
+		WIZ_STRING_TYPE LoadData::ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::UserType& temp, const ExecuteData& executeData)
 		{
 			WIZ_STRING_TYPE result, _temp;
 			size_t user_count = 0;
@@ -1071,7 +1071,7 @@ namespace wiz {
 					result += " ";
 				}
 				if (temp.IsItemList(i)) {
-					_temp = ToBool4(now, global, temp.GetItemList(item_count), excuteData);
+					_temp = ToBool4(now, global, temp.GetItemList(item_count), executeData);
 					result += _temp;
 					item_count++;
 				}
@@ -1085,7 +1085,7 @@ namespace wiz {
 						}
 					}
 
-					_temp = _ToBool4(now, global, *temp.GetUserTypeList(user_count), excuteData);
+					_temp = _ToBool4(now, global, *temp.GetUserTypeList(user_count), executeData);
 					result += _temp;
 
 
@@ -1100,7 +1100,7 @@ namespace wiz {
 
 			return result;
 		}
-		WIZ_STRING_TYPE LoadData::_ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::UserType& temp, const ExecuteData& excuteData)
+		WIZ_STRING_TYPE LoadData::_ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::UserType& temp, const ExecuteData& executeData)
 		{
 			WIZ_STRING_TYPE result, _temp;
 			size_t user_count = 0;
@@ -1112,7 +1112,7 @@ namespace wiz {
 					result += " ";
 				}
 				if (temp.IsItemList(i)) {
-					_temp = ToBool4(now, global, temp.GetItemList(item_count), excuteData);
+					_temp = ToBool4(now, global, temp.GetItemList(item_count), executeData);
 					result += _temp;
 					operandStack.push(_temp);
 					item_count++;
@@ -1127,7 +1127,7 @@ namespace wiz {
 						}
 					}
 
-					_temp = _ToBool4(now, global, *temp.GetUserTypeList(user_count), excuteData);
+					_temp = _ToBool4(now, global, *temp.GetUserTypeList(user_count), executeData);
 					result += _temp;
 					
 
@@ -1152,7 +1152,7 @@ namespace wiz {
 					_stack.push(operandStack.pop());
 				}
 
-				if (!operation(now, global, temp.GetName(), _stack, excuteData)) {
+				if (!operation(now, global, temp.GetName(), _stack, executeData)) {
 					wiz::Out << "operation ERROR";
 				}
 
@@ -1162,7 +1162,7 @@ namespace wiz {
 			return result;
 		}
 
-		WIZ_STRING_TYPE LoadData::ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::ItemType<std::string>& temp, const ExecuteData& excuteData)
+		WIZ_STRING_TYPE LoadData::ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const wiz::load_data::ItemType<std::string>& temp, const ExecuteData& executeData)
 		{
 			WIZ_STRING_TYPE result;
 			if (temp.GetName().empty() == false) {
@@ -1172,13 +1172,13 @@ namespace wiz {
 			auto tokens = tokenize(temp.Get(), '/');
 
 			if (tokens.size() <= 1) {
-				return result + ToBool4(now, global, temp.Get(), excuteData);
+				return result + ToBool4(now, global, temp.Get(), executeData);
 			}
 			
 			WIZ_STRING_TYPE _result = "/";
 
 			for (int i = 0; i < tokens.size(); ++i) {
-				WIZ_STRING_TYPE _temp = ToBool4(now, global, tokens[i], excuteData);
+				WIZ_STRING_TYPE _temp = ToBool4(now, global, tokens[i], executeData);
 				//std::cout << "chk " << _temp << " ";
 				_result += _temp;
 
@@ -1188,18 +1188,18 @@ namespace wiz {
 			}
 			//std::cout << "\n";
 
-			return result + ToBool4(now, global, _result.ToString(), excuteData);
+			return result + ToBool4(now, global, _result.ToString(), executeData);
 		}
 
-		WIZ_STRING_TYPE LoadData::ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const std::string& temp, const ExecuteData& excuteData) {
+		WIZ_STRING_TYPE LoadData::ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const std::string& temp, const ExecuteData& executeData) {
 			std::string result;
 			if (String::startsWith(temp, "$local.")) {
-				if (!(result = FindLocals(excuteData.info.locals, temp)).empty()) {
+				if (!(result = FindLocals(executeData.info.locals, temp)).empty()) {
 					return result;
 				}
 			}
 			else if (String::startsWith(temp, "$parameter.")) {
-				if (!(result = FindParameters(excuteData.info.parameters, temp)).empty()) {
+				if (!(result = FindParameters(executeData.info.parameters, temp)).empty()) {
 					return result;
 				}
 			}
