@@ -3,7 +3,944 @@
 #include "wiz/ClauText.h"
 using namespace std::literals;
 
+#include "wiz/smart_ptr.h"
+
 namespace wiz {
+
+
+	class UtInfo {
+	public:
+		wiz::SmartPtr<wiz::load_data::UserType> global;
+		wiz::load_data::UserType* ut;
+		std::string dir;
+		long long itCount = 0;
+		long long utCount = 0;
+		long long count = 0;
+	public:
+		UtInfo(wiz::load_data::UserType* global, wiz::load_data::UserType* ut, const std::string& dir, long long itCount = 0, long long utCount = 0)
+			: global(global), ut(ut), itCount(itCount), utCount(utCount), count(0), dir(dir)
+		{
+			//
+		}
+	};
+
+	// for @insert, @update, @delete
+	inline bool EqualFunc(wiz::load_data::UserType* global, wiz::load_data::UserType* eventUT, const wiz::load_data::ItemType<std::string>& x,
+		wiz::load_data::ItemType<std::string> y, long long x_idx, const std::string& dir) {
+
+		auto x_name = x.GetName();
+		auto x_value = x.Get();
+
+		bool use_not = false;
+		if (wiz::String::startsWith(y.Get(), "!")) {
+			use_not = true;
+			y.Set(0, y.Get().substr(1));
+		}
+
+		{
+			std::string name = y.GetName();
+
+			if (wiz::String::startsWith(name, "&"sv) && name.size() >= 2) {
+				long long idx = std::stoll(name.substr(1));
+				if (idx < 0 || idx >= global->GetItemListSize()) {
+					return false;
+				}
+
+				if (y.Get() == "%any"sv) {
+					return !use_not;
+				}
+
+				x_idx = idx;
+				x_name = global->GetItemList(idx).GetName();
+				x_value = global->GetItemList(idx).Get();
+			}
+		}
+
+		if (y.Get() == "%any"sv) {
+			return !use_not;
+		}
+
+		if (wiz::String::startsWith(y.Get(), "%event_"sv)) {
+			std::string event_id = y.Get().substr(7);
+
+			wiz::ClauText clautext;
+			wiz::ExecuteData executeData;
+			executeData.pEvents = eventUT;
+			wiz::Option option;
+
+			std::string statements;
+
+			// do not use NONE!(in user?)
+			statements += " Event = { id = NONE  ";
+			statements += " $call = { id = " + event_id + " ";
+			statements += " name = " + x_name.empty() ? "EMPTY_NAME" : x_name + " ";
+			statements += " value = " + x_value + " ";
+			statements += " is_user_type = FALSE ";
+			//statements += " real_dir =  " + wiz::load_data::LoadData::GetRealDir(dir, global) + " ";
+			statements += " relative_dir = " + dir + " ";
+			statements += " idx = " + std::to_string(x_idx) + " "; // removal?
+			statements += " } ";
+
+			statements += " $return = { $return_value = { } }  ";
+			statements += " } ";
+			std::string result = clautext.execute_module(" Main = { $call = { id = NONE  } } " + statements, global, executeData, option, 1);
+
+			bool success = false;
+			if (result == "TRUE"sv) {
+				success = true;
+			}
+
+			if (use_not) {
+				return !success;
+			}
+			return success;
+		}
+
+		if (use_not) {
+			return x_value != y.Get();
+		}
+		return x_value == y.Get();
+	}
+
+
+	bool _InsertFunc(wiz::SmartPtr<wiz::load_data::UserType> global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
+		std::queue<UtInfo> que;
+
+		std::string dir = "/.";
+
+		que.push(UtInfo(global, insert_ut, dir));
+
+		while (!que.empty()) {
+			UtInfo x = que.front();
+			que.pop();
+
+			// find non-@
+			long long ut_count = 0;
+			long long it_count = 0;
+			long long count = 0;
+
+			for (long long i = 0; i < x.ut->GetIListSize(); ++i) {
+				if (x.ut->IsItemList(i) && x.ut->GetItemList(it_count).GetName().empty()
+					&& !wiz::String::startsWith(x.ut->GetItemList(it_count).Get(), "@"sv)) {
+					// chk exist all case of value?
+					auto item = x.global->GetItemIdx("");
+					// no exist -> return false;
+					if (item.empty()) {
+						// LOG....
+						return false;
+					}
+
+					bool pass = false;
+					for (long long j = 0; j < item.size(); ++j) {
+						if (EqualFunc(x.global, eventUT, x.global->GetItemList(item[j]), x.ut->GetItemList(it_count), item[j],
+							x.dir)) {
+							pass = true;
+							break;
+						}
+					}
+					if (!pass) {
+						return false;
+					}
+				}
+				else if (x.ut->IsItemList(i) && !x.ut->GetItemList(it_count).GetName().empty() && !wiz::String::startsWith(x.ut->GetItemList(it_count).GetName(), "@"sv)) {
+					// chk exist all case of value?
+					auto item = x.global->GetItemIdx(x.ut->GetItemList(it_count).GetName());
+					// no exist -> return false;
+					if (item.empty()) {
+						// LOG....
+						return false;
+					}
+
+					bool pass = false;
+
+					for (long long j = 0; j < item.size(); ++j) {
+						if (EqualFunc(x.global, eventUT, x.global->GetItemList(item[j]), x.ut->GetItemList(it_count), item[j],
+							x.dir)) {
+							pass = true;
+							break;
+						}
+					}
+					if (!pass) {
+						return false;
+					}
+
+				}
+				else if (x.ut->IsUserTypeList(i) && !wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "@"sv)) {
+					// chk all case exist of @.
+					// no exist -> return false;
+					if (wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "$"sv)) {
+						ut_count++;
+						count++;
+						continue;
+					}
+
+					auto usertype = x.global->GetUserTypeItemIdx(x.ut->GetUserTypeList(ut_count)->GetName());
+
+					if (usertype.empty()) {
+						return false;
+					}
+
+					ut_count++;
+					count++;
+
+					for (long long j = 0; j < usertype.size(); ++j) {
+						que.push(UtInfo(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count - 1),
+							x.dir));
+					}
+
+					continue;
+				}
+
+				if (x.ut->IsItemList(i)) {
+					it_count++;
+				}
+				else {
+					ut_count++;
+				}
+				count++;
+			}
+		}
+
+		return true;
+	}
+
+	bool _RemoveFunc(wiz::SmartPtr<wiz::load_data::UserType> global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
+		std::queue<UtInfo> que;
+		std::string dir = "/.";
+		que.push(UtInfo(global, insert_ut, dir));
+
+		while (!que.empty()) {
+			UtInfo x = que.front();
+			que.pop();
+
+			// find non-@
+			long long ut_count = 0;
+			long long it_count = 0;
+			long long count = 0;
+
+			for (long long i = 0; i < x.ut->GetIListSize(); ++i) {
+				if (x.ut->IsItemList(i) && x.ut->GetItemList(it_count).GetName().empty()
+					&& !wiz::String::startsWith(x.ut->GetItemList(it_count).Get(), "@"sv)) {
+					// chk exist all case of value?
+					auto item = x.global->GetItemIdx("");
+					// no exist -> return false;
+					if (item.empty()) {
+						// LOG....
+						return false;
+					}
+
+					bool pass = false;
+					for (long long j = 0; j < item.size(); ++j) {
+						if (EqualFunc(x.global, eventUT, x.global->GetItemList(item[j]), x.ut->GetItemList(it_count), item[j],
+							x.dir)) {
+							pass = true;
+							break;
+						}
+					}
+					if (!pass) {
+						return false;
+					}
+				}
+				else if (x.ut->IsItemList(i) && !x.ut->GetItemList(it_count).GetName().empty() && !wiz::String::startsWith(x.ut->GetItemList(it_count).GetName(), "@"sv)) {
+					// chk exist all case of value?
+					auto item = x.global->GetItemIdx(x.ut->GetItemList(it_count).GetName());
+					// no exist -> return false;
+					if (item.empty()) {
+						if (x.ut->GetItemList(it_count).Get() == "!%any") {
+							return true;
+						}
+						// LOG....
+						return false;
+					}
+
+					bool pass = false;
+
+					for (long long j = 0; j < item.size(); ++j) {
+						if (EqualFunc(x.global, eventUT, x.global->GetItemList(item[j]), x.ut->GetItemList(it_count), item[j],
+							x.dir)) {
+							pass = true;
+							break;
+						}
+					}
+					if (!pass) {
+						return false;
+					}
+
+				}
+				else if (x.ut->IsUserTypeList(i) && !wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "@"sv)) {
+					// chk all case exist of @.
+					// no exist -> return false;
+					if (wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "$"sv)) {
+						ut_count++;
+						count++;
+						continue;
+					}
+
+					auto usertype = x.global->GetUserTypeItemIdx(x.ut->GetUserTypeList(ut_count)->GetName());
+
+					if (usertype.empty()) {
+						return false;
+					}
+
+					ut_count++;
+					count++;
+
+					for (long long j = 0; j < usertype.size(); ++j) {
+						que.push(UtInfo(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count - 1),
+							x.dir + "/$ut" + std::to_string(usertype[j])));
+					}
+
+					continue;
+				}
+				else if (x.ut->IsUserTypeList(i) && x.ut->GetUserTypeList(ut_count)->GetName() == "@$"sv) {
+					//
+				}
+
+				if (x.ut->IsItemList(i)) {
+					it_count++;
+				}
+				else {
+					ut_count++;
+				}
+				count++;
+			}
+		}
+
+		return true;
+	}
+
+
+	bool _UpdateFunc(wiz::SmartPtr<wiz::load_data::UserType> global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
+		std::queue<UtInfo> que;
+		std::string dir = "/.";
+		que.push(UtInfo(global, insert_ut, dir));
+
+		while (!que.empty()) {
+			UtInfo x = que.front();
+			que.pop();
+
+
+			// find non-@
+			long long ut_count = 0;
+			long long it_count = 0;
+			long long count = 0;
+
+			for (long long i = 0; i < x.ut->GetIListSize(); ++i) {
+				if (x.ut->IsItemList(i) && x.ut->GetItemList(it_count).GetName().empty()
+					&& !wiz::String::startsWith(x.ut->GetItemList(it_count).Get(), "@"sv)) {
+					// chk exist all case of value?
+					auto item = x.global->GetItemIdx("");
+					// no exist -> return false;
+					if (item.empty()) {
+						// LOG....
+						return false;
+					}
+
+					bool pass = false;
+					for (long long j = 0; j < item.size(); ++j) {
+						if (EqualFunc(x.global, eventUT, x.global->GetItemList(item[j]), x.ut->GetItemList(it_count), item[j],
+							x.dir)) {
+							pass = true;
+							break;
+						}
+					}
+					if (!pass) {
+						return false;
+					}
+				}
+				else if (x.ut->IsItemList(i) && !x.ut->GetItemList(it_count).GetName().empty() && !wiz::String::startsWith(x.ut->GetItemList(it_count).GetName(), "@"sv)) {
+					// chk exist all case of value?
+					auto item = x.global->GetItemIdx(x.ut->GetItemList(it_count).GetName());
+					// no exist -> return false;
+					if (item.empty()) {
+						// LOG....
+						return false;
+					}
+
+					bool pass = false;
+
+					for (long long j = 0; j < item.size(); ++j) {
+						if (EqualFunc(x.global, eventUT, x.global->GetItemList(item[j]), x.ut->GetItemList(it_count), item[j],
+							dir)) {
+							pass = true;
+							break;
+						}
+					}
+					if (!pass) {
+						return false;
+					}
+
+				}
+				else if (x.ut->IsUserTypeList(i) && !wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "@"sv)) {
+					// chk all case exist of @.
+					// no exist -> return false;
+					if (wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "$"sv)) {
+						ut_count++;
+						count++;
+						continue;
+					}
+
+					auto usertype = x.global->GetUserTypeItemIdx(x.ut->GetUserTypeList(ut_count)->GetName());
+
+					if (usertype.empty()) {
+						return false;
+					}
+
+					ut_count++;
+					count++;
+
+					for (long long j = 0; j < usertype.size(); ++j) {
+						que.push(UtInfo(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count - 1),
+							dir + "$ut" + std::to_string(usertype[j])));
+					}
+
+					continue;
+				}
+
+				if (x.ut->IsItemList(i)) {
+					it_count++;
+				}
+				else {
+					ut_count++;
+				}
+				count++;
+			}
+		}
+
+		return true;
+	}
+
+	// starts with '@' -> insert target
+	// else -> condition target.
+	bool InsertFunc(wiz::SmartPtr<wiz::load_data::UserType> global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
+		if (!_InsertFunc(global, insert_ut, eventUT)) {
+			return false;
+		}
+		std::string dir = "/.";
+		std::queue<UtInfo> que;
+		// insert
+		que.push(UtInfo(global, insert_ut, dir));
+
+		while (!que.empty()) {
+			UtInfo x = que.front();
+			que.pop();
+
+			// find non-@
+			long long ut_count = 0;
+			long long it_count = 0;
+			long long count = 0;
+
+			//chk only @  ! - todo
+			for (long long i = 0; i < x.ut->GetIListSize(); ++i) {
+				if (x.ut->IsItemList(i) && x.ut->GetItemList(it_count).GetName().empty()
+					&& wiz::String::startsWith(x.ut->GetItemList(it_count).Get(), "@"sv)) {
+
+					if (wiz::String::startsWith(x.ut->GetItemList(it_count).Get(), "@%event_"sv)) {
+						std::string event_id = x.ut->GetItemList(it_count).Get().substr(8);
+
+						wiz::ClauText clautext;
+						wiz::ExecuteData executeData;
+						executeData.pEvents = insert_ut->GetParent();
+						wiz::Option option;
+
+						std::string statements;
+
+						// do not use NONE!(in user?)
+						statements += " Event = { id = NONE  ";
+						statements += " $call = { id = " + event_id + " ";
+						statements += " name = EMPTY_STRING ";
+						statements += " is_user_type = FALSE ";
+						statements += " } ";
+
+						statements += " $return = { $return_value = { } }  ";
+						statements += " } ";
+						std::string result = clautext.execute_module(" Main = { $call = { id = NONE  } } " + statements, x.global, executeData, option, 1);
+
+						x.global->AddItem("", result);
+					}
+					else {
+						x.global->AddItem("", x.ut->GetItemList(it_count).Get().substr(1));
+					}
+
+					it_count++;
+				}
+				else if (x.ut->IsItemList(i) && wiz::String::startsWith(x.ut->GetItemList(it_count).GetName(), "@"sv)) {
+					if (wiz::String::startsWith(x.ut->GetItemList(it_count).Get(), "%event_"sv)) {
+						std::string event_id = x.ut->GetItemList(it_count).Get().substr(7);
+
+						wiz::ClauText clautext;
+						wiz::ExecuteData executeData;
+						executeData.pEvents = insert_ut->GetParent();
+						wiz::Option option;
+
+						std::string statements;
+
+						// do not use NONE!(in user?)
+						statements += " Event = { id = NONE  ";
+						statements += " $call = { id = " + event_id + " ";
+						statements += " name =  " + x.ut->GetItemList(it_count).GetName() + " ";
+						statements += " is_user_type = FALSE ";
+						statements += " } ";
+
+						statements += " $return = { $return_value = { } }  ";
+						statements += " } ";
+						std::string result = clautext.execute_module(" Main = { $call = { id = NONE  } } " + statements, x.global, executeData, option, 1);
+
+						x.global->AddItem(
+							x.ut->GetItemList(it_count).GetName().substr(1),
+							result);
+					}
+					else {
+						x.global->AddItem(
+							x.ut->GetItemList(it_count).GetName().substr(1),
+							x.ut->GetItemList(it_count).Get());
+					}
+					it_count++;
+				}
+				else if (x.ut->IsUserTypeList(i) && wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "@"sv)) {
+					x.global->LinkUserType(x.ut->GetUserTypeList(ut_count));
+					x.ut->GetUserTypeList(ut_count)->SetName(x.ut->GetUserTypeList(ut_count)->GetName().substr(1));
+					x.ut->GetUserTypeList(ut_count) = nullptr;
+
+					x.ut->RemoveUserTypeList(ut_count);
+					count--;
+					i--;
+				}
+				else if (x.ut->IsUserTypeList(i) && !wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "@"sv)) {
+					if (wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "$"sv)) {
+						auto temp = x.ut->GetUserTypeList(ut_count)->GetName();
+						auto name = temp.substr(1);
+
+						if (name.empty()) {
+
+							for (long long j = 0; j < x.global->GetUserTypeListSize(); ++j) {
+								if (_InsertFunc(x.global->GetUserTypeList(j), x.ut->GetUserTypeList(ut_count), eventUT)) {
+									que.push(UtInfo(x.global->GetUserTypeList(j), x.ut->GetUserTypeList(ut_count)
+										, x.dir + "/$ut" + std::to_string(j)
+									));
+								}
+							}
+						}
+						else {
+
+							auto usertype = x.global->GetUserTypeItemIdx(name);
+
+							for (long long j = 0; j < usertype.size(); ++j) {
+								if (_InsertFunc(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count), eventUT)) {
+									que.push(UtInfo(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count),
+										x.dir + "/$ut" + std::to_string(usertype[j])));
+								}
+							}
+						}
+					}
+					else {
+						auto usertype = x.global->GetUserTypeItemIdx(x.ut->GetUserTypeList(ut_count)->GetName());
+
+						for (long long j = 0; j < usertype.size(); ++j) {
+							//if (_InsertFunc(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count), eventUT)) {
+							que.push(UtInfo(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count),
+								x.dir + "/$ut" + std::to_string(usertype[j])));
+							//}
+						}
+					}
+					ut_count++;
+				}
+				else if (x.ut->IsUserTypeList(i)) {
+					ut_count++;
+				}
+				else {
+					it_count++;
+				}
+
+				count++;
+			}
+		}
+
+		return true;
+	}
+
+	bool RemoveFunc(wiz::SmartPtr<wiz::load_data::UserType> global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
+		if (!_RemoveFunc(global, insert_ut, eventUT)) {
+			return false;
+		}
+		std::string dir = "/.";
+		std::queue<UtInfo> que;
+		// insert
+		que.push(UtInfo(global, insert_ut, dir));
+
+		while (!que.empty()) {
+			UtInfo x = que.front();
+			que.pop();
+
+			// find non-@
+			long long ut_count = x.ut->GetUserTypeListSize() - 1;
+			long long it_count = x.ut->GetItemListSize() - 1;
+			long long count = x.ut->GetIListSize() - 1;
+
+			//chk only @  ! - todo
+			for (long long i = x.ut->GetIListSize() - 1; i >= 0; --i) {
+				if (x.ut->IsItemList(i) && x.ut->GetItemList(it_count).GetName().empty()
+					&& wiz::String::startsWith(x.ut->GetItemList(it_count).Get(), "@"sv)) {
+
+					if (wiz::String::startsWith(x.ut->GetItemList(it_count).Get(), "@%event_"sv)) {
+						std::string event_id = x.ut->GetItemList(it_count).Get().substr(8);
+
+						wiz::ClauText clautext;
+						wiz::ExecuteData executeData;
+						executeData.pEvents = insert_ut->GetParent();
+						wiz::Option option;
+
+						wiz::load_data::UserType callUT;
+						std::string statements;
+
+						statements += " Event = { id = NONE  ";
+						statements += " $call = { id = " + event_id + " ";
+						statements += " name = _name  ";
+						statements += " value = _value ";
+						statements += " is_user_type = FALSE ";
+						statements += " real_dir =  _real_dir "; //+wiz::load_data::LoadData::GetRealDir(dir, global) + " ";
+						statements += " relative_dir = _dir "; // +dir + " ";
+						statements += " idx = _idx "; // +std::to_string(x_idx) + " "; // removal?
+						statements += " } ";
+
+						statements += " $return = { $return_value = { } }  ";
+						statements += " } ";
+
+						wiz::load_data::LoadData::LoadDataFromString(statements, callUT);
+
+						auto temp = x.global->GetItemIdx("");
+
+						for (long long j = 0; j < temp.size(); ++j) {
+							auto callInfo = wiz::load_data::UserType::Find(&callUT, "/./Event/$call");
+
+							callInfo.second[0]->SetItem("name", "$NO_NAME");
+							callInfo.second[0]->SetItem("value", x.global->GetItemList(temp[j]).Get());
+							callInfo.second[0]->SetItem("real_dir", wiz::load_data::LoadData::GetRealDir(x.dir, x.global));
+							callInfo.second[0]->SetItem("relative_dir", x.dir);
+							callInfo.second[0]->SetItem("idx", std::to_string(temp[j]));
+
+							std::string result = clautext.execute_module(" Main = { $call = { id = NONE  } } " + callUT.ToString(), x.global,
+								executeData, option, 1);
+
+							if (result == "TRUE"sv) { //x.ut->GetItemList(it_count).Get().substr(1)) {
+								x.global->RemoveItemList(temp[j]);
+							}
+						}
+					}
+					else {
+						x.global->RemoveItemList("", x.ut->GetItemList(it_count).Get().substr(1));
+					}
+					it_count--;
+					//x.global->AddItemType(wiz::load_data::ItemType<std::string>("", x.ut->GetItemList(it_count).Get().substr(1)));
+				}
+				else if (x.ut->IsItemList(i) && wiz::String::startsWith(x.ut->GetItemList(it_count).GetName(), "@"sv)) {
+					//x.global->AddItemType(wiz::load_data::ItemType<std::string>(
+					//	x.ut->GetItemList(it_count).GetName().substr(1),
+					//	x.ut->GetItemList(it_count).Get()));
+					if (wiz::String::startsWith(x.ut->GetItemList(it_count).Get(), "%event_"sv)) {
+						std::string event_id = x.ut->GetItemList(it_count).Get().substr(7);
+
+						wiz::ClauText clautext;
+						wiz::ExecuteData executeData;
+						executeData.pEvents = insert_ut->GetParent();
+						wiz::Option option;
+						wiz::load_data::UserType callUT;
+						std::string statements;
+
+						statements += " Event = { id = NONE  ";
+						statements += " $call = { id = " + event_id + " ";
+						statements += " name = _name  ";
+						statements += " value = _value ";
+						statements += " is_user_type = FALSE ";
+						statements += " real_dir =  _real_dir "; //+wiz::load_data::LoadData::GetRealDir(dir, global) + " ";
+						statements += " relative_dir = _dir "; // +dir + " ";
+						statements += " idx = _idx "; // +std::to_string(x_idx) + " "; // removal?
+						statements += " } ";
+
+						statements += " $return = { $return_value = { } }  ";
+						statements += " } ";
+
+						wiz::load_data::LoadData::LoadDataFromString(statements, callUT);
+
+						auto name = x.ut->GetItemList(it_count).GetName().substr(1);
+						auto temp = x.global->GetItemIdx(name);
+
+						if (wiz::String::startsWith(name, "&"sv) && name.size() >= 2) {
+							long long idx = std::stoll(name.substr(1));
+
+							if (idx < 0 || idx >= x.global->GetItemListSize()) { // .size()) {
+								return false;
+							}
+							auto valName = x.ut->GetItemList(it_count).Get();
+
+							auto callInfo = wiz::load_data::UserType::Find(&callUT, "/./Event/$call");
+
+							callInfo.second[0]->SetItem("name", name);
+							callInfo.second[0]->SetItem("value", x.global->GetItemList(idx).Get());
+							callInfo.second[0]->SetItem("real_dir", wiz::load_data::LoadData::GetRealDir(x.dir, x.global));
+							callInfo.second[0]->SetItem("relative_dir", x.dir);
+							callInfo.second[0]->SetItem("idx", std::to_string(idx));
+
+							std::string result = clautext.execute_module(" Main = { $call = { id = NONE  } } " + callUT.ToString(), x.global,
+								executeData, option, 1);
+
+							if (result == "TRUE"sv) {
+								x.global->RemoveItemList(idx);
+							}
+						}
+						else {
+							for (long long j = 0; j < temp.size(); ++j) {
+								auto callInfo = wiz::load_data::UserType::Find(&callUT, "/./Event/$call");
+
+								callInfo.second[0]->SetItem("name", name);
+								callInfo.second[0]->SetItem("value", x.global->GetItemList(temp[j]).Get());
+								callInfo.second[0]->SetItem("real_dir", wiz::load_data::LoadData::GetRealDir(x.dir, x.global));
+								callInfo.second[0]->SetItem("relative_dir", x.dir);
+								callInfo.second[0]->SetItem("idx", std::to_string(temp[j]));
+
+								std::string result = clautext.execute_module(" Main = { $call = { id = NONE  } } " + callUT.ToString(), x.global,
+									executeData, option, 1);
+
+								if (result == "TRUE"sv) {
+									x.global->RemoveItemList(temp[j]);
+								}
+							}
+						}
+					}
+					else {
+						x.global->RemoveItemList(x.ut->GetItemList(it_count).GetName().substr(1), x.ut->GetItemList(it_count).Get());
+					}
+
+					it_count--;
+				}
+				else if (x.ut->IsUserTypeList(i) && wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "@"sv)) {
+					if (x.ut->GetUserTypeList(ut_count)->GetName() == "@$"sv) {
+						for (long long j = x.global->GetUserTypeListSize() - 1; j >= 0; --j) {
+							if (_RemoveFunc(x.global->GetUserTypeList(j), x.ut->GetUserTypeList(ut_count), eventUT)) {
+								delete[] x.global->GetUserTypeList(j);
+								x.global->GetUserTypeList(j) = nullptr;
+								x.global->RemoveUserTypeList(j);
+							}
+						}
+					}
+					else {
+						auto usertype = x.global->GetUserTypeItemIdx(x.ut->GetUserTypeList(ut_count)->GetName().substr(1));
+
+						for (long long j = usertype.size() - 1; j >= 0; --j) {
+							if (_RemoveFunc(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count), eventUT)) {
+								x.global->RemoveUserTypeList(usertype[j]);
+							}
+						}
+					}
+					ut_count--;
+				}
+				else if (x.ut->IsUserTypeList(i) && false == wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "@"sv)) {
+					if (wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "$"sv)) {
+						auto temp = x.ut->GetUserTypeList(ut_count)->GetName();
+						auto name = temp.substr(1);
+
+						if (name.empty()) {
+
+							for (long long j = 0; j < x.global->GetUserTypeListSize(); ++j) {
+								if (_InsertFunc(x.global->GetUserTypeList(j), x.ut->GetUserTypeList(ut_count), eventUT)) {
+									que.push(UtInfo(x.global->GetUserTypeList(j), x.ut->GetUserTypeList(ut_count)
+										, x.dir + "/$ut" + std::to_string(j)
+									));
+								}
+							}
+						}
+						else {
+							auto usertype = x.global->GetUserTypeItemIdx(name);
+
+							for (long long j = 0; j < usertype.size(); ++j) {
+								if (_InsertFunc(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count), eventUT)) {
+									que.push(UtInfo(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count),
+										x.dir + "/$ut" + std::to_string(usertype[j])));
+								}
+							}
+						}
+					}
+					else {
+						auto usertype = x.global->GetUserTypeItemIdx(x.ut->GetUserTypeList(ut_count)->GetName());
+
+						for (long long j = 0; j < usertype.size(); ++j) {
+							//if (_RemoveFunc(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count), eventUT)) {
+							que.push(UtInfo(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count),
+								x.dir + "/$ut" + std::to_string(usertype[j])));
+							//}
+						}
+					}
+
+					ut_count--;
+				}
+				else if (x.ut->IsUserTypeList(i)) {
+					ut_count--;
+				}
+				else if (x.ut->IsItemList(i)) {
+					it_count--;
+				}
+
+				count--;
+			}
+		}
+
+		return true;
+	}
+
+	bool UpdateFunc(wiz::SmartPtr<wiz::load_data::UserType> global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
+		if (!_UpdateFunc(global, insert_ut, eventUT)) {
+			return false;
+		}
+		std::string dir = "/.";
+		std::queue<UtInfo> que;
+		// insert
+		que.push(UtInfo(global, insert_ut, dir));
+
+		while (!que.empty()) {
+			UtInfo x = que.front();
+			que.pop();
+
+			// find non-@
+			long long ut_count = 0;
+			long long it_count = 0;
+			long long count = 0;
+
+			//chk only @  ! - todo
+			for (long long i = 0; i < x.ut->GetIListSize(); ++i) {
+				if (x.ut->IsItemList(i) && x.ut->GetItemList(it_count).GetName().empty()
+					&& wiz::String::startsWith(x.ut->GetItemList(it_count).Get(), "@"sv)) {
+					// think @&0 = 3 # 0 <- index, 3 <- value.
+					//x.global->GetItemList(0).Set(0, x.ut->GetItemList(it_count).Get());
+				}
+				else if (x.ut->IsItemList(i) && wiz::String::startsWith(x.ut->GetItemList(it_count).GetName(), "@"sv)) {
+					if (wiz::String::startsWith(x.ut->GetItemList(it_count).Get(), "%event_"sv)) {
+						std::string event_id = x.ut->GetItemList(it_count).Get().substr(7);
+
+						wiz::ClauText clautext;
+						wiz::ExecuteData executeData;
+						executeData.pEvents = insert_ut->GetParent();
+						wiz::Option option;
+
+						wiz::load_data::UserType callUT;
+						std::string statements;
+
+						statements += " Event = { id = NONE  ";
+						statements += " $call = { id = " + event_id + " ";
+						statements += " name = _name  ";
+						statements += " value = _value ";
+						statements += " is_user_type = FALSE ";
+						statements += " real_dir =  _real_dir "; //+wiz::load_data::LoadData::GetRealDir(dir, global) + " ";
+						statements += " relative_dir = _dir "; // +dir + " ";
+						statements += " idx = _idx "; // +std::to_string(x_idx) + " "; // removal?
+						statements += " } ";
+
+						statements += " $return = { $return_value = { } }  ";
+						statements += " } ";
+
+						wiz::load_data::LoadData::LoadDataFromString(statements, callUT);
+
+						auto temp = wiz::load_data::UserType::Find(&callUT, "/./Event/$call").second[0];
+
+						std::string name = x.ut->GetItemList(it_count).GetName().substr(1);
+						auto position = x.global->GetItemIdx(name);
+
+						{
+							std::string name = x.ut->GetItemList(it_count).GetName().substr(1);
+							if (wiz::String::startsWith(name, "&"sv) && name.size() >= 2) {
+								long long idx = std::stoll(name.substr(1));
+								if (idx < 0 || idx >= x.global->GetItemListSize()) {
+									return false; // error
+								}
+								else {
+									position.clear();
+									position.push_back(idx);
+								}
+							}
+
+
+							for (long long j = 0; j < position.size(); ++j) {
+
+								temp->SetItem("name", x.ut->GetItemList(it_count).GetName().substr(1));
+								temp->SetItem("value", x.global->GetItemList(position[j]).Get());
+								temp->SetItem("relative_dir", x.dir);
+								temp->SetItem("real_dir", wiz::load_data::LoadData::GetRealDir(x.dir, x.global));
+								temp->SetItem("idx", std::to_string(x.global->GetIlistIndex(position[j], 1)));
+
+								std::string result = clautext.execute_module(" Main = { $call = { id = NONE  } } " + callUT.ToString(), x.global, executeData, option, 1);
+
+								x.global->GetItemList(position[j]).Set(0, result);
+
+							}
+						}
+					}
+					else {
+						std::string name = x.ut->GetItemList(it_count).GetName().substr(1);
+						if (wiz::String::startsWith(name, "&"sv) && name.size() >= 2) {
+							long long idx = std::stoll(name.substr(1));
+							if (idx < 0 || idx >= x.global->GetItemListSize()) {
+								return false;
+							}
+							auto value = x.ut->GetItemList(it_count).Get();
+							x.global->GetItemList(idx).Set(0, value);
+						}
+						else {
+							x.global->SetItem(std::string(x.ut->GetItemList(it_count).GetName().substr(1)),
+								x.ut->GetItemList(it_count).Get());
+						}
+					}
+				}
+				else if (x.ut->IsUserTypeList(i) && !wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "@"sv)) {
+					if (wiz::String::startsWith(x.ut->GetUserTypeList(ut_count)->GetName(), "$"sv)) {
+						auto temp = x.ut->GetUserTypeList(ut_count)->GetName();
+						auto name = temp.substr(1);
+
+						if (name.empty()) {
+
+							for (long long j = 0; j < x.global->GetUserTypeListSize(); ++j) {
+								if (_InsertFunc(x.global->GetUserTypeList(j), x.ut->GetUserTypeList(ut_count), eventUT)) {
+									que.push(UtInfo(x.global->GetUserTypeList(j), x.ut->GetUserTypeList(ut_count)
+										, x.dir + "/$ut" + std::to_string(j)
+									));
+								}
+							}
+						}
+						else {
+
+							auto usertype = x.global->GetUserTypeItemIdx(name);
+
+							for (long long j = 0; j < usertype.size(); ++j) {
+								if (_InsertFunc(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count), eventUT)) {
+									que.push(UtInfo(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count),
+										x.dir + "/$ut" + std::to_string(usertype[j])));
+								}
+							}
+						}
+					}
+					else {
+						auto usertype = x.global->GetUserTypeItemIdx(x.ut->GetUserTypeList(ut_count)->GetName());
+
+						for (long long j = 0; j < usertype.size(); ++j) {
+							//if (_UpdateFunc(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count), eventUT)) {
+							que.push(UtInfo(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count),
+								x.dir + "/$ut" + std::to_string(usertype[j])));
+							//	}
+						}
+					}
+				}
+
+				if (x.ut->IsItemList(i)) {
+					it_count++;
+				}
+				else {
+					ut_count++;
+				}
+				count++;
+			}
+		}
+
+		return true;
+	}
+
 
 template <class T> // T has clear method, default constructor.
 class Node
@@ -321,7 +1258,38 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 
 			while (val != nullptr)
 			{
-				if ("$copy"sv == val->GetName()) { // to = { } from = { } option = { 1 : internal data, default, 2 : total data }
+				if ("$query"sv == val->GetName()) {
+					ExecuteData _executeData; _executeData.depth = executeData.depth;
+					_executeData.chkInfo = true;
+					_executeData.info = eventStack.top();
+					_executeData.pObjectMap = objectMapPtr;
+					_executeData.pEvents = eventPtr;
+					_executeData.pModule = moduleMapPtr;
+					_executeData.noUseInput = executeData.noUseInput;
+					_executeData.noUseOutput = executeData.noUseOutput;
+
+					// start dir
+					std::string work_dir = wiz::load_data::LoadData::ToBool4(val, global, *val->GetUserTypeList(0), _executeData).ToString();
+
+					wiz::load_data::UserType* work_space = wiz::load_data::UserType::Find(&global, work_dir).second[0];
+
+					for (long long i = 1; i < val->GetUserTypeListSize(); ++i) {
+						const std::string name = val->GetUserTypeList(i)->GetName();
+						if (name == "$insert"sv) {
+							eventStack.top().return_value = InsertFunc(work_space, val->GetUserTypeList(i), &events);
+						}
+						else if (name == "$update"sv) {
+							eventStack.top().return_value = UpdateFunc(work_space, val->GetUserTypeList(i), &events);
+						}
+						else if (name == "$delete"sv) {
+							eventStack.top().return_value = RemoveFunc(work_space, val->GetUserTypeList(i), &events);
+						}
+					}
+
+					eventStack.top().userType_idx.top()++;
+					break;
+				}
+				else if ("$copy"sv == val->GetName()) { // to = { } from = { } option = { 1 : internal data, default, 2 : total data }
 					ExecuteData _executeData; _executeData.depth = executeData.depth;
 					_executeData.chkInfo = true;
 					_executeData.info = eventStack.top();
