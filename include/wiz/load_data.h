@@ -699,14 +699,14 @@ namespace wiz {
 
 
 					int b = clock();
-					//std::cout << "scan " << b - a << "ms\n";
-					//std::cout << "count " << token_arr_len << "\n";
+					//wiz::Out << "scan " << b - a << "ms\n";
+					//wiz::Out << "count " << token_arr_len << "\n";
 
 					//	{
 					//		for (long long i = 0; i < token_arr_len; ++i) {
 					//			std::string(buffer + GetIdx(token_arr[i]), GetLength(token_arr[i]));
 				//				if (0 == GetIdx(token_arr[i])) {
-					//				std::cout << "chk";
+					//				wiz::Out << "chk";
 					//			}
 					//		}
 					//	}
@@ -800,17 +800,17 @@ namespace wiz {
 								break;
 							case -1:
 							case -4:
-								std::cout << "Syntax Error\n";
+								wiz::Out << "Syntax Error\n";
 								break;
 							case -2:
-								std::cout << "error final state is not last_state!\n";
+								wiz::Out << "error final state is not last_state!\n";
 								break;
 							case -3:
-								std::cout << "error x > buffer + buffer_len:\n";
+								wiz::Out << "error x > buffer + buffer_len:\n";
 								break;
 								// -4, -5?
 							default:
-								std::cout << "unknown parser error\n";
+								wiz::Out << "unknown parser error\n";
 								break;
 							}
 						}
@@ -818,17 +818,17 @@ namespace wiz {
 						// Merge
 						try {
 							if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->IsVirtual()) {
-								std::cout << "not valid file1\n";
+								wiz::Out << "not valid file1\n";
 								throw 1;
 							}
 							if (next.back()->GetParent() != nullptr) {
-								std::cout << "not valid file2\n";
+								wiz::Out << "not valid file2\n";
 								throw 2;
 							}
 
 							int err = Merge(&_global, &__global[0], &next[0]);
 							if (-1 == err || (pivots.size() == 0 && 1 == err)) {
-								std::cout << "not valid file3\n";
+								wiz::Out << "not valid file3\n";
 								throw 3;
 							}
 
@@ -836,11 +836,11 @@ namespace wiz {
 								// linearly merge and error check...
 								int err = Merge(next[i - 1], &__global[i], &next[i]);
 								if (-1 == err) {
-									std::cout << "not valid file4\n";
+									wiz::Out << "not valid file4\n";
 									throw 4;
 								}
 								else if (i == pivots.size() && 1 == err) {
-									std::cout << "not valid file5\n";
+									wiz::Out << "not valid file5\n";
 									throw 5;
 								}
 							}
@@ -887,13 +887,13 @@ namespace wiz {
 
 
 					int b = clock();
-					//	std::cout << "scan " << b - a << "ms\n";
+					//	wiz::Out << "scan " << b - a << "ms\n";
 
 						//	{
 						//		for (long long i = 0; i < token_arr_len; ++i) {
 						//			std::string(buffer + GetIdx(token_arr[i]), GetLength(token_arr[i]));
 					//				if (0 == GetIdx(token_arr[i])) {
-						//				std::cout << "chk";
+						//				wiz::Out << "chk";
 						//			}
 						//		}
 						//	}
@@ -987,17 +987,17 @@ namespace wiz {
 								break;
 							case -1:
 							case -4:
-								std::cout << "Syntax Error\n";
+								wiz::Out << "Syntax Error\n";
 								break;
 							case -2:
-								std::cout << "error final state is not last_state!\n";
+								wiz::Out << "error final state is not last_state!\n";
 								break;
 							case -3:
-								std::cout << "error x > buffer + buffer_len:\n";
+								wiz::Out << "error x > buffer + buffer_len:\n";
 								break;
 								// -4, -5?
 							default:
-								std::cout << "unknown parser error\n";
+								wiz::Out << "unknown parser error\n";
 								break;
 							}
 						}
@@ -1005,17 +1005,17 @@ namespace wiz {
 						// Merge
 						try {
 							if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->IsVirtual()) {
-								std::cout << "not valid file1\n";
+								wiz::Out << "not valid file1\n";
 								throw 1;
 							}
 							if (next.back()->GetParent() != nullptr) {
-								std::cout << "not valid file2\n";
+								wiz::Out << "not valid file2\n";
 								throw 2;
 							}
 
 							int err = Merge(&_global, &__global[0], &next[0]);
 							if (-1 == err || (pivots.size() == 0 && 1 == err)) {
-								std::cout << "not valid file3\n";
+								wiz::Out << "not valid file3\n";
 								throw 3;
 							}
 
@@ -1023,11 +1023,11 @@ namespace wiz {
 								// linearly merge and error check...
 								int err = Merge(next[i - 1], &__global[i], &next[i]);
 								if (-1 == err) {
-									std::cout << "not valid file4\n";
+									wiz::Out << "not valid file4\n";
 									throw 4;
 								}
 								else if (i == pivots.size() && 1 == err) {
-									std::cout << "not valid file5\n";
+									wiz::Out << "not valid file5\n";
 									throw 5;
 								}
 							}
@@ -1102,10 +1102,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const char* err) { std::cout << err << "\n"; inFile.close(); return false; }
-				catch (const std::string& e) { std::cout << e << "\n"; inFile.close(); return false; }
-				catch (const std::exception& e) { std::cout << e.what() << "\n"; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << "\n"; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << "\n"; inFile.close(); return false; }
+				catch (const std::string& e) { wiz::Out << e << "\n"; inFile.close(); return false; }
+				catch (const std::exception& e) { wiz::Out << e.what() << "\n"; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << "\n"; inFile.close(); return false; }
 
 
 				global = std::move(globalTemp);
@@ -1157,10 +1157,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const char* err) { std::cout << err << "\n"; inFile.close(); return false; }
-				catch (const std::string& e) { std::cout << e << "\n"; inFile.close(); return false; }
-				catch (const std::exception& e) { std::cout << e.what() << "\n"; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << "\n"; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << "\n"; inFile.close(); return false; }
+				catch (const std::string& e) { wiz::Out << e << "\n"; inFile.close(); return false; }
+				catch (const std::exception& e) { wiz::Out << e.what() << "\n"; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << "\n"; inFile.close(); return false; }
 
 
 				global = std::move(globalTemp);
@@ -1172,7 +1172,7 @@ namespace wiz {
 
 				// Scan + Parse 
 				if (false == LoadDataFromFile(fileName, globalTemp, thr_num, thr_num)) { return false; }
-				//std::cout << "LoadData2 End" << "\n";
+				//wiz::Out << "LoadData2 End" << "\n";
 
 				global = std::move(globalTemp);
 				return true;
@@ -1263,10 +1263,10 @@ namespace wiz {
 						return false; // return true?
 					}
 				}
-				catch (const char* err) { std::cout << err << "\n";  return false; }
-				catch (const std::string& e) { std::cout << e << "\n";  return false; }
-				catch (const std::exception& e) { std::cout << e.what() << "\n";  return false; }
-				catch (...) { std::cout << "not expected error" << "\n"; return false; }
+				catch (const char* err) { wiz::Out << err << "\n";  return false; }
+				catch (const std::string& e) { wiz::Out << e << "\n";  return false; }
+				catch (const std::exception& e) { wiz::Out << e.what() << "\n";  return false; }
+				catch (...) { wiz::Out << "not expected error" << "\n"; return false; }
 
 
 				ut = std::move(globalTemp);
@@ -1292,10 +1292,10 @@ namespace wiz {
 						return false; // return true?
 					}
 				}
-				catch (const char* err) { std::cout << err << "\n";  return false; }
-				catch (const std::string& e) { std::cout << e << "\n";  return false; }
-				catch (const std::exception& e) { std::cout << e.what() << "\n";  return false; }
-				catch (...) { std::cout << "not expected error" << "\n"; return false; }
+				catch (const char* err) { wiz::Out << err << "\n";  return false; }
+				catch (const std::string& e) { wiz::Out << e << "\n";  return false; }
+				catch (const std::exception& e) { wiz::Out << e.what() << "\n";  return false; }
+				catch (...) { wiz::Out << "not expected error" << "\n"; return false; }
 
 
 				ut = std::move(globalTemp);
@@ -2001,15 +2001,15 @@ namespace wiz {
 					int b = clock();
 
 					//
-					//std::cout << "scan " << b - a << "ms\n";
-					//std::cout << "count " << token_arr_len << "\n";
+					//wiz::Out << "scan " << b - a << "ms\n";
+					//wiz::Out << "count " << token_arr_len << "\n";
 					
 					
 					//	{
 					//		for (long long i = 0; i < token_arr_len; ++i) {
 					//			std::string(buffer + GetIdx(token_arr[i]), GetLength(token_arr[i]));
 				//				if (0 == GetIdx(token_arr[i])) {
-					//				std::cout << "chk";
+					//				wiz::Out << "chk";
 					//			}
 					//		}
 					//	}
@@ -2049,23 +2049,23 @@ namespace wiz {
 							return -1;
 						case -1:
 						case -4:
-							std::cout << "Syntax Error\n";
+							wiz::Out << "Syntax Error\n";
 							return 0;
 							break;
 						case -2:
-							std::cout << "error final state is not last_state!\n";
+							wiz::Out << "error final state is not last_state!\n";
 							return 0;
 							break;
 						case -3:
-							std::cout << "error x > buffer + buffer_len:\n";
+							wiz::Out << "error x > buffer + buffer_len:\n";
 							return 0;
 							break;
 						case -5:
-							std::cout << "not valid utf-8\n";
+							wiz::Out << "not valid utf-8\n";
 							return 1; // chk.
 							break;
 						default:
-							std::cout << "unknown parser error\n";
+							wiz::Out << "unknown parser error\n";
 							return 0;
 							break;
 						}
@@ -2144,24 +2144,24 @@ namespace wiz {
 							case -1:
 							case -4:
 								has_error = true;
-								std::cout << "Syntax Error\n";
+								wiz::Out << "Syntax Error\n";
 								break;
 							case -2:
 								has_error = true;
-								std::cout << "error final state is not last_state!\n";
+								wiz::Out << "error final state is not last_state!\n";
 								break;
 							case -3:
 								has_error = true;
-								std::cout << "error x > buffer + buffer_len:\n";
+								wiz::Out << "error x > buffer + buffer_len:\n";
 								break;
 							case -5: // special case.
 								//has_error = true;
-								std::cout << "not valid utf-8\n";
+								wiz::Out << "not valid utf-8\n";
 								utf8 = false;
 								break;
 							default:
 								has_error = true;
-								std::cout << "unknown parser error\n";
+								wiz::Out << "unknown parser error\n";
 								break;
 							}
 						}
@@ -2170,17 +2170,17 @@ namespace wiz {
 							// Merge
 							try {
 								if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->GetName() == "#") {
-									std::cout << "not valid file1\n";
+									wiz::Out << "not valid file1\n";
 									throw 1;
 								}
 								if (next.back()->GetParent() != nullptr) {
-									std::cout << "not valid file2\n";
+									wiz::Out << "not valid file2\n";
 									throw 2;
 								}
 
 								int err = Merge(&_global, &__global[0], &next[0]);
 								if (-1 == err || (pivots.size() == 0 && 1 == err)) {
-									std::cout << "not valid file3\n";
+									wiz::Out << "not valid file3\n";
 									throw 3;
 								}
 
@@ -2188,11 +2188,11 @@ namespace wiz {
 									// linearly merge and error check...
 									int err = Merge(next[i - 1], &__global[i], &next[i]);
 									if (-1 == err) {
-										std::cout << "not valid file4\n";
+										wiz::Out << "not valid file4\n";
 										throw 4;
 									}
 									else if (i == pivots.size() && 1 == err) {
-										std::cout << "not valid file5\n";
+										wiz::Out << "not valid file5\n";
 										throw 5;
 									}
 								}
@@ -2244,13 +2244,13 @@ namespace wiz {
 
 
 					int b = clock();
-					//std::cout << "scan " << b - a << "ms\n";
-					//std::cout << "count " << token_arr_len << "\n";
+					//wiz::Out << "scan " << b - a << "ms\n";
+					//wiz::Out << "count " << token_arr_len << "\n";
 					//	{
 					//		for (long long i = 0; i < token_arr_len; ++i) {
 					//			std::string(buffer + GetIdx(token_arr[i]), GetLength(token_arr[i]));
 				//				if (0 == GetIdx(token_arr[i])) {
-					//				std::cout << "chk";
+					//				wiz::Out << "chk";
 					//			}
 					//		}
 					//	}
@@ -2290,23 +2290,23 @@ namespace wiz {
 							return -1;
 						case -1:
 						case -4:
-							std::cout << "Syntax Error\n";
+							wiz::Out << "Syntax Error\n";
 							return 0;
 							break;
 						case -2:
-							std::cout << "error final state is not last_state!\n";
+							wiz::Out << "error final state is not last_state!\n";
 							return 0;
 							break;
 						case -3:
-							std::cout << "error x > buffer + buffer_len:\n";
+							wiz::Out << "error x > buffer + buffer_len:\n";
 							return 0;
 							break;
 						case -5:
-							std::cout << "not valid utf-8\n";
+							wiz::Out << "not valid utf-8\n";
 							return 1; // chk.
 							break;
 						default:
-							std::cout << "unknown parser error\n";
+							wiz::Out << "unknown parser error\n";
 							return 0;
 							break;
 						}
@@ -2385,24 +2385,24 @@ namespace wiz {
 							case -1:
 							case -4:
 								has_error = true;
-								std::cout << "Syntax Error\n";
+								wiz::Out << "Syntax Error\n";
 								break;
 							case -2:
 								has_error = true;
-								std::cout << "error final state is not last_state!\n";
+								wiz::Out << "error final state is not last_state!\n";
 								break;
 							case -3:
 								has_error = true;
-								std::cout << "error x > buffer + buffer_len:\n";
+								wiz::Out << "error x > buffer + buffer_len:\n";
 								break;
 							case -5: // special case.
 								//has_error = true;
-								std::cout << "not valid utf-8\n";
+								wiz::Out << "not valid utf-8\n";
 								utf8 = false;
 								break;
 							default:
 								has_error = true;
-								std::cout << "unknown parser error\n";
+								wiz::Out << "unknown parser error\n";
 								break;
 							}
 						}
@@ -2411,17 +2411,17 @@ namespace wiz {
 							// Merge
 							try {
 								if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->GetName() == "#") {
-									std::cout << "not valid file1\n";
+									wiz::Out << "not valid file1\n";
 									throw 1;
 								}
 								if (next.back()->GetParent() != nullptr) {
-									std::cout << "not valid file2\n";
+									wiz::Out << "not valid file2\n";
 									throw 2;
 								}
 
 								int err = Merge(&_global, &__global[0], &next[0]);
 								if (-1 == err || (pivots.size() == 0 && 1 == err)) {
-									std::cout << "not valid file3\n";
+									wiz::Out << "not valid file3\n";
 									throw 3;
 								}
 
@@ -2429,11 +2429,11 @@ namespace wiz {
 									// linearly merge and error check...
 									int err = Merge(next[i - 1], &__global[i], &next[i]);
 									if (-1 == err) {
-										std::cout << "not valid file4\n";
+										wiz::Out << "not valid file4\n";
 										throw 4;
 									}
 									else if (i == pivots.size() && 1 == err) {
-										std::cout << "not valid file5\n";
+										wiz::Out << "not valid file5\n";
 										throw 5;
 									}
 								}
@@ -2486,13 +2486,13 @@ namespace wiz {
 
 
 					int b = clock();
-					std::cout << "scan " << b - a << "ms\n";
-					std::cout << "count " << token_arr_len << "\n";
+					wiz::Out << "scan " << b - a << "ms\n";
+					wiz::Out << "count " << token_arr_len << "\n";
 					//	{
 					//		for (long long i = 0; i < token_arr_len; ++i) {
 					//			std::string(buffer + GetIdx(token_arr[i]), GetLength(token_arr[i]));
 				//				if (0 == GetIdx(token_arr[i])) {
-					//				std::cout << "chk";
+					//				wiz::Out << "chk";
 					//			}
 					//		}
 					//	}
@@ -2535,23 +2535,23 @@ namespace wiz {
 							return -1;
 						case -1:
 						case -4:
-							std::cout << "Syntax Error\n";
+							wiz::Out << "Syntax Error\n";
 							return 0;
 							break;
 						case -2:
-							std::cout << "error final state is not last_state!\n";
+							wiz::Out << "error final state is not last_state!\n";
 							return 0;
 							break;
 						case -3:
-							std::cout << "error x > buffer + buffer_len:\n";
+							wiz::Out << "error x > buffer + buffer_len:\n";
 							return 0;
 							break;
 						case -5:
-							std::cout << "not valid utf-8\n";
+							wiz::Out << "not valid utf-8\n";
 							return 1; // chk.
 							break;
 						default:
-							std::cout << "unknown parser error\n";
+							wiz::Out << "unknown parser error\n";
 							return 0;
 							break;
 						}
@@ -2630,24 +2630,24 @@ namespace wiz {
 							case -1:
 							case -4:
 								has_error = true;
-								std::cout << "Syntax Error\n";
+								wiz::Out << "Syntax Error\n";
 								break;
 							case -2:
 								has_error = true;
-								std::cout << "error final state is not last_state!\n";
+								wiz::Out << "error final state is not last_state!\n";
 								break;
 							case -3:
 								has_error = true;
-								std::cout << "error x > buffer + buffer_len:\n";
+								wiz::Out << "error x > buffer + buffer_len:\n";
 								break;
 							case -5: // special case.
 								//has_error = true;
-								std::cout << "not valid utf-8\n";
+								wiz::Out << "not valid utf-8\n";
 								utf8 = false;
 								break;
 							default:
 								has_error = true;
-								std::cout << "unknown parser error\n";
+								wiz::Out << "unknown parser error\n";
 								break;
 							}
 						}
@@ -2656,17 +2656,17 @@ namespace wiz {
 							// Merge
 							try {
 								if (__global[0].GetUserTypeListSize() > 0 && __global[0].GetUserTypeList(0)->GetName() == "#") {
-									std::cout << "not valid file1\n";
+									wiz::Out << "not valid file1\n";
 									throw 1;
 								}
 								if (next.back()->GetParent() != nullptr) {
-									std::cout << "not valid file2\n";
+									wiz::Out << "not valid file2\n";
 									throw 2;
 								}
 
 								int err = Merge(&_global, &__global[0], &next[0]);
 								if (-1 == err || (pivots.size() == 0 && 1 == err)) {
-									std::cout << "not valid file3\n";
+									wiz::Out << "not valid file3\n";
 									throw 3;
 								}
 
@@ -2674,11 +2674,11 @@ namespace wiz {
 									// linearly merge and error check...
 									int err = Merge(next[i - 1], &__global[i], &next[i]);
 									if (-1 == err) {
-										std::cout << "not valid file4\n";
+										wiz::Out << "not valid file4\n";
 										throw 4;
 									}
 									else if (i == pivots.size() && 1 == err) {
-										std::cout << "not valid file5\n";
+										wiz::Out << "not valid file5\n";
 										throw 5;
 									}
 								}
@@ -2766,10 +2766,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const char* err) { std::cout << err << "\n"; inFile.close(); return false; }
-				catch (const std::string& e) { std::cout << e << "\n"; inFile.close(); return false; }
-				catch (const std::exception& e) { std::cout << e.what() << "\n"; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << "\n"; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << "\n"; inFile.close(); return false; }
+				catch (const std::string& e) { wiz::Out << e << "\n"; inFile.close(); return false; }
+				catch (const std::exception& e) { wiz::Out << e.what() << "\n"; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << "\n"; inFile.close(); return false; }
 
 
 				global = std::move(globalTemp);
@@ -2823,10 +2823,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const char* err) { std::cout << err << "\n"; inFile.close(); return false; }
-				catch (const std::string& e) { std::cout << e << "\n"; inFile.close(); return false; }
-				catch (const std::exception& e) { std::cout << e.what() << "\n"; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << "\n"; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << "\n"; inFile.close(); return false; }
+				catch (const std::string& e) { wiz::Out << e << "\n"; inFile.close(); return false; }
+				catch (const std::exception& e) { wiz::Out << e.what() << "\n"; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << "\n"; inFile.close(); return false; }
 
 
 				global = std::move(globalTemp);
@@ -2882,10 +2882,10 @@ namespace wiz {
 
 					inFile.close();
 				}
-				catch (const char* err) { std::cout << err << "\n"; inFile.close(); return false; }
-				catch (const std::string& e) { std::cout << e << "\n"; inFile.close(); return false; }
-				catch (const std::exception& e) { std::cout << e.what() << "\n"; inFile.close(); return false; }
-				catch (...) { std::cout << "not expected error" << "\n"; inFile.close(); return false; }
+				catch (const char* err) { wiz::Out << err << "\n"; inFile.close(); return false; }
+				catch (const std::string& e) { wiz::Out << e << "\n"; inFile.close(); return false; }
+				catch (const std::exception& e) { wiz::Out << e.what() << "\n"; inFile.close(); return false; }
+				catch (...) { wiz::Out << "not expected error" << "\n"; inFile.close(); return false; }
 
 
 				global = std::move(globalTemp);

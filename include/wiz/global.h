@@ -38,18 +38,27 @@ namespace wiz {
 
 	class _Out {
 	private:
+		bool no_use = false;
+
 		std::string LOG_FILE_NAME = "clautext_log.txt";
 		
 		long policy = 0; // default 0 - only console, 1 - only file, 2 - file and console.
- 	public:
-		_Out& operator = (const _Out& other) {
-			policy = other.policy;
-			return *this;
+	public:
+		bool is_no_use() const {
+			return no_use;
+		}
+
+		void change_no_use() {
+			no_use = !no_use;
 		}
 
 		template<class T>
 		_Out& operator << (const T& data) 
 		{
+			if (no_use) {
+				return *this;
+			}
+
 			if (0 == policy || 2 == policy) {
 				std::cout << data;
 			}

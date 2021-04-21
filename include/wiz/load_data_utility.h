@@ -27,9 +27,9 @@ namespace wiz {
 				long long idx = GetIdx(x);
 
 				for (long long i = 0; i < len; ++i) {
-					std::cout << text[idx + i];
+					wiz::Out << text[idx + i];
 				}
-				std::cout << "\n";
+				wiz::Out << "\n";
 			}
 		private:
 			static char convert(const char* arr) {
@@ -260,7 +260,7 @@ namespace wiz {
 					result[2] = convert(third);
 				}
 				else {
-					std::cout << "error in Convert\n";
+					wiz::Out << "error in Convert\n";
 				}
 				return result;
 			}

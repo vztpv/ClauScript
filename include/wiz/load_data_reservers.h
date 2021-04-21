@@ -86,9 +86,9 @@ namespace wiz {
 				long long idx = GetIdx(x);
 
 				for (long long i = 0; i < len; ++i) {
-					std::cout << text[idx + i];
+					wiz::Out << text[idx + i];
 				}
-				std::cout << "\n";
+				wiz::Out << "\n";
 			}
 
 			static long long GetIdx(long long x) {
@@ -372,7 +372,7 @@ namespace wiz {
 
 				{
 					if (0 != state) {
-						std::cout << "[ERROR] state [" << state << "] is not zero \n";
+						wiz::Out << "[ERROR] state [" << state << "] is not zero \n";
 					}
 				}
 
@@ -495,7 +495,7 @@ namespace wiz {
 					token_arr_size = token_arr_count;
 
 					if (0 != state) {
-						std::cout << "[" << state << "] state is not zero.\n";
+						wiz::Out << "[" << state << "] state is not zero.\n";
 					}
 				}
 
@@ -554,7 +554,7 @@ namespace wiz {
 						}
 
 						//int b = clock();
-					//	std::cout << b - a << "ms\n";
+					//	wiz::Out << b - a << "ms\n";
 						_buffer = buffer;
 						_token_arr = token_arr;
 						*_token_arr_len = token_arr_size;
@@ -636,7 +636,7 @@ namespace wiz {
 						buffer = str.c_str();
 					}
 				}
-					//	std::cout << *token_arr_len << "\n";
+					//	wiz::Out << *token_arr_len << "\n";
 				return x;
 			}
 		};
@@ -668,8 +668,8 @@ namespace wiz {
 				long long len = GetLength(x);
 				long long idx = GetIdx(x);
 
-				std::cout << std::string_view(text + idx, len);
-				std::cout << "\n";
+				wiz::Out << std::string_view(text + idx, len);
+				wiz::Out << "\n";
 			}
 
 			static long long GetIdx(long long x) {
@@ -976,7 +976,7 @@ namespace wiz {
 
 
 								if (!Utility::ValidateUTF8(text, idx, len)) {
-									std::cout << "not valid char";
+									wiz::Out << "not valid char";
 								}
 
 								tokens[real_token_arr_count] = Get(idx, len, ch, option);
@@ -1012,7 +1012,7 @@ namespace wiz {
 								}
 
 								if (!Utility::ValidateUTF8(text, idx, len)) {
-									std::cout << "not valid char";
+									wiz::Out << "not valid char";
 								}
 
 								tokens[real_token_arr_count] = Get(idx, len, ch, option);
@@ -1041,7 +1041,7 @@ namespace wiz {
 
 				{
 					if (0 != state) {
-						std::cout << "[ERROR] state [" << state << "] is not zero \n";
+						wiz::Out << "[ERROR] state [" << state << "] is not zero \n";
 					}
 				}
 
@@ -1164,7 +1164,7 @@ namespace wiz {
 					token_arr_size = token_arr_count;
 
 					if (0 != state) {
-						std::cout << "[" << state << "] state is not zero.\n";
+						wiz::Out << "[" << state << "] state is not zero.\n";
 					}
 				}
 
@@ -1223,7 +1223,7 @@ namespace wiz {
 						}
 
 						//int b = clock();
-					//	std::cout << b - a << "ms\n";
+					//	wiz::Out << b - a << "ms\n";
 						_buffer = buffer;
 						_token_arr = token_arr;
 						*_token_arr_len = token_arr_size;
@@ -1305,7 +1305,7 @@ namespace wiz {
 						buffer = str.c_str();
 					}
 				}
-				//	std::cout << *token_arr_len << "\n";
+				//	wiz::Out << *token_arr_len << "\n";
 				return x;
 			}
 		};
@@ -1338,8 +1338,8 @@ namespace wiz {
 				long long len = GetLength(x);
 				long long idx = GetIdx(x);
 
-				std::cout << std::string_view(text + idx, len);
-				std::cout << "\n";
+				wiz::Out << std::string_view(text + idx, len);
+				wiz::Out << "\n";
 			}
 
 			static long long GetIdx(long long x) {
@@ -1667,7 +1667,7 @@ namespace wiz {
 
 
 								if (!Utility::ValidateUTF8(text, idx, len)) {
-									std::cout << "not valid char";
+									wiz::Out << "not valid char";
 								}
 
 								tokens[real_token_arr_count] = Get(idx, len, ch, option);
@@ -1703,7 +1703,7 @@ namespace wiz {
 								}
 
 								if (!Utility::ValidateUTF8(text, idx, len)) {
-									std::cout << "not valid char";
+									wiz::Out << "not valid char";
 								}
 
 								tokens[real_token_arr_count] = Get(idx, len, ch, option);
@@ -1732,7 +1732,7 @@ namespace wiz {
 
 				{
 					if (0 != state) {
-						std::cout << "[ERROR] state [" << state << "] is not zero \n";
+						wiz::Out << "[ERROR] state [" << state << "] is not zero \n";
 					}
 				}
 
@@ -1857,7 +1857,7 @@ namespace wiz {
 					token_arr_size = token_arr_count;
 
 					if (0 != state) {
-						std::cout << "[" << state << "] state is not zero.\n";
+						wiz::Out << "[" << state << "] state is not zero.\n";
 					}
 				}
 
@@ -1917,7 +1917,7 @@ namespace wiz {
 						}
 
 						//int b = clock();
-					//	std::cout << b - a << "ms\n";
+					//	wiz::Out << b - a << "ms\n";
 						_buffer = buffer;
 						_token_arr = token_arr;
 						*_token_arr_len = token_arr_size;
@@ -2000,7 +2000,7 @@ namespace wiz {
 						buffer = str.c_str();
 					}
 				}
-				//	std::cout << *token_arr_len << "\n";
+				//	wiz::Out << *token_arr_len << "\n";
 				return x;
 			}
 		};
@@ -2056,9 +2056,9 @@ namespace wiz {
 				long long idx = GetIdx(x);
 
 				for (long long i = 0; i < len; ++i) {
-					std::cout << text[idx + i];
+					wiz::Out << text[idx + i];
 				}
-				std::cout << "\n";
+				wiz::Out << "\n";
 			}
 
 			static long long GetIdx(long long x) {
@@ -2341,7 +2341,7 @@ namespace wiz {
 									ch = text[_idx];
 
 									if (!Utility::ValidateUTF8(text, idx + 1, len - 2)) {
-										std::cout << "not valid char";
+										wiz::Out << "not valid char";
 									}
 								}
 							}
@@ -2369,12 +2369,12 @@ namespace wiz {
 									break;
 								default:
 									state = 1;
-									std::cout << "Syntax Error in pre-parsing0\n";
+									wiz::Out << "Syntax Error in pre-parsing0\n";
 									break;
 								}
 
 								if (slush_start + 1 + 4 >= length) {
-									std::cout << "Syntax Error in pre-parsing0.25\n";
+									wiz::Out << "Syntax Error in pre-parsing0.25\n";
 								}
 
 								for (long long k = 2; k < back_slush_count + 2; ++k) {
@@ -2388,7 +2388,7 @@ namespace wiz {
 										//
 									}
 									else {
-										std::cout << "Syntax Error in pre-parsing0.5\n";
+										wiz::Out << "Syntax Error in pre-parsing0.5\n";
 									}
 								}
 
@@ -2407,7 +2407,7 @@ namespace wiz {
 
 
 							if (_stack.empty()) {
-								std::cout << "Syntax Error in pre-parsing1\n";
+								wiz::Out << "Syntax Error in pre-parsing1\n";
 							}
 
 							if (expect_comma) {
@@ -2422,13 +2422,13 @@ namespace wiz {
 										//
 									}
 									else {
-										std::cout << "Syntax Error in pre-parsing2\n";
+										wiz::Out << "Syntax Error in pre-parsing2\n";
 									}
 								}
 							}
 							else {
 								if (len == 1 && ch == ',') {
-									std::cout << "Syntax Error in pre-parsing3.5\n";
+									wiz::Out << "Syntax Error in pre-parsing3.5\n";
 								}
 							}
 
@@ -2442,7 +2442,7 @@ namespace wiz {
 								}
 								else if (2 == type) { // RIGHT
 									if (comma_on) {
-										std::cout << "Syntax Error in pre-parsing3.75\n";
+										wiz::Out << "Syntax Error in pre-parsing3.75\n";
 									}
 
 									if (_stack.top() == option.Left && ch == option.Right) {
@@ -2452,30 +2452,30 @@ namespace wiz {
 										_stack.pop();
 									}
 									else {
-										std::cout << "Syntax Error in pre-parsing4\n";
+										wiz::Out << "Syntax Error in pre-parsing4\n";
 									}
 
 									expect_comma = true;
 								}
 								else if (3 == type) { // ASSIGN
 									if (comma_on) {
-										std::cout << "Syntax Error in pre-parsing4.5\n";
+										wiz::Out << "Syntax Error in pre-parsing4.5\n";
 									}
 
 									if (_stack.top() == option.Left2) { // array
-										std::cout << "Syntax Error in pre-parsing5\n";
+										wiz::Out << "Syntax Error in pre-parsing5\n";
 									}
 									if (!var) {
-										std::cout << "Syntax Error in pre-parsing6\n";
+										wiz::Out << "Syntax Error in pre-parsing6\n";
 									}
 									parse_state = 1;
 								}
 								else {
 									if (1 == len && ch == ',') {
-										std::cout << "Syntax Error in pre-parsing7\n";
+										wiz::Out << "Syntax Error in pre-parsing7\n";
 									}
 									if (var) {
-										std::cout << " " << "Syntax Eror in pre-parsing7.5\n";
+										wiz::Out << " " << "Syntax Eror in pre-parsing7.5\n";
 									}
 									if (_stack.top() == option.Left) {
 										var = true;
@@ -2492,7 +2492,7 @@ namespace wiz {
 											//
 										}
 										else {
-											std::cout << "Syntax Error in pre-parsing8\n";
+											wiz::Out << "Syntax Error in pre-parsing8\n";
 										}
 									}
 									else if (val) {
@@ -2513,7 +2513,7 @@ namespace wiz {
 											//
 										}
 										else {
-											std::cout << "Syntax Error in pre-parsing8.25\n";
+											wiz::Out << "Syntax Error in pre-parsing8.25\n";
 										}
 
 										expect_comma = true;
@@ -2523,7 +2523,7 @@ namespace wiz {
 							}
 							else if (1 == parse_state) {
 								if (comma_on) {
-									std::cout << "Syntax Error in pre-parsing8.5\n";
+									wiz::Out << "Syntax Error in pre-parsing8.5\n";
 								}
 
 								if (1 == type) { // LEFT
@@ -2534,7 +2534,7 @@ namespace wiz {
 								}
 								else if (0 == type) {
 									if (len == 1 && ch == ',') {
-										std::cout << "Syntax Error in pre-parsing9\n";
+										wiz::Out << "Syntax Error in pre-parsing9\n";
 									}
 									else {
 										var = false;
@@ -2563,12 +2563,12 @@ namespace wiz {
 										//
 									}
 									else {
-										std::cout << "Syntax Error in pre-parsing9.5\n";
+										wiz::Out << "Syntax Error in pre-parsing9.5\n";
 									}
 								}
 								else {
 									// error
-									std::cout << "Syntax Error in pre-parsing10\n";
+									wiz::Out << "Syntax Error in pre-parsing10\n";
 								}
 
 								parse_state = 0;
@@ -2580,16 +2580,16 @@ namespace wiz {
 				}
 
 				if (comma_on) {
-					std::cout << "Syntax Error in pre-parsing11\n";
+					wiz::Out << "Syntax Error in pre-parsing11\n";
 				}
 
 				{
 					if (1 != _stack.size()) {
-						std::cout << "_stack.size() != 1\n";
+						wiz::Out << "_stack.size() != 1\n";
 					}
 
 					if (0 != state) {
-						std::cout << "[ERROR] state [" << state << "] is not zero \n";
+						wiz::Out << "[ERROR] state [" << state << "] is not zero \n";
 					}
 				}
 
@@ -2728,7 +2728,7 @@ namespace wiz {
 									break;
 								default:
 									state = 1;
-									std::cout << "Syntax Error in pre-parsing0\n";
+									wiz::Out << "Syntax Error in pre-parsing0\n";
 									break;
 								}
 							}
@@ -2743,7 +2743,7 @@ namespace wiz {
 									//
 								}
 								else {
-									std::cout << "Syntax Error in pre-parsing0.5\n";
+									wiz::Out << "Syntax Error in pre-parsing0.5\n";
 								}
 								back_slush_count--;
 
@@ -2779,7 +2779,7 @@ namespace wiz {
 						}
 
 						if (_stack.empty()) {
-							std::cout << line << " " << "Syntax Error in pre-parsing1\n";
+							wiz::Out << line << " " << "Syntax Error in pre-parsing1\n";
 						}
 
 						const long long type = GetType(token_arr[i]);
@@ -2803,13 +2803,13 @@ namespace wiz {
 									//
 								}
 								else {
-									std::cout << line << " " << "Syntax Error in pre-parsing2\n";
+									wiz::Out << line << " " << "Syntax Error in pre-parsing2\n";
 								}
 							}
 						}
 						else {
 							if (len == 1 && ch == ',') {
-								std::cout << line << " " << "Syntax Error in pre-parsing3.5\n";
+								wiz::Out << line << " " << "Syntax Error in pre-parsing3.5\n";
 							}
 						}
 
@@ -2824,7 +2824,7 @@ namespace wiz {
 							}
 							else if (2 == type) { // RIGHT
 								if (comma_on) {
-									std::cout << line << " " << "Syntax Error in pre-parsing3.75\n";
+									wiz::Out << line << " " << "Syntax Error in pre-parsing3.75\n";
 								}
 
 								if (_stack.top() == option.Left && ch == option.Right) {
@@ -2834,31 +2834,31 @@ namespace wiz {
 									_stack.pop();
 								}
 								else {
-									std::cout << line << " " << "Syntax Error in pre-parsing4\n";
+									wiz::Out << line << " " << "Syntax Error in pre-parsing4\n";
 								}
 
 								expect_comma = true;
 							}
 							else if (3 == type) { // ASSIGN
 								if (comma_on) {
-									std::cout << line << " " << "Syntax Error in pre-parsing4.5\n";
+									wiz::Out << line << " " << "Syntax Error in pre-parsing4.5\n";
 								}
 
 								if (_stack.top() == option.Left2) { // array
-									std::cout << line << " " << "Syntax Error in pre-parsing5\n";
+									wiz::Out << line << " " << "Syntax Error in pre-parsing5\n";
 								}
 								if (!var) {
-									std::cout << line << " " << "Syntax Error in pre-parsing6\n";
+									wiz::Out << line << " " << "Syntax Error in pre-parsing6\n";
 								}
 								parse_state = 1;
 							}
 							else {
 								if (1 == len && ch == ',') {
-									std::cout << line << " " << "Syntax Error in pre-parsing7\n";
+									wiz::Out << line << " " << "Syntax Error in pre-parsing7\n";
 								}
 
 								if (var) {
-									std::cout << line << " " << "Syntax Eror in pre-parsing7.5\n";
+									wiz::Out << line << " " << "Syntax Eror in pre-parsing7.5\n";
 								}
 
 								if (_stack.top() == option.Left) {
@@ -2876,7 +2876,7 @@ namespace wiz {
 										//
 									}
 									else {
-										std::cout << line << " " << "Syntax Error in pre-parsing8\n";
+										wiz::Out << line << " " << "Syntax Error in pre-parsing8\n";
 									}
 								}
 								else if (val) {
@@ -2900,7 +2900,7 @@ namespace wiz {
 										//
 									}
 									else {
-										std::cout << "Syntax Error in pre-parsing8.25\n";
+										wiz::Out << "Syntax Error in pre-parsing8.25\n";
 									}
 								}
 
@@ -2909,7 +2909,7 @@ namespace wiz {
 						}
 						else if (1 == parse_state) {
 							if (comma_on) {
-								std::cout << line << " " << "Syntax Error in pre-parsing8.5\n";
+								wiz::Out << line << " " << "Syntax Error in pre-parsing8.5\n";
 							}
 
 							if (1 == type) { // LEFT
@@ -2920,7 +2920,7 @@ namespace wiz {
 							}
 							else if (0 == type) {
 								if (len == 1 && ch == ',') {
-									std::cout << line << " " << "Syntax Error in pre-parsing9\n";
+									wiz::Out << line << " " << "Syntax Error in pre-parsing9\n";
 								}
 								else {
 									var = false;
@@ -2946,12 +2946,12 @@ namespace wiz {
 									//
 								}
 								else {
-									std::cout << "Syntax Error in pre-parsing9.5\n";
+									wiz::Out << "Syntax Error in pre-parsing9.5\n";
 								}
 							}
 							else {
 								// error
-								std::cout << line << " " << "Syntax Error in pre-parsing10\n";
+								wiz::Out << line << " " << "Syntax Error in pre-parsing10\n";
 							}
 
 							parse_state = 0;
@@ -2959,13 +2959,13 @@ namespace wiz {
 					}
 
 					if (comma_on) {
-						std::cout << line << " " << "Syntax Error in pre-parsing11\n";
+						wiz::Out << line << " " << "Syntax Error in pre-parsing11\n";
 					}
 
 					token_arr_size = real_token_arr_count;
 
 					if (0 != state) {
-						std::cout << "[" << state << "] state is not zero.\n";
+						wiz::Out << "[" << state << "] state is not zero.\n";
 					}
 				}
 
@@ -3023,7 +3023,7 @@ namespace wiz {
 						}
 
 						//int b = clock();
-					//	std::cout << b - a << "ms\n";
+					//	wiz::Out << b - a << "ms\n";
 						_buffer = buffer;
 						_token_arr = token_arr;
 						*_token_arr_len = token_arr_size;
@@ -3050,7 +3050,7 @@ namespace wiz {
 			{
 				bool x = Scan(*pInFile, Num, option, thr_num, buffer, buffer_len, token_arr, token_arr_len, lines, lines_len, load_schema).second > 0;
 
-				//	std::cout << *token_arr_len << "\n";
+				//	wiz::Out << *token_arr_len << "\n";
 				return x;
 			}
 		};
@@ -3087,9 +3087,9 @@ namespace wiz {
 				long long idx = GetIdx(x);
 
 				for (long long i = 0; i < len; ++i) {
-					std::cout << text[idx + i];
+					wiz::Out << text[idx + i];
 				}
-				std::cout << "\n";
+				wiz::Out << "\n";
 			}
 
 			static long long GetIdx(long long x) {
@@ -3513,7 +3513,7 @@ namespace wiz {
 
 
 								if (!Utility::ValidateUTF8(text, idx, len)) {
-									std::cout << "not valid char";
+									wiz::Out << "not valid char";
 								}
 
 								tokens[real_token_arr_count] = Get(idx, len, ch, option);
@@ -3559,7 +3559,7 @@ namespace wiz {
 								}
 
 								if (!Utility::ValidateUTF8(text, idx, len)) {
-									std::cout << "not valid char";
+									wiz::Out << "not valid char";
 								}
 
 								tokens[real_token_arr_count] = Get(idx, len, ch, option);
@@ -3593,7 +3593,7 @@ namespace wiz {
 								break;
 							default:
 								state = 1;
-								std::cout << "Syntax Error in pre-parsing0\n";
+								wiz::Out << "Syntax Error in pre-parsing0\n";
 								break;
 							}
 
@@ -3608,7 +3608,7 @@ namespace wiz {
 									//
 								}
 								else {
-									std::cout << "Syntax Error in pre-parsing0.5\n";
+									wiz::Out << "Syntax Error in pre-parsing0.5\n";
 								}
 							}
 
@@ -3652,16 +3652,16 @@ namespace wiz {
 				}
 
 				if (comma_on) {
-					std::cout << line << " " << "Syntax Error in pre-parsing11\n";
+					wiz::Out << line << " " << "Syntax Error in pre-parsing11\n";
 				}
 
 				{
 					if (1 != _stack.size()) {
-						std::cout << "_stack.size() != 1\n";
+						wiz::Out << "_stack.size() != 1\n";
 					}
 
 					if (0 != state) {
-						std::cout << "[ERROR] state [" << state << "] is not zero \n";
+						wiz::Out << "[ERROR] state [" << state << "] is not zero \n";
 					}
 				}
 
@@ -3719,7 +3719,7 @@ namespace wiz {
 						}
 
 						//int b = clock();
-					//	std::cout << b - a << "ms\n";
+					//	wiz::Out << b - a << "ms\n";
 						_buffer = buffer;
 						_token_arr = token_arr;
 						*_token_arr_len = token_arr_size;

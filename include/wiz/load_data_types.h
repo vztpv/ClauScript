@@ -25,8 +25,8 @@ namespace wiz {
 			void chk() {
 				/*
 				if ("_" == name || (String::startsWith(name, "$ut") && name.size() > 3) || (String::startsWith(name, "$it") && name.size() > 3)) {
-					//std::cout << "name is " << name << ENTER;
-					//std::cout << "in funciton chk() in Type" << ENTER;
+					//wiz::Out << "name is " << name << ENTER;
+					//wiz::Out << "in funciton chk() in Type" << ENTER;
 					GETCH();
 					throw "ERROR for name in Type";
 				}
@@ -158,7 +158,7 @@ namespace wiz {
 			}
 
 			virtual ~ItemType() { 
-				////std::cout << "chk" << "\n";
+				////wiz::Out << "chk" << "\n";
 			}
 		public:
 			void Remove(const int idx = 0)
@@ -620,7 +620,7 @@ namespace wiz {
 					_stack.back()->ReserveUserTypeList(_stack2.back().ut->GetUserTypeListSize());
 				}
 				//int b = clock();
-				//std::cout << b - a << "ms\n";
+				//wiz::Out << b - a << "ms\n";
 			}
 			void Reset2(UserType&& ut) {
 				//std::swap( userTypeList_sortFlagA, ut.userTypeList_sortFlagA );
@@ -758,7 +758,7 @@ namespace wiz {
 				if (chk && userTypeList[idx]) {
 					delete userTypeList[idx];
 				}
-				////std::cout << GetUserTypeListSize() << ENTER;
+				////wiz::Out << GetUserTypeListSize() << ENTER;
 				// left shift start idx, to end, at itemList. and resize!
 				for (int i = idx + 1; i < GetUserTypeListSize(); ++i) {
 					userTypeList[i - 1] = std::move(userTypeList[i]);
@@ -1415,7 +1415,7 @@ namespace wiz {
 						}
 					}
 					else {
-						////std::cout << "no found" << ENTER;
+						////wiz::Out << "no found" << ENTER;
 					}
 				}
 
@@ -1483,7 +1483,7 @@ namespace wiz {
 						}
 					}
 					else {
-						////std::cout << "no found" << ENTER;
+						////wiz::Out << "no found" << ENTER;
 					}
 				}
 				*/
@@ -1542,7 +1542,7 @@ namespace wiz {
 						}
 					}
 					else {
-						////std::cout << "no found" << ENTER;
+						////wiz::Out << "no found" << ENTER;
 					}
 				}
 
@@ -1597,7 +1597,7 @@ namespace wiz {
 						}
 					}
 					else {
-						////std::cout << "no found" << ENTER;
+						////wiz::Out << "no found" << ENTER;
 					}
 				}
 
@@ -1633,7 +1633,7 @@ namespace wiz {
 
 
 				for (int i = 0; i < ut->ilist.size(); ++i) {
-					////std::cout << "ItemList" << endl;
+					////wiz::Out << "ItemList" << endl;
 					if (ut->ilist[i] == 1) {
 						for (int j = 0; j < ut->itemList[itemListCount].size(); j++) {
 							std::string temp;
@@ -1663,7 +1663,7 @@ namespace wiz {
 						itemListCount++;
 					}
 					else if (ut->ilist[i] == 2) {
-						// //std::cout << "UserTypeList" << endl;
+						// //wiz::Out << "UserTypeList" << endl;
 						for (int k = 0; k < depth; ++k) {
 							stream << "\t";
 						}
@@ -1696,7 +1696,7 @@ namespace wiz {
 
 				
 				for (int i = 0; i < ut->ilist.size(); ++i) {
-					////std::cout << "ItemList" << endl;
+					////wiz::Out << "ItemList" << endl;
 					if (ut->ilist[i] == 1) {
 						for (int j = 0; j < ut->itemList[itemListCount].size(); j++) {
 							//for (int k = 0; k < depth; ++k) {
@@ -1714,7 +1714,7 @@ namespace wiz {
 						itemListCount++;
 					}
 					else if (ut->ilist[i] == 2) {
-						// //std::cout << "UserTypeList" << endl;
+						// //wiz::Out << "UserTypeList" << endl;
 						if (wiz::ToString(ut->userTypeList[userTypeListCount]->GetName()) != "")
 						{
 							stream << wiz::ToString(ut->userTypeList[userTypeListCount]->GetName()) << " = ";
@@ -1787,7 +1787,7 @@ namespace wiz {
 				*/
 
 				for (int i = 0; i < ut->ilist.size(); ++i) {
-					////std::cout << "ItemList" << endl;
+					////wiz::Out << "ItemList" << endl;
 					if (ut->ilist[i] == 1) {
 						//if (userTypeListCount > 0 && 0 == ut->userTypeList[userTypeListCount - 1]->GetIListSize() && ut->userTypeList[userTypeListCount - 1]->GetName().empty())
 						//{
@@ -1844,7 +1844,7 @@ namespace wiz {
 						for (int k = 0; k < depth; ++k) {
 							stream << "\t";
 						}
-						// //std::cout << "UserTypeList" << endl;
+						// //wiz::Out << "UserTypeList" << endl;
 						
 						if (wiz::ToString(ut->userTypeList[userTypeListCount]->GetName()) != "")
 						{
@@ -1908,7 +1908,7 @@ namespace wiz {
 				*/
 
 				for (int i = 0; i < ut->ilist.size(); ++i) {
-					////std::cout << "ItemList" << endl;
+					////wiz::Out << "ItemList" << endl;
 					if (ut->ilist[i] == 1) {
 						//if (userTypeListCount > 0 && 0 == ut->userTypeList[userTypeListCount - 1]->GetIListSize() && ut->userTypeList[userTypeListCount - 1]->GetName().empty())
 						//{
@@ -1967,7 +1967,7 @@ namespace wiz {
 						for (int k = 0; k < depth; ++k) {
 							stream << "\t";
 						}
-						// //std::cout << "UserTypeList" << endl;
+						// //wiz::Out << "UserTypeList" << endl;
 						if (ut->userTypeList[userTypeListCount]->GetIListSize() > 0) {
 						
 							if (wiz::ToString(ut->userTypeList[userTypeListCount]->GetName()) != "")
@@ -2124,7 +2124,7 @@ namespace wiz {
 				int userTypeListCount = 0;
 
 				for (int i = 0; i < ilist.size(); ++i) {
-					////std::cout << "ItemList" << endl;
+					////wiz::Out << "ItemList" << endl;
 					if (ilist[i] == 1) {
 						for (int j = 0; j < itemList[itemListCount].size(); j++) {
 							if (wiz::ToString(itemList[itemListCount].GetName()) != "") {
@@ -2143,7 +2143,7 @@ namespace wiz {
 						itemListCount++;
 					}
 					else if (ilist[i] == 2) {
-						// //std::cout << "UserTypeList" << endl;
+						// //wiz::Out << "UserTypeList" << endl;
 						if (wiz::ToString(userTypeList[userTypeListCount]->GetName()) != "") {
 							temp.append(wiz::ToString(userTypeList[userTypeListCount]->GetName()));
 							temp.append(" = ");
@@ -2193,7 +2193,7 @@ namespace wiz {
 
 					count++;
 
-					////std::cout << "ItemList" << endl;
+					////wiz::Out << "ItemList" << endl;
 					if (ilist[i] == 1) {
 						for (int j = 0; j < itemList[itemListCount].size(); j++) {
 							if (wiz::ToString(itemList[itemListCount].GetName()) != "") {
@@ -2213,7 +2213,7 @@ namespace wiz {
 						itemListCount++;
 					}
 					else if (ilist[i] == 2) {
-						// //std::cout << "UserTypeList" << endl;
+						// //wiz::Out << "UserTypeList" << endl;
 						if (wiz::ToString(userTypeList[userTypeListCount]->GetName()) != "") {
 							temp.append(wiz::ToString(userTypeList[userTypeListCount]->GetName()));
 							temp.append(" = ");
@@ -2241,13 +2241,13 @@ namespace wiz {
 				std::vector<std::string> x;
 
 
-				//std::cout << "string view is " << pos_sv << " ";
+				//wiz::Out << "string view is " << pos_sv << " ";
 				std::vector<std::string> tokens = tokenize(position, '/');
 			
 				for (size_t i = 0; i < tokens.size(); ++i) {
 					std::string temp = tokens[i];
 					
-					//std::cout << tokens[i] << " ";
+					//wiz::Out << tokens[i] << " ";
 
 					if (temp == ".") {
 						continue;
@@ -2291,11 +2291,11 @@ namespace wiz {
 				utTemp.second = 0;
 				std::vector<std::string> strVec;
 
-				//std::cout << "position is " << position << "\t";
+				//wiz::Out << "position is " << position << "\t";
 				for (int i = start; i < tokens.size(); ++i) {
 					std::string strTemp = tokens[i];
 
-					//std::cout << strTemp << " ";
+					//wiz::Out << strTemp << " ";
 
 					if (strTemp == "root" && i == 0) {
 					}
@@ -2337,7 +2337,7 @@ namespace wiz {
 					}
 					std::reverse(strVec.begin(), strVec.end());
 				}
-				//std::cout << "\n";
+				//wiz::Out << "\n";
 
 				utDeck.push_front(utTemp);
 
