@@ -537,7 +537,7 @@ namespace wiz {
 
 				if ('/' == x[0])
 				{
-				//	std::cout << global.ToString();
+				//	wiz::Out << global.ToString();
 
 					wiz::load_data::UserType* ut = wiz::load_data::UserType::Find(&global, x).second[0];
 					x = wiz::toStr(ut->GetItemListSize());
@@ -1050,7 +1050,9 @@ namespace wiz {
 
 			else {
 				if (wiz::String::startsWith(str.ToString(), "$") && str.ToString().size() >= 2) {
-					wiz::Out << "no exist in load-data " << str.ToString() << ENTER;
+					if (!executeData.noUseOutput) {
+						wiz::Out << "no exist in load-data " << str.ToString() << ENTER;
+					}
 					return false;
 				}
 				return true;
@@ -1140,11 +1142,11 @@ namespace wiz {
 				}
 			}
 
-			//std::cout << temp.GetName() << " ";
+			//wiz::Out << temp.GetName() << " ";
 			//for (int i = 0; i < operandStack.size(); ++i) {
-				//std::cout << operandStack[i] << " ";
+				//wiz::Out << operandStack[i] << " ";
 			//}
-			//std::cout << "\n";
+			//wiz::Out << "\n";
 			if (String::startsWith(temp.GetName(), "$") && temp.GetName().size() > 1) {
 				wiz::ArrayStack<WIZ_STRING_TYPE> _stack;
 
@@ -1153,12 +1155,14 @@ namespace wiz {
 				}
 
 				if (!operation(now, global, temp.GetName(), _stack, executeData)) {
-					wiz::Out << "operation ERROR";
+					if (!executeData.noUseOutput) {
+						wiz::Out << "operation ERROR";
+					}
 				}
 
 				result = _stack.top();
 			}
-			//std::cout << "result is " << result << "\n";
+			//wiz::Out << "result is " << result << "\n";
 			return result;
 		}
 
@@ -1179,14 +1183,14 @@ namespace wiz {
 
 			for (int i = 0; i < tokens.size(); ++i) {
 				WIZ_STRING_TYPE _temp = ToBool4(now, global, tokens[i], executeData);
-				//std::cout << "chk " << _temp << " ";
+				//wiz::Out << "chk " << _temp << " ";
 				_result += _temp;
 
 				if (i < tokens.size() - 1) {
 					_result += "/";
 				}
 			}
-			//std::cout << "\n";
+			//wiz::Out << "\n";
 
 			return result + ToBool4(now, global, _result.ToString(), executeData);
 		}

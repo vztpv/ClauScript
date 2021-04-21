@@ -124,7 +124,7 @@ namespace wiz {
 		:str_value(cstr, len)
 	{
 		if (len < 0) {
-			std::cout << "chk\n";
+			wiz::Out << "chk\n";
 		}
 
 		if (USE_REMOVE_IN_DATATYPE) {
@@ -152,7 +152,7 @@ namespace wiz {
 	DataType::DataType(const char* cstr, size_t len, const LineInfo& opt)
 	{
 		if (len < 0) {
-			std::cout << "chk\n";
+			wiz::Out << "chk\n";
 		}
 		this->str_value = std::string(cstr, len);
 

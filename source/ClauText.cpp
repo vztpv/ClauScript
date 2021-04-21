@@ -66,6 +66,8 @@ namespace wiz {
 			wiz::ClauText clautext;
 			wiz::ExecuteData executeData;
 			executeData.pEvents = eventUT;
+			executeData.noUseInput = true;
+			executeData.noUseOutput = true;
 			wiz::Option option;
 
 			std::string statements;
@@ -441,6 +443,8 @@ namespace wiz {
 						wiz::ClauText clautext;
 						wiz::ExecuteData executeData;
 						executeData.pEvents = insert_ut->GetParent();
+						executeData.noUseInput = true;
+						executeData.noUseOutput = true;
 						wiz::Option option;
 
 						std::string statements;
@@ -471,6 +475,8 @@ namespace wiz {
 						wiz::ClauText clautext;
 						wiz::ExecuteData executeData;
 						executeData.pEvents = insert_ut->GetParent();
+						executeData.noUseInput = true;
+						executeData.noUseOutput = true;
 						wiz::Option option;
 
 						std::string statements;
@@ -588,6 +594,8 @@ namespace wiz {
 						wiz::ClauText clautext;
 						wiz::ExecuteData executeData;
 						executeData.pEvents = insert_ut->GetParent();
+						executeData.noUseInput = true;
+						executeData.noUseOutput = true;
 						wiz::Option option;
 
 						wiz::load_data::UserType callUT;
@@ -643,6 +651,8 @@ namespace wiz {
 						wiz::ClauText clautext;
 						wiz::ExecuteData executeData;
 						executeData.pEvents = insert_ut->GetParent();
+						executeData.noUseInput = true;
+						executeData.noUseOutput = true;
 						wiz::Option option;
 						wiz::load_data::UserType callUT;
 						std::string statements;
@@ -819,6 +829,8 @@ namespace wiz {
 						wiz::ClauText clautext;
 						wiz::ExecuteData executeData;
 						executeData.pEvents = insert_ut->GetParent();
+						executeData.noUseInput = true;
+						executeData.noUseOutput = true;
 						wiz::Option option;
 
 						wiz::load_data::UserType callUT;
@@ -1015,7 +1027,9 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 	if (executeData.chkInfo == false) { /// chk smartpointer.
 		if (global.GetUserTypeItem("Main").empty() && MainStr.empty())
 		{
-			wiz::Out << "do not exist Main" << ENTER;
+			if (!executeData.noUseOutput) {
+				wiz::Out << "do not exist Main" << ENTER;
+			}
 			return "ERROR -1";
 		}
 
@@ -2276,7 +2290,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					}
 					else // 
 					{
-					//	std::cout << val->GetUserTypeList(0)->ToString() << "\n";
+					//	wiz::Out << val->GetUserTypeList(0)->ToString() << "\n";
 						dir = wiz::load_data::LoadData::ToBool4(nullptr, global, *val->GetUserTypeList(0), _executeData).ToString();
 						is2 = true;
 					}
@@ -2530,7 +2544,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 								wiz::Out << temp;
 							}
 							else {
-								//std::cout << global.ToString() << "\n";
+								//wiz::Out << global.ToString() << "\n";
 								wiz::load_data::UserType* ut = wiz::load_data::UserType::Find(&global, listName).second[0];
 								if (ut->GetItemListSize() == 0 && wiz::ToString(ut->GetItemList(0).GetName()).empty()) {
 									wiz::Out << wiz::ToString(ut->GetItemList(0).Get(0));
@@ -2633,7 +2647,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 						//int a = clock();
 						if (wiz::load_data::LoadData::LoadDataFromFile(fileName, ut)) {
 							//int b = clock();
-							//std::cout << b - a << "ms\n";
+							//wiz::Out << b - a << "ms\n";
 							{
 
 								int item_count = 0;
@@ -2656,8 +2670,9 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 							if (!_Main.empty())
 							{
 								// error!
-								wiz::Out << "err" << ENTER;
-
+								if (executeData.noUseOutput) {
+									wiz::Out << "err" << ENTER;
+								}
 								return "ERROR -2"; /// exit?
 							}
 						}
@@ -2795,7 +2810,7 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					//int a = clock();
 					if (wiz::load_data::LoadData::LoadDataFromFileWithJson(fileName, ut)) {
 						//int b = clock();
-						//std::cout << b - a << "ms\n";
+						//wiz::Out << b - a << "ms\n";
 						{
 							//for (int i = 0; i < ut.GetCommentListSize(); ++i) {
 							//	utTemp->PushComment(std::move(ut.GetCommentList(i)));
@@ -3357,7 +3372,9 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					else
 					{
 						// debug..
-						wiz::Out << "Error Debug : " << cond << ENTER;
+						if (!executeData.noUseOutput) {
+							wiz::Out << "Error Debug : " << cond << ENTER;
+						}
 						return "ERROR -3";
 					}
 				}
@@ -3381,8 +3398,9 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 					}
 				}
 				else { //
-					wiz::Out << "it does not work. : " << wiz::ToString(val->GetName()) << ENTER;
-
+					if (!executeData.noUseOutput) {
+						wiz::Out << "it does not work. : " << wiz::ToString(val->GetName()) << ENTER;
+					}
 					eventStack.top().userType_idx.top()++;
 					break;
 				}
@@ -3507,7 +3525,7 @@ void ClauText::ShellMode(wiz::load_data::UserType& global, const ExecuteData& ex
 			if ("$print" == command) {
 				wiz::Out << ">> : global" << ENTER;
 				//cout << global.ToString() << endl;
-				global.Save1(std::cout);
+				global.Save1(std::cout); /// todo - change cout?
 				wiz::Out << ENTER;
 			}
 			else if ("$print_data_only" == command) {

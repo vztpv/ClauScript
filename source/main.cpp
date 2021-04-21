@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 
 
 	if (argc == 1) {
-		std::cout << "FileName: ";
+		wiz::Out << "FileName: ";
 		std::getline(std::cin, fileName);
 	}
 	else
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 			a = clock();
 			{
 			
-				wiz::load_data::LoadData::LoadDataFromFile(fileName, global, 1, 1);
+				wiz::load_data::LoadData::LoadDataFromFile(fileName, global, 1, 1); // only 1 1 // 0 or > 1 -> different work..
 			
 			}
 			b = clock();
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 		wiz::Out << "fileName is " << fileName << ENTER;
 
 		//wiz::load_data::LoadData::SaveWizDB(global, "test2.eu4", "3"); // 3 : JSON
-		//std::cout << global.ToString() << "\n";
+		//wiz::Out << global.ToString() << "\n";
 
 		wiz::Option opt;
 		{
