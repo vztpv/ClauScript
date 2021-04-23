@@ -2267,7 +2267,10 @@ namespace wiz {
 				return _Find(std::move(x), global);
 			}
 		private:	
-			// find userType! not itemList!,// this has bug
+			// find userType! not itemList!,
+			// this has bug
+			/// /../x ok   ( /../../y ok)
+			/// /x/../x/../x no
 			static std::pair<bool, std::vector< UserType*> > _Find(std::vector<std::string>&& tokens, UserType* global) /// option, option_offset
 			{
 				std::vector< UserType* > temp;

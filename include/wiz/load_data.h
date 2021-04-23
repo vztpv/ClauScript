@@ -2993,8 +2993,12 @@ namespace wiz {
 			}
 
 			//cf) /$ and /$/ ??
+			/// very slow..
 			static std::string GetRealDir(const std::string& dir, const wiz::load_data::UserType* ut)
 			{
+
+				return dir;
+
 				std::vector<std::string> real_dir;
 				std::string result;
 				const wiz::load_data::UserType* before;
@@ -3009,6 +3013,7 @@ namespace wiz {
 						}
 					}
 				}
+
 
 				while (nullptr != ut) {
 					before = ut;
@@ -3089,7 +3094,7 @@ namespace wiz {
 								temp.SetInt(j);
 								x[k]->GetItemList(5).Set(0, temp.ToString());
 							}
-							std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _executeData, opt, 0);
+							std::string result;// = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _executeData, opt, 0);
 
 							if (result.empty() == false) {
 								UserType resultUT;
@@ -3138,7 +3143,7 @@ namespace wiz {
 						}
 
 						Option opt;
- 						std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _executeData, opt, 0);
+						std::string result; // = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _executeData, opt, 0);
 
 						if (result.empty() == false) {
 							UserType resultUT;
