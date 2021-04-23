@@ -42,7 +42,8 @@ int main(int argc, char* argv[])
 
 	wiz::load_data::UserType global;
 
-	try {
+	//try 
+	{
 		int a = clock();
 		{
 			//	wiz::load_data::LoadData::LoadDataFromFile(fileName, global);
@@ -88,23 +89,23 @@ int main(int argc, char* argv[])
 			wiz::Out << b - a << "ms" << "\n"; //
 		}
 	}
-	catch (const char* str) {
-		wiz::Out << str << ENTER;
+	//catch (const char* str) {
+	//	wiz::Out << str << ENTER;
 
-		GETCH();
-	}
-	catch (const std::string& str) {
-		wiz::Out << str << ENTER;
-		GETCH();
-	}
+	//	GETCH();
+	//}
+	//catch (const std::string& str) {
+	//	wiz::Out << str << ENTER;
+	//	GETCH();
+	//}
 	//catch (const wiz::Error& e) {
 	//	wiz::Out << e << ENTER;
 	//	GETCH();
 	//}
-	catch (const std::exception& e) {
-		wiz::Out << e.what() << ENTER;
-		GETCH();
-	}
+//	catch (const std::exception& e) {
+	//	wiz::Out << e.what() << ENTER;
+//		GETCH();
+//	}
 
 #ifndef _DEBUG
 	//catch (...) {

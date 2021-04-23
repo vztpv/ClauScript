@@ -442,7 +442,7 @@ namespace wiz {
 
 						wiz::ClauText clautext;
 						wiz::ExecuteData executeData;
-						executeData.pEvents = insert_ut->GetParent();
+						executeData.pEvents = eventUT; // eventUT;
 						executeData.noUseInput = true;
 						executeData.noUseOutput = true;
 						wiz::Option option;
@@ -474,7 +474,7 @@ namespace wiz {
 
 						wiz::ClauText clautext;
 						wiz::ExecuteData executeData;
-						executeData.pEvents = insert_ut->GetParent();
+						executeData.pEvents = eventUT;// eventUT;
 						executeData.noUseInput = true;
 						executeData.noUseOutput = true;
 						wiz::Option option;
@@ -593,7 +593,7 @@ namespace wiz {
 
 						wiz::ClauText clautext;
 						wiz::ExecuteData executeData;
-						executeData.pEvents = insert_ut->GetParent();
+						executeData.pEvents = eventUT;
 						executeData.noUseInput = true;
 						executeData.noUseOutput = true;
 						wiz::Option option;
@@ -623,7 +623,7 @@ namespace wiz {
 
 							callInfo.second[0]->SetItem("name", "$NO_NAME");
 							callInfo.second[0]->SetItem("value", x.global->GetItemList(temp[j]).Get());
-							callInfo.second[0]->SetItem("real_dir", wiz::load_data::LoadData::GetRealDir(x.dir, x.global));
+						//	callInfo.second[0]->SetItem("real_dir", wiz::load_data::LoadData::GetRealDir(x.dir, x.global));
 							callInfo.second[0]->SetItem("relative_dir", x.dir);
 							callInfo.second[0]->SetItem("idx", std::to_string(temp[j]));
 
@@ -650,7 +650,7 @@ namespace wiz {
 
 						wiz::ClauText clautext;
 						wiz::ExecuteData executeData;
-						executeData.pEvents = insert_ut->GetParent();
+						executeData.pEvents = eventUT; // eventUT;
 						executeData.noUseInput = true;
 						executeData.noUseOutput = true;
 						wiz::Option option;
@@ -687,7 +687,7 @@ namespace wiz {
 
 							callInfo.second[0]->SetItem("name", name);
 							callInfo.second[0]->SetItem("value", x.global->GetItemList(idx).Get());
-							callInfo.second[0]->SetItem("real_dir", wiz::load_data::LoadData::GetRealDir(x.dir, x.global));
+							//callInfo.second[0]->SetItem("real_dir", wiz::load_data::LoadData::GetRealDir(x.dir, x.global));
 							callInfo.second[0]->SetItem("relative_dir", x.dir);
 							callInfo.second[0]->SetItem("idx", std::to_string(idx));
 
@@ -704,7 +704,7 @@ namespace wiz {
 
 								callInfo.second[0]->SetItem("name", name);
 								callInfo.second[0]->SetItem("value", x.global->GetItemList(temp[j]).Get());
-								callInfo.second[0]->SetItem("real_dir", wiz::load_data::LoadData::GetRealDir(x.dir, x.global));
+							//	callInfo.second[0]->SetItem("real_dir", wiz::load_data::LoadData::GetRealDir(x.dir, x.global));
 								callInfo.second[0]->SetItem("relative_dir", x.dir);
 								callInfo.second[0]->SetItem("idx", std::to_string(temp[j]));
 
@@ -828,7 +828,7 @@ namespace wiz {
 
 						wiz::ClauText clautext;
 						wiz::ExecuteData executeData;
-						executeData.pEvents = insert_ut->GetParent();
+						executeData.pEvents = eventUT; // eventUT;
 						executeData.noUseInput = true;
 						executeData.noUseOutput = true;
 						wiz::Option option;
@@ -875,7 +875,7 @@ namespace wiz {
 								temp->SetItem("name", x.ut->GetItemList(it_count).GetName().substr(1));
 								temp->SetItem("value", x.global->GetItemList(position[j]).Get());
 								temp->SetItem("relative_dir", x.dir);
-								temp->SetItem("real_dir", wiz::load_data::LoadData::GetRealDir(x.dir, x.global));
+							//	temp->SetItem("real_dir", wiz::load_data::LoadData::GetRealDir(x.dir, x.global));
 								temp->SetItem("idx", std::to_string(x.global->GetIlistIndex(position[j], 1)));
 
 								std::string result = clautext.execute_module(" Main = { $call = { id = NONE  } } " + callUT.ToString(), x.global, executeData, option, 1);

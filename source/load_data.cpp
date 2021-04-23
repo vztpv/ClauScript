@@ -30,7 +30,7 @@ namespace wiz {
 					if ("{"sv == operandStack[i]) {
 						count++;
 					}
-					if ("}"sv == operandStack[i]) {
+					else if ("}"sv == operandStack[i]) {
 						count--;
 						if (count < 0) {
 							break;
