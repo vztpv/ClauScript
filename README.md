@@ -1,5 +1,5 @@
 # ClauScript
-    new project, Modified [ClauText](https://github.com/ClauText/ClauText) to use in other Project...
+new project, Modified [ClauText](https://github.com/ClauText/ClauText) to use in other Project...
 
 # Example 
     
