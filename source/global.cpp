@@ -370,6 +370,42 @@ namespace wiz {
 		return DataType(str) + type;
 	}
 
+	int tokenize_pre(std::string_view sv, char ch) {
+		int count = 0;
+
+		size_t x;
+		if ((x = sv.find(ch)) == std::string::npos) {
+			if (!sv.empty()) {
+				count++;
+			}
+			return count;
+		}
+
+		if (x > 0) {
+			count++;
+		}
+
+		size_t y;
+		while (x != std::string::npos) {
+			y = sv.find(ch, x + 1);
+
+			if (y == std::string::npos) {
+				if (x + 1 < sv.size()) {
+					count++;
+				}
+				break;
+			}
+			else {
+				if (y - 1 - x + 1 > 0) {
+					count++;
+				}
+			}
+
+			x = y;
+		}
+
+		return count;
+	}
 
 	std::vector<std::string> tokenize(std::string sv, char ch) {
 		std::vector<std::string> result;

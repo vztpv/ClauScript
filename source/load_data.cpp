@@ -1109,6 +1109,10 @@ namespace wiz {
 			size_t item_count = 0;
 			ArrayStack<WIZ_STRING_TYPE> operandStack;
 
+			if (temp.GetItemListSize() > 0) {
+				operandStack.reserve(temp.GetItemListSize());
+			}
+
 			for (size_t i = 0; i < temp.GetIListSize(); ++i) {
 				if (i > 0) {
 					result += " ";
@@ -1122,7 +1126,9 @@ namespace wiz {
 				else {
 					if (!String::startsWith(temp.GetUserTypeList(user_count)->GetName(), "$")) {
 						if (!temp.GetUserTypeList(user_count)->GetName().empty()) {
-							result += " " + temp.GetUserTypeList(user_count)->GetName() + " = { ";
+							result += " ";
+							result += temp.GetUserTypeList(user_count)->GetName();
+							result += " = { ";
 						}
 						else {
 							result += " { ";
@@ -1150,6 +1156,10 @@ namespace wiz {
 			if (String::startsWith(temp.GetName(), "$") && temp.GetName().size() > 1) {
 				wiz::ArrayStack<WIZ_STRING_TYPE> _stack;
 
+				if (!operandStack.empty()) {
+					_stack.reserve(operandStack.size());
+				}
+
 				while (operandStack.empty() == false) {
 					_stack.push(operandStack.pop());
 				}
@@ -1170,15 +1180,26 @@ namespace wiz {
 		{
 			WIZ_STRING_TYPE result;
 			if (temp.GetName().empty() == false) {
-				result += temp.GetName() + " = ";
+				result += temp.GetName();
+				result += " = ";
 			}
 
-			auto tokens = tokenize(temp.Get(), '/');
-
-			if (tokens.size() <= 1) {
-				return result + ToBool4(now, global, temp.Get(), executeData);
-			}
+			int count = 0;
+			auto temp_val = temp.Get();
 			
+			if (auto x = temp_val.find('/'); x != std::string::npos) {
+				count++;
+			}
+
+			auto tokens_pre = tokenize_pre(temp_val, '/');
+
+			if (tokens_pre <= 1) {
+				return result + ToBool4(now, global, temp_val, executeData);
+			}
+
+			auto tokens = tokenize(temp_val, '/');
+
+
 			WIZ_STRING_TYPE _result = "/";
 
 			for (int i = 0; i < tokens.size(); ++i) {
@@ -1197,17 +1218,17 @@ namespace wiz {
 
 		WIZ_STRING_TYPE LoadData::ToBool4(wiz::load_data::UserType* now, wiz::load_data::UserType& global, const std::string& temp, const ExecuteData& executeData) {
 			std::string result;
-			if (String::startsWith(temp, "$local.")) {
+			if (String::startsWith(temp, "$local."sv)) {
 				if (!(result = FindLocals(executeData.info.locals, temp)).empty()) {
 					return result;
 				}
 			}
-			else if (String::startsWith(temp, "$parameter.")) {
+			else if (String::startsWith(temp, "$parameter."sv)) {
 				if (!(result = FindParameters(executeData.info.parameters, temp)).empty()) {
 					return result;
 				}
 			}
-			else if (String::startsWith(temp, "/") && temp.size() > 1) {
+			else if (String::startsWith(temp, "/"sv) && temp.size() > 1) {
 				if (!(result = Find(&global, temp)).empty()) {
 					return result;
 				}
