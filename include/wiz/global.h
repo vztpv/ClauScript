@@ -267,7 +267,7 @@ namespace wiz {
 
 
 	inline bool operator==(std::string_view str, const DataType& type) {
-		return str == (std::string_view)type.ToString();
+		return type == str;
 	}
 	inline bool operator!=(std::string_view str, const DataType& type) {
 		return type != str;
@@ -864,6 +864,7 @@ namespace wiz{
 	long long checkDelimiter(const char* start, const char* last, const std::vector<std::string>& delimiter);
 
 	std::vector<std::string> tokenize(std::string sv, char ch);
+	int tokenize_pre(std::string_view sv, char ch);
 }
 
 
