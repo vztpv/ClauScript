@@ -318,7 +318,7 @@ namespace wiz {
 
 	bool DataType::operator==(std::string_view str) const
 	{
-		return this->str_value == str;
+		return this->str_value.compare(str) == 0;
 	}
 
 	bool DataType::operator!=(std::string_view str) const
