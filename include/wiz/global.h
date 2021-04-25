@@ -179,18 +179,19 @@ namespace wiz {
 	private:
 		std::string str_value;
 	public:
-		 DataType() { int_value = 0; float_value = 0; }
-		 DataType(const char* cstr);
-		 DataType(const char* cstr, size_t len);
-		 DataType(const std::string& str);
+		DataType() { int_value = 0; float_value = 0; }
+		DataType(const char* cstr);
+		DataType(const char* cstr, size_t len);
+		DataType(const std::string& str);
 
-		 DataType(const char* cstr, size_t len, const LineInfo& lineOpt);
-		 DataType(const std::string& str, const LineInfo& lineOpt);
-		 DataType(std::string&& str, const LineInfo& lineOpt);
-		 DataType(std::string&& str);
+		DataType(const char* cstr, size_t len, const LineInfo& lineOpt);
+		DataType(const std::string& str, const LineInfo& lineOpt);
+		DataType(std::string&& str, const LineInfo& lineOpt);
+		DataType(std::string&& str);
 		virtual ~DataType() {
 			//
 		}
+
 		/*
 
 		DataType(const DataType&) = delete;
@@ -226,11 +227,11 @@ namespace wiz {
 		}
 	public:
 		bool operator==(const DataType& type) const;
-	//	bool operator==(const std::string& str) const;
+		//	bool operator==(const std::string& str) const;
 		bool operator==(std::string_view str) const;
 		bool operator!=(std::string_view str) const;
 		bool operator!=(const DataType& type) const;
-	//	bool operator!=(const std::string& str) const;
+		//	bool operator!=(const std::string& str) const;
 
 		DataType operator+(const DataType& type)const;
 		DataType operator+(const char* cstr) const;
@@ -263,15 +264,16 @@ namespace wiz {
 			stream << x.ToString();
 			return stream;
 		}
+
+		friend bool operator==(std::string_view str, const DataType& type) {
+			return type.str_value.compare(str) == 0;
+		}
+		friend bool operator!=(std::string_view str, const DataType& type) {
+			return type.str_value.compare(str) != 0;
+		}
 	};
 
 
-	inline bool operator==(std::string_view str, const DataType& type) {
-		return type == str;
-	}
-	inline bool operator!=(std::string_view str, const DataType& type) {
-		return type != str;
-	}
 	
 	DataType operator+(const char* cstr, const DataType& type);
 	DataType operator+(const std::string& str, const DataType& type);
