@@ -7,6 +7,8 @@
 //#include <vld.h>
 #endif
 
+#include "mimalloc-new-delete.h"
+
 // Log
 #include <string>
 #include <fstream>
@@ -85,7 +87,7 @@ int main(int argc, char* argv[])
 			wiz::Out.clear_file();
 			std::string result = clauText.execute_module("", &global, wiz::ExecuteData(true, true), opt, 0);
 			int b = clock();
-			wiz::Out << "excute result is " << result << "\n";
+			wiz::Out << "execute result is " << result << "\n";
 			wiz::Out << b - a << "ms" << "\n"; //
 		}
 	}
