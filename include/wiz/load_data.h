@@ -98,7 +98,7 @@ namespace wiz {
 		// for sorting..
 		bool operator<(const SortInfo& info) const
 		{
-			std::string temp = wiz::load_data::Utility::Compare(this->data, info.data);
+			std::string_view temp = wiz::load_data::Utility::Compare(this->data, info.data);
 
 			if (this->data == "") {
 				return false;
@@ -146,7 +146,7 @@ namespace wiz {
 				return false;
 			}
 
-			std::string temp = wiz::load_data::Utility::Compare(this->data, info.data);
+			std::string_view temp = wiz::load_data::Utility::Compare(this->data, info.data);
 			if (temp == "< 0") { return false; }
 			else if (temp == "> 0") { return true; }
 			else if (temp == "== 0") {
@@ -3064,8 +3064,11 @@ namespace wiz {
 			}
 			*/
 
+			inline static std::map<std::string, std::string> _map;
+
 			static void _Iterate(Option& opt, UserType& global, const std::string& dir, const std::vector<wiz::load_data::UserType*>& ut, UserType* eventsTemp, const std::string& recursive, const ExecuteData& executeData)
 			{
+				
 				for (int i = 0; i < ut.size(); ++i) {
 					int itemCount = 0;
 					int utCount = 0;
@@ -3086,15 +3089,25 @@ namespace wiz {
 							
 							auto x = eventsTemp->GetUserTypeList(eventsTemp->GetUserTypeListSize() - 1)->GetUserTypeItem("$call");
 							for (int k = 0; k < x.size() && k + itemCount < ut[i]->GetItemListSize(); ++k) {
-								x[k]->GetItemList(1).Set(0, ut[i]->GetItemList(itemCount + k).GetName());
-								x[k]->GetItemList(2).Set(0, ut[i]->GetItemList(itemCount + k).Get(0));
+								x[k]->GetItemList(1).Set(0, ut[i]->GetItemList(itemCount).GetName());
+								x[k]->GetItemList(2).Set(0, ut[i]->GetItemList(itemCount).Get(0));
 								x[k]->GetItemList(3).Set(0, "FALSE");
 								x[k]->GetItemList(4).Set(0, GetRealDir(dir, ut[i]));
 								WIZ_STRING_TYPE temp;
 								temp.SetInt(j);
 								x[k]->GetItemList(5).Set(0, temp.ToString());
 							}
-							std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _executeData, opt, 0);
+							
+							std::string key = ut[i]->GetItemList(itemCount).GetName() + " = " + ut[i]->GetItemList(itemCount).Get();
+							std::string result;
+
+							if (_map.find(key) != _map.end()) {
+								result = _map[key];
+							}
+							else {
+								result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _executeData, opt, 0);
+								_map.insert(std::make_pair(key, result));
+							}
 
 							if (result.empty() == false) {
 								UserType resultUT;
@@ -3169,6 +3182,7 @@ namespace wiz {
 			// new function! - check UserType::Find().second[0] ?
 			static void Iterate(wiz::load_data::UserType& global, const std::string& dir, const std::vector<std::string>& events, const std::string& recursive, const std::string& before_value, const ExecuteData& executeData)
 			{
+				_map.clear();
 				std::vector<wiz::load_data::UserType*> ut = wiz::load_data::UserType::Find(&global, dir).second; // chk first?
 				wiz::load_data::UserType eventsTemp = *executeData.pEvents;
 
@@ -3204,6 +3218,9 @@ namespace wiz {
 
 				eventsTemp.RemoveUserTypeList(eventsTemp.GetUserTypeListSize() - 1);
 			//	eventsTemp->RemoveUserTypeList(eventsTemp->GetUserTypeListSize() - 1);
+
+
+				_map.clear();
 			}
 			
 			// chk remove!
@@ -4497,13 +4514,18 @@ namespace wiz {
 				return x.first;
 			}
 	
-
-			static inline std::string FindParameters(const wiz::ArrayMap<std::string, std::string>& parameters, const std::string& operand)
+			class EQ_STR_SV {
+			public:
+				bool operator()(const std::string& str, void* val) const {
+					return str.compare(*static_cast<std::string_view*>(val)) == 0;
+				}
+			};
+			static inline std::string FindParameters(const wiz::ArrayMap<std::string, std::string>& parameters, std::string_view operand)
 			{
 				wiz::ArrayMap<std::string, std::string>::const_iterator x;
 				for (int i = 0; i < parameters.size(); ++i) {
-					if (wiz::String::startsWith(operand, "$parameter.")
-						&& (x = parameters.find(wiz::String::substring(operand, 11))) != parameters.end()) {
+					if (wiz::String::startsWith(operand, "$parameter."sv)
+						&& ((x = parameters.find<EQ_STR_SV>(static_cast<void*>(&(operand = operand.substr(11))), EQ_STR_SV())) != parameters.end())) {
 						return x->second;
 					}
 				}
@@ -4511,7 +4533,7 @@ namespace wiz {
 			}
 			static inline std::string FindLocals(const wiz::ArrayMap<std::string, std::string>& locals, const std::string& operand)
 			{
-				if (wiz::String::startsWith(operand, "$local.") && locals.end() != locals.find(wiz::String::substring(operand, 7)))
+				if (wiz::String::startsWith(operand, "$local."sv) && locals.end() != locals.find(wiz::String::substring(operand, 7)))
 				{
 					return locals.at(wiz::String::substring(operand, 7));
 				}

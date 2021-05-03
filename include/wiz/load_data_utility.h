@@ -879,7 +879,7 @@ namespace wiz {
 				else if (7 == state) { return "DATE"; }
 				else return "STRING";
 			}
-			static std::string Compare(std::string_view str1, std::string_view str2,
+			static std::string_view Compare(std::string_view str1, std::string_view str2,
 				std::string _type1="", std::string _type2="", const int type = 0)
 			{
 				//if (str1.size() > 2 && str1[0] == str1.back() && (str1[0] == '\"' || str1[0] == '\''))
@@ -956,7 +956,7 @@ namespace wiz {
 					std::string_view x = str1; x = x.substr(0, x_pos);
 					std::string_view y = str2; y = y.substr(0, y_pos);
 
-					std::string z = Compare(x, y, "INTEGER", "INTEGER");
+					std::string_view z = Compare(x, y, "INTEGER", "INTEGER");
 					if ("== 0" == z)
 					{
 						x = str1; x = x.substr(x_pos + 1);
@@ -995,7 +995,7 @@ namespace wiz {
 					std::string_view y = str2; y = y.substr(0, y_pos);
 
 					for (int i = 0; i < 3; ++i) {
-						const std::string comp = Compare(x, y);
+						const std::string_view comp = Compare(x, y);
 
 						if (comp == "< 0") { return comp; }
 						else if (comp == "> 0") { return comp; }
@@ -1014,7 +1014,7 @@ namespace wiz {
 					std::string_view y = str2; y = y.substr(0, y_pos);
 
 					for (int i = 0; i < 4; ++i) {
-						const std::string comp = Compare(x, y, "INTEGER", "INTEGER");
+						const std::string_view comp = Compare(x, y, "INTEGER", "INTEGER");
 
 						if (comp == "< 0") { return comp; }
 						else if (comp == "> 0") { return comp; }
@@ -1034,7 +1034,7 @@ namespace wiz {
 					std::string_view y = str2; y = y.substr(0, y_pos);
 
 					for (int i = 0; i < 5; ++i) {
-						const std::string comp = Compare(x, y, "INTEGER", "INTEGER");
+						const std::string_view comp = Compare(x, y, "INTEGER", "INTEGER");
 
 						if (comp == "< 0") { return comp; }
 						else if (comp == "> 0") { return comp; }

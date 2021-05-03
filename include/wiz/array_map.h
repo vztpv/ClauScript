@@ -78,6 +78,24 @@ namespace wiz {
 		auto find(const Key& key) const {
 			return std::find(_map.begin(), _map.end(), wiz::Pair(key, Data()));
 		}
+		template <class Eq>
+		auto find(void* key, Eq func) const {
+			for (auto x = _map.cbegin(); x != _map.cend(); ++x) {
+				if (func(x->first, key)) {
+					return x;
+				}
+			}
+			return _map.cend();
+		}
+		template <class Eq>
+		auto find(void* key, Eq func) {
+			for (auto x = _map.begin(); x != _map.end(); ++x) {
+				if (func(*x, key)) {
+					return x;
+				}
+			}
+			return _map.end();
+		}
 
 		Data& operator[] (Key&& key) {
 			for (int i = 0; i < _map.size(); ++i) {
