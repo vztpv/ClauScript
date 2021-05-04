@@ -265,7 +265,7 @@ namespace wiz {
 			return stream;
 		}
 
-		friend bool operator==(std::string_view str, const DataType& type) {
+		inline friend bool operator==(std::string_view str, const DataType& type) {
 			return type.str_value.compare(str) == 0;
 		}
 		friend bool operator!=(std::string_view str, const DataType& type) {

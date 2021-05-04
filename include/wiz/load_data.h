@@ -3156,8 +3156,17 @@ namespace wiz {
 						}
 
 						Option opt;
-						std::string result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _executeData, opt, 0);
+						std::string result;
+						
+						std::string key = ut[i]->GetUserTypeList(utCount)->GetName();
 
+						if (_map.find(key) != _map.end()) {
+							result = _map[key];
+						}
+						else {
+							result = pExcuteModule->execute_module("Main = { $call = { id = NONE__  } }", &global, _executeData, opt, 0);
+							_map.insert(std::make_pair(key, result));
+						}
 						if (result.empty() == false) {
 							UserType resultUT;
 							wiz::load_data::LoadData::LoadDataFromString(result, resultUT);
