@@ -111,10 +111,11 @@ namespace wiz {
             if (isOnlyOne())
             {
                 remove(false);
+                quit();
             }
             else
             {
-                remove(false);
+               remove(false);
             }
         }
     public:
