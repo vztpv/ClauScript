@@ -1,16 +1,15 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
-
+#include "mimalloc-new-delete.h"
 #include "wiz/ClauText.h"
 using namespace std::literals;
 
-#include "wiz/smart_ptr.h"
 
 namespace wiz {
 
 
 	class UtInfo {
 	public:
-		wiz::SmartPtr<wiz::load_data::UserType> global;
+		wiz::load_data::UserType* global;
 		wiz::load_data::UserType* ut;
 		std::string dir;
 		long long itCount = 0;
@@ -24,7 +23,7 @@ namespace wiz {
 		}
 	};
 
-	// for @insert, @update, @delete
+	// for $insert, $update, $delete
 	inline bool EqualFunc(wiz::load_data::UserType* global, wiz::load_data::UserType* eventUT, const wiz::load_data::ItemType<std::string>& x,
 		wiz::load_data::ItemType<std::string> y, long long x_idx, const std::string& dir) {
 
@@ -105,7 +104,7 @@ namespace wiz {
 	}
 
 
-	bool _InsertFunc(wiz::SmartPtr<wiz::load_data::UserType> global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
+	bool _InsertFunc(wiz::load_data::UserType* global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
 		std::queue<UtInfo> que;
 
 		std::string dir = "/.";
@@ -206,7 +205,7 @@ namespace wiz {
 		return true;
 	}
 
-	bool _RemoveFunc(wiz::SmartPtr<wiz::load_data::UserType> global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
+	bool _RemoveFunc(wiz::load_data::UserType* global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
 		std::queue<UtInfo> que;
 		std::string dir = "/.";
 		que.push(UtInfo(global, insert_ut, dir));
@@ -312,7 +311,7 @@ namespace wiz {
 	}
 
 
-	bool _UpdateFunc(wiz::SmartPtr<wiz::load_data::UserType> global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
+	bool _UpdateFunc(wiz::load_data::UserType* global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
 		std::queue<UtInfo> que;
 		std::string dir = "/.";
 		que.push(UtInfo(global, insert_ut, dir));
@@ -414,7 +413,7 @@ namespace wiz {
 
 	// starts with '@' -> insert target
 	// else -> condition target.
-	bool InsertFunc(wiz::SmartPtr<wiz::load_data::UserType> global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
+	bool InsertFunc(wiz::load_data::UserType* global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
 		if (!_InsertFunc(global, insert_ut, eventUT)) {
 			return false;
 		}
@@ -565,7 +564,7 @@ namespace wiz {
 		return true;
 	}
 
-	bool RemoveFunc(wiz::SmartPtr<wiz::load_data::UserType> global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
+	bool RemoveFunc(wiz::load_data::UserType* global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
 		if (!_RemoveFunc(global, insert_ut, eventUT)) {
 			return false;
 		}
@@ -797,7 +796,7 @@ namespace wiz {
 		return true;
 	}
 
-	bool UpdateFunc(wiz::SmartPtr<wiz::load_data::UserType> global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
+	bool UpdateFunc(wiz::load_data::UserType* global, wiz::load_data::UserType* insert_ut, wiz::load_data::UserType* eventUT) {
 		if (!_UpdateFunc(global, insert_ut, eventUT)) {
 			return false;
 		}
@@ -3242,6 +3241,10 @@ std::string ClauText::execute_module(const std::string& MainStr, wiz::load_data:
 				}
 #if _WIN32
 				MStyleTest(&global, _executeData);
+				system("cls");
+
+				gotoxy(0, 0);
+				setcolor(7, 0);
 #endif
 				eventStack.top().userType_idx.top()++;
 				break;
@@ -3537,7 +3540,21 @@ void ClauText::ShellMode(wiz::load_data::UserType& global, const ExecuteData& ex
 				break;
 			}
 			else if ("$option" == command) {
+				//
+			}
+			else if ("$M" == command) {
+				
+#ifdef _WIN32
+				if (executeData.noUseInput || executeData.noUseOutput) {
+					continue;
+				}
 
+				MStyleTest(&global, executeData); 
+				system("cls");
+
+				gotoxy(0, 0);
+				setcolor(7, 0);
+#endif
 			}
 			else if (wiz::String::startsWith(command, "$call"))
 			{
@@ -3690,7 +3707,7 @@ void ClauText::ShellMode(wiz::load_data::UserType& global, const ExecuteData& ex
 				command.append("\n");
 
 				totalCommand.append(command);
-				if (wiz::load_data::LoadData::LoadDataFromString(totalCommand, global)) {
+				if (wiz::load_data::LoadData::AddData(global, "/./", totalCommand, executeData)) {
 					wiz::Out << ">> : Data Added!" << ENTER;
 				}
 				else {
