@@ -1,7 +1,7 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #define ARRAY_QUEUE std::deque // chk?
 #define VECTOR std::vector
-
+#include "mimalloc-new-delete.h"
 #include <iostream>
 #include <cmath>
 

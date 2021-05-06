@@ -1,6 +1,6 @@
 ﻿
 #define _CRT_SECURE_NO_WARNINGS
-
+#include "mimalloc-new-delete.h"
 #include "wiz/global.h"
 #include "wiz/load_data_utility.h"
 
