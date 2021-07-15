@@ -1,8 +1,6 @@
-bool VM::_InsertFunc(clau_parser::UserType* global, clau_parser::UserType* insert_ut, VM* vm) {
+bool VM::_RemoveFunc(clau_parser::UserType* global, clau_parser::UserType* insert_ut, VM* vm) {
 	std::queue<UtInfo> que;
-
 	std::string dir = "/.";
-
 	que.push(UtInfo(global, insert_ut, dir));
 
 	while (!que.empty()) {
@@ -42,6 +40,9 @@ bool VM::_InsertFunc(clau_parser::UserType* global, clau_parser::UserType* inser
 				auto item = x.global->GetItemIdx(x.ut->GetItemList(it_count).GetName());
 				// no exist -> return false;
 				if (item.empty()) {
+					if (x.ut->GetItemList(it_count).Get() == "!%any") {
+						return true;
+					}
 					// LOG....
 					return false;
 				}
@@ -80,10 +81,13 @@ bool VM::_InsertFunc(clau_parser::UserType* global, clau_parser::UserType* inser
 
 				for (long long j = 0; j < usertype.size(); ++j) {
 					que.push(UtInfo(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count - 1),
-						x.dir));
+						x.dir + "/$ut" + std::to_string(usertype[j])));
 				}
 
 				continue;
+			}
+			else if (x.ut->IsUserTypeList(i) && x.ut->GetUserTypeList(ut_count)->GetName() == "@$"sv) {
+				//
 			}
 
 			if (x.ut->IsItemList(i)) {
