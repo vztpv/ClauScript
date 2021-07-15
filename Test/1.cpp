@@ -1,4 +1,4 @@
-bool VM::_RemoveFunc(clau_parser::UserType* global, clau_parser::UserType* insert_ut, VM* vm) {
+bool VM::_UpdateFunc(clau_parser::UserType* global, clau_parser::UserType* insert_ut, VM* vm) {
 	std::queue<UtInfo> que;
 	std::string dir = "/.";
 	que.push(UtInfo(global, insert_ut, dir));
@@ -6,6 +6,7 @@ bool VM::_RemoveFunc(clau_parser::UserType* global, clau_parser::UserType* inser
 	while (!que.empty()) {
 		UtInfo x = que.front();
 		que.pop();
+
 
 		// find non-@
 		long long ut_count = 0;
@@ -40,9 +41,6 @@ bool VM::_RemoveFunc(clau_parser::UserType* global, clau_parser::UserType* inser
 				auto item = x.global->GetItemIdx(x.ut->GetItemList(it_count).GetName());
 				// no exist -> return false;
 				if (item.empty()) {
-					if (x.ut->GetItemList(it_count).Get() == "!%any") {
-						return true;
-					}
 					// LOG....
 					return false;
 				}
@@ -51,7 +49,7 @@ bool VM::_RemoveFunc(clau_parser::UserType* global, clau_parser::UserType* inser
 
 				for (long long j = 0; j < item.size(); ++j) {
 					if (EqualFunc(x.global, x.global->GetItemList(item[j]), x.ut->GetItemList(it_count), item[j],
-						x.dir, vm)) {
+						dir, vm)) {
 						pass = true;
 						break;
 					}
@@ -81,13 +79,10 @@ bool VM::_RemoveFunc(clau_parser::UserType* global, clau_parser::UserType* inser
 
 				for (long long j = 0; j < usertype.size(); ++j) {
 					que.push(UtInfo(x.global->GetUserTypeList(usertype[j]), x.ut->GetUserTypeList(ut_count - 1),
-						x.dir + "/$ut" + std::to_string(usertype[j])));
+						dir + "/$ut" + std::to_string(usertype[j])));
 				}
 
 				continue;
-			}
-			else if (x.ut->IsUserTypeList(i) && x.ut->GetUserTypeList(ut_count)->GetName() == "@$"sv) {
-				//
 			}
 
 			if (x.ut->IsItemList(i)) {
